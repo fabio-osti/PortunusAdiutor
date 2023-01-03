@@ -110,7 +110,7 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	{
 		var userId = _mailPoster.ConsumeSut(
 			token,
-			MessageType.EmailConfirmation
+			MessageType.PasswordRedefinition
 		);
 		var user = _context.Users.Find(userId);
 		user = UserNotFoundException.ThrowIfUserNull<TUser, TKey>(user);
