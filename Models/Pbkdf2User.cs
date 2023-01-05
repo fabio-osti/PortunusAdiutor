@@ -12,8 +12,8 @@ namespace PortunusAdiutor.Models;
 /// </summary>
 /// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
 /// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
-public class Pbkdf2IdentityUser<TUser, TKey> : IManagedUser<TUser, TKey>
-where TUser : Pbkdf2IdentityUser<TUser, TKey>
+public class Pbkdf2User<TUser, TKey> : IManagedUser<TUser, TKey>
+where TUser : Pbkdf2User<TUser, TKey>
 where TKey : IEquatable<TKey>
 {
 	private const KeyDerivationPrf DefaultPrf = KeyDerivationPrf.HMACSHA512;
@@ -28,9 +28,9 @@ where TKey : IEquatable<TKey>
 	/// <param name="salt">Salt of the user.</param>
 	/// <param name="passwordHash">Hashed password of the user.</param>
 	/// <remarks>
-	/// 	This constructor should only be used by EF to build an object representing an existing <see cref="Pbkdf2IdentityUser{TUser, TKey}"/>.
+	/// 	This constructor should only be used by EF to build an object representing an existing <see cref="Pbkdf2User{TUser, TKey}"/>.
 	/// </remarks>
-	public Pbkdf2IdentityUser(TKey id, string email, byte[] salt, string passwordHash)
+	public Pbkdf2User(TKey id, string email, byte[] salt, string passwordHash)
 	{
 		Id = id;
 		PasswordHash = passwordHash;
@@ -44,7 +44,7 @@ where TKey : IEquatable<TKey>
 	/// <param name="id">Id of the user</param>
 	/// <param name="email">Email of the user.</param>
 	/// <param name="password">Password of the user.</param>
-	public Pbkdf2IdentityUser(TKey id, string email, string password)
+	public Pbkdf2User(TKey id, string email, string password)
 	{
 		Id = id;
 		Email = email;
