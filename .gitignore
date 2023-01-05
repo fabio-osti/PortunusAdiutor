@@ -377,3 +377,8 @@ nuget.config
 PortunusAdiutor.code-workspace
 .vscode/settings.json
 db.session.sql
+
+results/
+*.db
+*.db-shm
+*.db-val
