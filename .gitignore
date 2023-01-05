@@ -381,4 +381,4 @@ db.session.sql
 results/
 *.db
 *.db-shm
-*.db-val
+*.db-wal
