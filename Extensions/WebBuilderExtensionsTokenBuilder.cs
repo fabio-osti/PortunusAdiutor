@@ -45,11 +45,7 @@ public static partial class WebBuilderExtensions
 
 				return builder.Services
 					.AddSingleton<ITokenBuilder>(_ => new TokenBuilder(tokenBuilderParams))
-					.AddAuthentication(x =>
-					{
-						x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-						x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-					})
+					.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 					.AddJwtBearer(
 						opt =>
 						{
