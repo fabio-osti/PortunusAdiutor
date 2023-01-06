@@ -9,6 +9,19 @@ interface TestResult {
 
 const tests: TestResult[] = []
 const formatOpt = { minimumIntegerDigits: 2, useGrouping: false }
+const filePath = (function () {
+	return __dirname
+		.split('\\')
+		.slice(0, -1)
+		.join('\\')
+		.concat(
+			`\\results\\${(new Date(Date.now()))
+				.toJSON()
+				.replaceAll('.', '')
+				.replaceAll(':', '')
+				.replaceAll('-', '')}`
+		)
+})()
 
 export function getTestAccumulator(title: string) {
 	return function (body: any, success: boolean, status: number) {
@@ -21,7 +34,7 @@ export function getTestAccumulator(title: string) {
 	}
 }
 
-function writeMD(filename: string) {
+function writeMD() {
 	const content = tests.reduce(
 		(acc, cur, i) =>
 			`${acc}` +
@@ -31,12 +44,12 @@ function writeMD(filename: string) {
 			`\`\`\`\n`,
 		""
 	)
-	fs.writeFile(`./results/${filename}.md`, content, (err) => {
+	fs.writeFile(`${filePath}.md`, content, (err) => {
 		if (err !== null) console.log(err)
 	})
 }
 
-function writeTXT(filename: string) {
+function writeTXT() {
 	const line = "+".repeat(37)
 	var divisor: string
 	const content = tests.reduce(
@@ -50,14 +63,14 @@ function writeTXT(filename: string) {
 			"\n\n",
 		""
 	).trimEnd()
-	fs.writeFile(`./results/${filename}.txt`, content, (err) => {
+	fs.writeFile(`${filePath}.txt`, content, (err) => {
 		if (err !== null) console.log(err)
 	})
 
 }
 
-function writeJSON(filename: string) {
-	fs.writeFile(`./results/${filename}.json`, JSON.stringify(tests, null, '\t'), (err) => {
+function writeJSON() {
+	fs.writeFile(`${filePath}.json`, JSON.stringify(tests, null, '\t'), (err) => {
 		if (err !== null) console.log(err)
 	})
 }
@@ -84,10 +97,8 @@ export function printAccumulatedTests(
 		writeToConsole?: boolean;
 	}
 ) {
-	const filename = (new Date(Date.now())).toJSON().replaceAll('.', '').replaceAll(':', '').replaceAll('-', '')
-
-	if (writeToTxt) writeTXT(filename)
-	if (writeToJson) writeJSON(filename)
-	if (writeToMd) writeMD(filename)
+	if (writeToTxt) writeTXT()
+	if (writeToJson) writeJSON()
+	if (writeToMd) writeMD()
 	if (writeToConsole) writeConsole()
 }
