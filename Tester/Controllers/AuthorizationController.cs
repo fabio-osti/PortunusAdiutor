@@ -6,7 +6,7 @@ using PortunusAdiutor.Models;
 using PortunusAdiutor.Services.TokenBuilder;
 using PortunusAdiutor.Services.UsersManager;
 using PortunusAdiutor.Static;
-using PortunusLiteTester.Data;
+using PortunusTester.Data;
 using PortunusTester.Models;
 
 namespace PortunusTester.Controllers

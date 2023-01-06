@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace PortunusLiteTester.Migrations
+namespace PortunusTester.Migrations
 {
     /// <inheritdoc />
     public partial class Admin : Migration
