@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PortunusAdiutor.Data;
 
-namespace PortunusLiteTester.Data
+namespace PortunusTester.Data
 {
 	public class ApplicationDbContext : ManagedUserDbContext<ApplicationUser, Guid>
 	{

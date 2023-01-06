@@ -14,10 +14,10 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <PackageId>PortunusAdiutorLite</PackageId>
+    <PackageId>PortunusAdiutor</PackageId>
     <Version>0.5.0</Version>
     <Authors>fabio-osti</Authors>
-    <PackageDescription>A helper with setting up JWT authorization.</PackageDescription>
+    <PackageDescription>An identity-less helper with setting up JWT authorization.</PackageDescription>
     <RepositoryUrl>https://github.com/fabio-osti/PortunusAdiutorLite.git</RepositoryUrl>
   </PropertyGroup>
 

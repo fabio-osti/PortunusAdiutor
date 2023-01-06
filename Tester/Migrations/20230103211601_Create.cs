@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace PortunusLiteTester.Migrations
+namespace PortunusTester.Migrations
 {
     /// <inheritdoc />
     public partial class Create : Migration

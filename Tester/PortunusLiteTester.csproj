@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PortunusAdiutorLite.csproj" />
+    <ProjectReference Include="..\PortunusAdiutor.csproj" />
   </ItemGroup>
 
 </Project>
