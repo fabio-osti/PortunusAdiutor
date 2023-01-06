@@ -24,6 +24,16 @@ export function whoAmI(token: string) {
 	})
 }
 
+export function getUsersCount(token: string) {
+	return fetch(_baseAddress + "Authorization/GetUsersCount", {
+		method: "GET",
+		headers: new Headers({
+			Authentication: "Bearer token",
+			Authorization: `Bearer ${token}`
+		})
+	})
+}
+
 export function signUp(cred: Credentials) {
 	return fetch(_baseAddress + "Authorization/SignUp", {
 		method: "POST",

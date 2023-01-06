@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using PortunusAdiutor.Extensions;
 using PortunusAdiutor.Services.MessagePoster;
 using PortunusAdiutor.Services.TokenBuilder;
+using PortunusAdiutor.Static;
 using PortunusLiteTester.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,14 @@ builder.AddAllPortunusServices<ApplicationDbContext, ApplicationUser, Guid>(
 	{
 		SmtpUri = new("smtp://localhost:2525")
 	}
+);
+builder.Services.AddAuthorization(
+	e => e.AddPolicy(
+		"Administrator",
+		policy => policy
+			.RequireClaim("is-admin", "True")
+			.RequireClaim(JwtCustomClaims.EmailConfirmed, "True")
+	)
 );
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

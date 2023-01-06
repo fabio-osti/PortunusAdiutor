@@ -5,10 +5,10 @@ import * as api from './api'
 import * as expect from './expect'
 import * as log from './log'
 
-function getRandomEmail() {
+function getRandomEmail(domainExt: string) {
 	const usr = (Math.random() + 1).toString(36).substring(2);
 	const prv = (Math.random() + 1).toString(36).substring(2);
-	return `${usr}@${prv}.com`;
+	return `${usr}@${prv}.${domainExt}`;
 }
 
 (async function () {
@@ -21,7 +21,7 @@ function getRandomEmail() {
 			logger: log.getTestAccumulator("Pings the server")
 		})
 		// <------------------------------|USER 1|------------------------------>
-		const emailU1 = getRandomEmail()
+		const emailU1 = getRandomEmail("com")
 
 		const U1 = {
 			email: emailU1,
@@ -99,7 +99,7 @@ function getRandomEmail() {
 		})
 
 		// <------------------------------|USER 2|------------------------------>
-		const emailU2 = getRandomEmail()
+		const emailU2 = getRandomEmail("adm")
 		const U2 = {
 			email: emailU2,
 			password: "$Pass123"
@@ -107,7 +107,7 @@ function getRandomEmail() {
 		// Step 12
 		await expect.fromResponse({
 			response: await api.signUp(U2),
-			logger: log.getTestAccumulator("Creates second user")
+			logger: log.getTestAccumulator("Creates second user with admin privileges")
 		})
 
 		// Step 13
@@ -164,6 +164,31 @@ function getRandomEmail() {
 			response: await api.whoAmI(await tokenU2A),
 			logger: log.getTestAccumulator("Get claims where email-confirmed == \"False\" from token returned by step 18"),
 			expect: (r) => r["email-confirmed"] === "False"
+		})
+
+		const xdcCnfrCodeU2 = input(`Enter the confirmation code for ${emailU2}: `)
+		const cnfrCodeU2 = {
+			email: emailU2,
+			password: "Pass321$",
+			xdc: xdcCnfrCodeU2
+		};
+
+		// Step 20
+		await expect.fromResponse({
+			response: await api.confirmEmail(cnfrCodeU2),
+			logger: log.getTestAccumulator("Confirms first user email with confirmation code sent at step 2")
+		});
+
+		// Step 21
+		const tokenU2B = await expect.fromResponse({
+			response: await api.signIn(U2B),
+			logger: log.getTestAccumulator("Signs in")
+		})
+
+		// Step 22
+		await expect.fromResponse({
+			response: await api.getUsersCount(await tokenU2B),
+			logger: log.getTestAccumulator("Get users count (admin only endpoint)")
 		})
 	} catch (e) {
 	} finally {
