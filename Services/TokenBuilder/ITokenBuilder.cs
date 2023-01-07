@@ -15,18 +15,21 @@ public interface ITokenBuilder
 	/// <param name="tokenDescriptor">Descriptor of the build token.</param>
 	/// <returns>A JWT describing <paramref name="tokenDescriptor"/>.</returns>
 	string BuildToken(SecurityTokenDescriptor tokenDescriptor);
+
 	/// <summary>
 	/// 	Builds a token with <paramref name="claims"/>.
 	/// </summary>
 	/// <param name="claims">Claims of the build token.</param>
 	/// <returns>A JWT containing <paramref name="claims"/>.</returns>
 	string BuildToken(Claim[] claims);
+
 	/// <summary>
 	/// 	Builds a token with <paramref name="claims"/>.
 	/// </summary>
 	/// <param name="claims">Claims of the build token.</param>
 	/// <returns>A JWT containing <paramref name="claims"/>.</returns>
 	string BuildToken(IDictionary<string, object> claims);
+
 	/// <summary>
 	/// 	Validates and gets the claims contained by <paramref name="token"/>.
 	/// </summary>

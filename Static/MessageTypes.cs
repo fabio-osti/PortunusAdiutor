@@ -9,6 +9,7 @@ public static class MessageTypes
 	/// 	Message of type "email-confirmation-token".
 	/// </summary>
 	public const string EmailConfirmation = "email-confirmation-token";
+	
 	/// <summary>
 	///		Message of type "password-redefinition".
 	/// </summary>

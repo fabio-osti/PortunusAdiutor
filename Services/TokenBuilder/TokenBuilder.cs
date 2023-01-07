@@ -11,6 +11,7 @@ namespace PortunusAdiutor.Services.TokenBuilder;
 public class TokenBuilder : ITokenBuilder
 {
 	private readonly TokenBuilderParams _builderParams;
+
 	/// <summary>
 	/// 	Initializes an instance of the class.
 	/// </summary>

@@ -20,6 +20,7 @@ where TUser : class, IManagedUser<TUser, TKey>
 where TKey : IEquatable<TKey>
 {
 	private readonly LinkMessagePosterParams _posterParams;
+
 	/// <summary>
 	/// 	Initializes an instance of the class.
 	/// </summary>
