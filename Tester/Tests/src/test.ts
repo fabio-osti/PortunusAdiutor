@@ -50,51 +50,49 @@ function getRandomEmail(domainExt: string) {
 
 		console.clear()
 		const xdcCnfrCodeU1 = input(`Enter the confirmation code for ${emailU1}: `);
-
-		// Step 5
 		const cnfrCodeU1 = {
 			email: emailU1,
 			password: "$Pass321",
 			xdc: xdcCnfrCodeU1
 		}
 
-		// Step 6
+		// Step 5
 		await expect.fromResponse({
 			response: await api.redefinePassword(cnfrCodeU1),
 			logger: log.getTestAccumulator("Fails to redefine password with confirmation code sent at step 2"),
 			expect: failure
 		});
 
-		// Step 7
+		// Step 6
 		await expect.fromResponse({
 			response: await api.confirmEmail(cnfrCodeU1),
 			logger: log.getTestAccumulator("Confirms first user email with confirmation code sent at step 2")
 		});
 
-		// Step 8
+		// Step 7
 		await expect.fromResponse({
 			response: await api.confirmEmail(cnfrCodeU1),
 			logger: log.getTestAccumulator("Fails to reconfirm first user email"),
 			expect: failure
 		});
 
-		// Step 9
+		// Step 8
 		await expect.fromResponse({
 			response: await api.signIn(cnfrCodeU1),
 			logger: log.getTestAccumulator("Fails to sign in with wrong password"),
 			expect: failure
 		})
 
-		// Step 10
+		// Step 9
 		const tokenU1B = await expect.fromResponse({
 			response: await api.signIn(U1),
 			logger: log.getTestAccumulator("Signs in")
 		})
 
-		// Step 11
+		// Step 10
 		await expect.fromResult({
 			response: await api.whoAmI(await tokenU1B),
-			logger: log.getTestAccumulator("Get claims where email-confirmed == \"True\" from token returned by step 10"),
+			logger: log.getTestAccumulator("Get claims where email-confirmed == \"True\" from token returned by step 9"),
 			expect: (r) => r["email-confirmed"] === "True"
 		})
 
@@ -104,19 +102,20 @@ function getRandomEmail(domainExt: string) {
 			email: emailU2,
 			password: "$Pass123"
 		}
-		// Step 12
+
+		// Step 11
 		await expect.fromResponse({
 			response: await api.signUp(U2),
 			logger: log.getTestAccumulator("Creates second user with admin privileges")
 		})
 
-		// Step 13
+		// Step 12
 		await expect.fromResponse({
 			response: await api.sendPasswordRedefinition(U2),
 			logger: log.getTestAccumulator("Sends password redefinition to the second user")
 		})
 
-		// Step 14
+		// Step 13
 		await expect.fromResponse({
 			response: await api.confirmEmail({
 				email: emailU2,
@@ -133,33 +132,33 @@ function getRandomEmail(domainExt: string) {
 			xdc: xdcRdfnCodeU2
 		};
 
-		// Step 15
+		// Step 14
 		await expect.fromResponse({
 			response: await api.confirmEmail(U2B),
 			logger: log.getTestAccumulator("Fails to confirm second user email with password redefinition code"),
 			expect: failure
 		})
 
-		// Step 16
+		// Step 15
 		await expect.fromResponse({
 			response: await api.redefinePassword(U2B),
-			logger: log.getTestAccumulator("Redefines second user password with code sent at step 15")
+			logger: log.getTestAccumulator("Redefines second user password with code sent at step 12")
 		})
 
-		// Step 17
+		// Step 16
 		await expect.fromResponse({
 			response: await api.signIn(U2),
 			logger: log.getTestAccumulator("Fails to sign second user in with old password"),
 			expect: failure
 		})
 
-		// Step 18
+		// Step 17
 		const tokenU2A = await expect.fromResponse({
 			response: await api.signIn(U2B),
 			logger: log.getTestAccumulator("Signs in")
 		})
 
-		// Step 19
+		// Step 18
 		await expect.fromResult({
 			response: await api.whoAmI(await tokenU2A),
 			logger: log.getTestAccumulator("Get claims where email-confirmed == \"False\" from token returned by step 18"),
@@ -173,19 +172,19 @@ function getRandomEmail(domainExt: string) {
 			xdc: xdcCnfrCodeU2
 		};
 
-		// Step 20
+		// Step 19
 		await expect.fromResponse({
 			response: await api.confirmEmail(cnfrCodeU2),
-			logger: log.getTestAccumulator("Confirms first user email with confirmation code sent at step 2")
+			logger: log.getTestAccumulator("Confirms second user email with confirmation code sent at step 19")
 		});
 
-		// Step 21
+		// Step 20
 		const tokenU2B = await expect.fromResponse({
 			response: await api.signIn(U2B),
 			logger: log.getTestAccumulator("Signs in")
 		})
 
-		// Step 22
+		// Step 21
 		await expect.fromResponse({
 			response: await api.getUsersCount(await tokenU2B),
 			logger: log.getTestAccumulator("Get users count (admin only endpoint)")
