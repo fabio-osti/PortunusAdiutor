@@ -55,7 +55,7 @@ where TKey : IEquatable<TKey>
 	{
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 		// Generates SUT
-		var sut = GenAndSave(user.Id, MessageTypes.EmailConfirmation, out _);
+		var sut = GenAndSave(user.Id, MessageType.EmailConfirmation, out _);
 		// Builds and sends message
 		var message = _posterParams.EmailConfirmationMessageBuilder(
 			user.Email,
@@ -69,7 +69,7 @@ where TKey : IEquatable<TKey>
 	{
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 		// Generates SUT
-		var sut = GenAndSave(user.Id, MessageTypes.PasswordRedefinition, out _);
+		var sut = GenAndSave(user.Id, MessageType.PasswordRedefinition, out _);
 		// Builds and sends message
 		var message = _posterParams.PasswordRedefinitionMessageBuilder(
 			user.Email,

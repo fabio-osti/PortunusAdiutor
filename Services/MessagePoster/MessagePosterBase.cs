@@ -62,13 +62,13 @@ where TKey : IEquatable<TKey>
 	/// </returns>
 	protected SingleUseToken<TUser, TKey> GenAndSave(
 		TKey userId,
-		string type,
+		MessageType type,
 		out string xdc
 	)
 	{
 		xdc = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
 
-		var userSut = new SingleUseToken<TUser, TKey>(userId, xdc, type);
+		var userSut = new SingleUseToken<TUser, TKey>(userId, xdc, type.ToTypeString());
 
 		_context.SingleUseTokens.Add(userSut);
 		_context.SaveChanges();
@@ -103,7 +103,7 @@ where TKey : IEquatable<TKey>
 			throw new TokenNotFoundException();
 		}
 
-		var type = messageType.ToJwtTypeString();
+		var type = messageType.ToTypeString();
 		if (userSut.ExpiresOn < DateTime.UtcNow || userSut.Type != type) {
 			throw new InvalidPasswordException();
 		}

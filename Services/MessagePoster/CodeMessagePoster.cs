@@ -53,7 +53,7 @@ where TKey : IEquatable<TKey>
 	{
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 
-		var otp = GenAndSave(user.Id, MessageTypes.EmailConfirmation, out var xdc);
+		var otp = GenAndSave(user.Id, MessageType.EmailConfirmation, out var xdc);
 
 		var message = _posterParams.EmailConfirmationMessageBuilder(
 			user.Email,
@@ -68,7 +68,7 @@ where TKey : IEquatable<TKey>
 	{
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 
-		var otp = GenAndSave(user.Id, MessageTypes.PasswordRedefinition, out var xdc);
+		var otp = GenAndSave(user.Id, MessageType.PasswordRedefinition, out var xdc);
 
 		var message = _posterParams.PasswordRedefinitionMessageBuilder(
 			user.Email,

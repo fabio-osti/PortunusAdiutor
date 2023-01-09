@@ -30,12 +30,8 @@ public static class MessageTypes
 	/// <exception cref="ArgumentOutOfRangeException">
 	/// 	Undefined <see cref="MessageType"/>.
 	/// </exception>
-	/// <param name="messageType">Type of message represented by the returned string.</param>
-	/// <returns>A string describing the <paramref name="messageType"/>.</returns>
-	/// <exception cref="ArgumentOutOfRangeException">Undefined <see cref="MessageType"/>.</exception>
-	public static string ToJwtTypeString(this MessageType messageType) =>
-	messageType switch
-	{
+	public static string ToTypeString(this MessageType messageType) =>
+	messageType switch {
 		MessageType.EmailConfirmation => EmailConfirmation,
 		MessageType.PasswordRedefinition => PasswordRedefinition,
 		_ => throw new ArgumentOutOfRangeException(nameof(messageType))
