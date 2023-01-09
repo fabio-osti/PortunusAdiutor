@@ -4,11 +4,17 @@ using PortunusAdiutor.Models;
 namespace PortunusAdiutor.Data;
 
 /// <summary>
-/// 	Base class for the Entity Framework database context used for identity.
+/// 	Base class for the Entity Framework database context.
 /// </summary>
-/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
-/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
-public class ManagedUserDbContext<TUser,TKey> : DbContext
+///
+/// <typeparam name="TUser">
+/// 	Type of the user.
+/// </typeparam>
+///
+/// <typeparam name="TKey">
+/// 	Type of the user primary key.
+/// </typeparam>
+public class ManagedUserDbContext<TUser, TKey> : DbContext
 where TUser : class, IManagedUser<TUser, TKey>
 where TKey : IEquatable<TKey>
 {
@@ -16,21 +22,26 @@ where TKey : IEquatable<TKey>
 	/// <summary>
 	/// 	Initializes a new instance of the class.
 	/// </summary>
-	/// <param name="options">Options to be used by a <see cref="DbContext"/>.</param>
+	///
+	/// <param name="options">
+	/// 	Options to be used by the <see cref="DbContext"/>.
+	/// </param>
 	public ManagedUserDbContext(DbContextOptions options) : base(options)
 	{
 	}
 #pragma warning restore CS8618
 
 	/// <summary>
-	/// 	Gets or sets the <see cref="DbSet{TEntity}"/> of <see cref="SingleUseToken{TUser, TKey}"/>
+	/// 	Gets or sets the <see cref="DbSet{TEntity}"/> 
+	/// 	containing all Users.
 	/// </summary>
-	public DbSet<SingleUseToken<TUser, TKey>> SingleUseTokens { get; set; }
+	public DbSet<TUser> Users { get; protected set; }
 
 	/// <summary>
-	/// 	Gets or sets the <see cref="DbSet{TEntity}"/> of <typeparamref name="TUser"/>.
-    /// </summary>
-	public DbSet<TUser> Users { get; set; }
+	/// 	Gets or sets the <see cref="DbSet{TEntity}"/> 
+	/// 	containing all SingleUseTokens.
+	/// </summary>
+	public DbSet<SingleUseToken<TUser, TKey>> SingleUseTokens { get; protected set; }
 
 	/// <inheritdoc/>
 	protected override void OnModelCreating(ModelBuilder builder)

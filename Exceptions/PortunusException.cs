@@ -6,10 +6,9 @@ namespace PortunusAdiutor.Exceptions;
 public class PortunusException : Exception 
 {
 	/// <summary>
-    /// 	Gets or sets a message describing the problem.
+    /// 	Gets or sets a short message describing the problem.
     /// </summary>
 	public string ShortMessage { get; protected set; }
-
 
 	/// <summary>
 	/// 	Initializes the exception.

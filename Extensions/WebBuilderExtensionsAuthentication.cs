@@ -17,16 +17,42 @@ namespace PortunusAdiutor.Extensions;
 public static partial class WebBuilderExtensions
 {
 	/// <summary>
-	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="LinkMessagePoster{TContext, TUser, TKey}"/>.
+	/// 	Adds all services to the <see cref="ServiceCollection"/> 
+	/// 	with <see cref="LinkMessagePoster{TContext, TUser, TKey}"/>.
 	/// </summary>
-	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity.</typeparam>
-	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
-	/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
-	/// <param name="builder">The web app builder.</param>
-	/// <param name="contextConfigurator">The configurator for the <typeparamref name="TContext"/>.</param>
-	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
-	/// <param name="mailLinkPosterParams">The parameters used by the <see cref="LinkMessagePoster{TContext, TUser, TKey}"/>.</param>
-	/// <returns>An <see cref="AuthenticationBuilder"/> for further configurations.</returns>
+	///
+	/// <typeparam name="TContext">
+	/// 	Type of the DbContext.
+	/// </typeparam>
+	///
+	/// <typeparam name="TUser">
+	/// 	Type of the user.
+	/// </typeparam>
+	///
+	/// <typeparam name="TKey">
+	/// 	Type of the user primary key.
+	/// </typeparam>
+	///
+	/// <param name="builder">
+	/// 	The web app builder.
+	/// </param>
+	///
+	/// <param name="contextConfigurator">
+	/// 	The configurator for the <typeparamref name="TContext"/>.
+	/// </param>
+	///
+	/// <param name="tokenBuilderParams">
+	/// 	The parameters used by the <see cref="TokenBuilder"/>.
+	/// </param>
+	///
+	/// <param name="mailLinkPosterParams">
+	/// 	The parameters used by the 
+	/// 	<see cref="LinkMessagePoster{TContext, TUser, TKey}"/>.
+	/// </param>
+	///
+	/// <returns>
+	/// 	An <see cref="AuthenticationBuilder"/> for further configurations.
+	/// </returns>
 	public static AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TKey>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,
@@ -45,16 +71,42 @@ public static partial class WebBuilderExtensions
 	}
 
 	/// <summary>
-	/// 	Adds all services to the <see cref="ServiceCollection"/> with <see cref="CodeMessagePoster{TContext, TUser, TKey}"/>.
+	/// 	Adds all services to the <see cref="ServiceCollection"/> 
+	/// 	with <see cref="CodeMessagePoster{TContext, TUser, TKey}"/>.
 	/// </summary>
-	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity.</typeparam>
-	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
-	/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
-	/// <param name="builder">The web app builder.</param>
-	/// <param name="contextConfigurator">The configurator for the <typeparamref name="TContext"/>.</param>
-	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
-	/// <param name="mailCodePosterParams">The parameters used by the <see cref="CodeMessagePoster{TContext, TUser, TKey}"/>.</param>
-	/// <returns>An <see cref="AuthenticationBuilder"/> for further configurations.</returns>
+	///
+	/// <typeparam name="TContext">
+	/// 	Type of the DbContext.
+	/// </typeparam>
+	///
+	/// <typeparam name="TUser">
+	/// 	Type of the user.
+	/// </typeparam>
+	///
+	/// <typeparam name="TKey">
+	/// 	Type of the user primary key.
+	/// </typeparam>
+	///
+	/// <param name="builder">
+	/// 	The web app builder.
+	/// </param>
+	///
+	/// <param name="contextConfigurator">
+	/// 	The configurator for the <typeparamref name="TContext"/>.
+	/// </param>
+	///
+	/// <param name="tokenBuilderParams">
+	/// 	The parameters used by the <see cref="TokenBuilder"/>.
+	/// </param>
+	///
+	/// <param name="mailCodePosterParams">
+	/// 	The parameters used by the 
+	/// 	<see cref="CodeMessagePoster{TContext, TUser, TKey}"/>.
+	/// </param>
+	///
+	/// <returns>
+	/// 	An <see cref="AuthenticationBuilder"/> for further configurations.
+	/// </returns>
 	public static AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TKey>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,

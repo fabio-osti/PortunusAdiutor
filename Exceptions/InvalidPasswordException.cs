@@ -8,5 +8,6 @@ public class InvalidPasswordException : PortunusException
 	/// <summary>
 	/// 	Initializes the exception.
 	/// </summary>
-	public InvalidPasswordException() : base("The validation of the password for this user failed.") { }
+	public InvalidPasswordException() : 
+		base("Validation failed for this user.") { }
 }

@@ -9,11 +9,21 @@ using PortunusAdiutor.Static;
 namespace PortunusAdiutor.Services.MessagePoster;
 
 /// <summary>
-/// 	Implementation of <see cref="IMessagePoster{TUser, TKey}"/> with the plain text SUT.
+/// 	Implementation of <see cref="IMessagePoster{TUser, TKey}"/>
+/// 	with access links.
 /// </summary>
-/// <typeparam name="TContext">Represents an Entity Framework database context used for identity with SUT keeping.</typeparam>
-/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
-/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
+///
+/// <typeparam name="TContext">
+/// 	Type of the DbContext.
+/// </typeparam>
+///
+/// <typeparam name="TUser">
+/// 	Type of the user.
+/// </typeparam>
+///
+/// <typeparam name="TKey">
+/// 	Type of the user primary key.
+/// </typeparam>
 public class LinkMessagePoster<TContext, TUser, TKey> : MessagePosterBase<TContext, TUser, TKey>, IMessagePoster<TUser, TKey>
 where TContext : ManagedUserDbContext<TUser, TKey>
 where TUser : class, IManagedUser<TUser, TKey>
@@ -24,8 +34,14 @@ where TKey : IEquatable<TKey>
 	/// <summary>
 	/// 	Initializes an instance of the class.
 	/// </summary>
-	/// <param name="posterParams">Parameters for sending messages.</param>
-	/// <param name="context">Database context.</param>
+	///
+	/// <param name="posterParams">
+	/// 	Parameters for sending messages.
+	/// </param>
+	///
+	/// <param name="context">
+	/// 	Database context.
+	/// </param>
 	public LinkMessagePoster(
 		LinkMessagePosterParams posterParams,
 		TContext context
@@ -61,7 +77,7 @@ where TKey : IEquatable<TKey>
 		);
 		SendMessage(message);
 	}
-	
+
 	private void SendMessage(MimeMessage message)
 	{
 		using var client = new SmtpClient();

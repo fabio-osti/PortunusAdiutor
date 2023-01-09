@@ -9,7 +9,7 @@ public static class MessageTypes
 	/// 	Message of type "email-confirmation-token".
 	/// </summary>
 	public const string EmailConfirmation = "email-confirmation-token";
-	
+
 	/// <summary>
 	///		Message of type "password-redefinition".
 	/// </summary>
@@ -18,6 +18,18 @@ public static class MessageTypes
 	/// <summary>
 	///		Gets a string associated with <paramref name="messageType"/>.
 	/// </summary>
+	///
+	/// <param name="messageType">
+	/// 	Type of message represented by the returned string.
+	/// </param>
+	///
+	/// <returns>
+	/// 	A string describing the <paramref name="messageType"/>.
+	/// </returns>
+	///
+	/// <exception cref="ArgumentOutOfRangeException">
+	/// 	Undefined <see cref="MessageType"/>.
+	/// </exception>
 	/// <param name="messageType">Type of message represented by the returned string.</param>
 	/// <returns>A string describing the <paramref name="messageType"/>.</returns>
 	/// <exception cref="ArgumentOutOfRangeException">Undefined <see cref="MessageType"/>.</exception>

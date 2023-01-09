@@ -11,13 +11,30 @@ namespace PortunusAdiutor.Extensions;
 public static partial class WebBuilderExtensions
 {
 	/// <summary>
-	/// 	Adds <see cref="CodeMessagePoster{TContext, TUser, TKey}"/> to the <see cref="ServiceCollection"/>.
+	/// 	Adds <see cref="CodeMessagePoster{TContext, TUser, TKey}"/>
+	/// 	to the <see cref="ServiceCollection"/>.
 	/// </summary>
-	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity.</typeparam>
-	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
-	/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
-	/// <param name="builder">The web app builder.</param>
-	/// <param name="mailParams">The parameters used by the <see cref="CodeMessagePoster{TContext, TUser, TKey}"/>.</param>
+	///
+	/// <typeparam name="TContext">
+	/// 	Type of the DbContext.
+	/// </typeparam>
+	///
+	/// <typeparam name="TUser">
+	/// 	Type of the user.
+	/// </typeparam>
+	///
+	/// <typeparam name="TKey">
+	/// 	Type of the user primary key.
+	/// </typeparam>
+	///
+	/// <param name="builder">
+	/// 	The web app builder.
+	/// </param>
+	///
+	/// <param name="mailParams">
+	/// 	The parameters used by the 
+	/// 	<see cref="CodeMessagePoster{TContext, TUser, TKey}"/>.
+	/// </param>
 	public static void AddMailCodePoster<TContext, TUser, TKey>(
 		this WebApplicationBuilder builder,
 		CodeMessagePosterParams mailParams
@@ -35,13 +52,30 @@ public static partial class WebBuilderExtensions
 	}
 
 	/// <summary>
-	/// 	Adds <see cref="LinkMessagePoster{TContext, TUser, TKey}"/> to the <see cref="ServiceCollection"/>.
+	/// 	Adds <see cref="LinkMessagePoster{TContext, TUser, TKey}"/> 
+	/// 	to the <see cref="ServiceCollection"/>.
 	/// </summary>
-	/// <typeparam name="TContext">Represents an Entity Framework database context used for identity.</typeparam>
-	/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
-	/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
-	/// <param name="builder">The web app builder.</param>
-	/// <param name="mailParams">The parameters used by the <see cref="LinkMessagePoster{TContext, TUser, TKey}"/>.</param>
+	///
+	/// <typeparam name="TContext">
+	/// 	Type of the DbContext.
+	/// </typeparam>
+	///
+	/// <typeparam name="TUser">
+	/// 	Type of the user.
+	/// </typeparam>
+	///
+	/// <typeparam name="TKey">
+	/// 	Type of the user primary key.
+	/// </typeparam>
+	///
+	/// <param name="builder">
+	/// 	The web app builder.
+	/// </param>
+	///
+	/// <param name="mailParams">
+	/// 	The parameters used by the 
+	/// 	<see cref="LinkMessagePoster{TContext, TUser, TKey}"/>.
+	/// </param>
 	public static void AddMailLinkPoster<TContext, TUser, TKey>(
 		this WebApplicationBuilder builder,
 		LinkMessagePosterParams mailParams

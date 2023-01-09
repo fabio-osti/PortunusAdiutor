@@ -3,17 +3,18 @@ using PortunusAdiutor.Models;
 namespace PortunusAdiutor.Exceptions;
 
 /// <summary>
-/// 	Represents error that occur when an user is not found.
+/// 	Represents error that occur when a 
+/// 	token is not found.
 /// </summary>
-public class UserNotFoundException : PortunusException
+public class TokenNotFoundException : PortunusException
 {
 	/// <summary>
 	/// 	Initializes the exception.
 	/// </summary>
-	public UserNotFoundException() : base("User not found.") { }
+	public TokenNotFoundException() : base("Token not found.") { }
 
 	/// <summary>
-	/// 	Checks if <paramref name="user"/> is null.
+	/// 	Checks if <paramref name="token"/> is null.
 	/// </summary>
 	///
 	/// <typeparam name="TUser">
@@ -24,21 +25,23 @@ public class UserNotFoundException : PortunusException
 	/// 	Type of the user primary key.
 	/// </typeparam>
 	///
-	/// <param name="user">
-	/// 	User to be checked if null.
+	/// <param name="token">
+	/// 	Token to be checked if null.
 	/// </param>
 	///
 	/// <returns>
-	/// 	Not null asserted <paramref name="user"/>.
+	/// 	Not null asserted <paramref name="token"/>.
 	/// </returns>
 	///
 	/// <exception cref="UserNotFoundException">
-	/// 	Throws if <paramref name="user"/> is null.
+	/// 	Throws if <paramref name="token"/> is null.
 	/// </exception>
-	public static TUser ThrowIfUserNull<TUser, TKey>(TUser? user)
+	public static SingleUseToken<TUser, TKey> ThrowIfUserNull<TUser, TKey>(
+		SingleUseToken<TUser, TKey>? token
+	)
 	where TUser : class, IManagedUser<TUser, TKey>
 	where TKey : IEquatable<TKey>
 	{
-		return user ?? throw new UserNotFoundException();
+		return token ?? throw new TokenNotFoundException();
 	}
 }

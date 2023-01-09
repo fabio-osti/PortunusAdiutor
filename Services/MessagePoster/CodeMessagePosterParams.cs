@@ -9,7 +9,7 @@ using MessageBuilder = System.Func<string, string, MimeKit.MimeMessage>;
 namespace PortunusAdiutor.Services.MessagePoster;
 
 /// <summary>
-/// 	Parameters necessary for the link message posting.
+/// 	Parameters necessary for posting messages containing access links.
 /// </summary>
 public class CodeMessagePosterParams
 {
@@ -19,22 +19,22 @@ public class CodeMessagePosterParams
 	public Uri SmtpUri { get; set; } = new(DefaultSmtpUriString);
 
 	/// <summary>
-	/// 	Credentials used for the SMTP server.
+	/// 	Credentials used for connecting to the SMTP server.
 	/// </summary>
-	public ICredentials SmtpCredentials{ get; set; } = DefaultCredentials;
-		
+	public ICredentials SmtpCredentials { get; set; } = DefaultCredentials;
+
 	/// <summary>
 	///		Sets or gets the builder of the email that should be sent if the user
 	///		forgets his password.
 	/// </summary>
-	public MessageBuilder PasswordRedefinitionMessageBuilder{ get; set; } = 
+	public MessageBuilder PasswordRedefinitionMessageBuilder { get; set; } =
 		DefaultPasswordRedefinitionMessageBuilder;
 
 	/// <summary>
 	///		Sets or gets the builder of the email that should be sent when the user 
 	///		is registered.
 	/// </summary>
-	public MessageBuilder EmailConfirmationMessageBuilder{ get; set; } = 
+	public MessageBuilder EmailConfirmationMessageBuilder { get; set; } =
 		DefaultEmailConfirmationMessageBuilder;
 
 	/// <summary>
@@ -48,21 +48,26 @@ public class CodeMessagePosterParams
 	/// 	using an <see cref="IConfiguration"/> object and
 	/// 	the defaults as base.
 	/// </summary>
+	///
 	/// <param name="config">
 	/// 	An <see cref="IConfiguration"/> instance that 
 	/// 	have the section "SMTP" defined.
 	/// </param>
+	///
+	/// <remarks>
+	///
+	/// </remarks>
 	public CodeMessagePosterParams(IConfiguration config)
 	{
 		var sect = config.GetSection("SMTP");
-		var smtpUri = sect["SMTP_URI"];
+		var smtpUri = sect["URI"];
 		if (smtpUri is not null) {
 			SmtpUri = new(smtpUri);
 		}
 
-		var smtpUser = sect["SMTP_USER"];
+		var smtpUser = sect["USRNM"];
 		if (smtpUser is not null) {
-			var smtpPassword = sect["SMTP_PSWRD"];
+			var smtpPassword = sect["PSWRD"];
 			SmtpCredentials =
 				new NetworkCredential(smtpUser, smtpPassword);
 		}
@@ -81,8 +86,7 @@ public class CodeMessagePosterParams
 		message.From.Add(new MailboxAddress("", ""));
 		message.To.Add(new MailboxAddress("", email));
 		message.Subject = "Reset your password";
-		message.Body = new TextPart("plain")
-		{
+		message.Body = new TextPart("plain") {
 			Text = $"""
 				Hello,
 
@@ -109,8 +113,7 @@ public class CodeMessagePosterParams
 		message.From.Add(new MailboxAddress("", ""));
 		message.To.Add(new MailboxAddress("", email));
 		message.Subject = "Validate your email";
-		message.Body = new TextPart("plain")
-		{
+		message.Body = new TextPart("plain") {
 			Text = $"""
 				Hello,
 

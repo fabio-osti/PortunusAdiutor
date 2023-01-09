@@ -13,16 +13,24 @@ public static partial class WebBuilderExtensions
 	/// <summary>
 	/// 	Adds <see cref="TokenBuilder"/> to the <see cref="ServiceCollection"/>.
 	/// </summary>
-	/// <param name="builder">The web app builder.</param>
-	/// <param name="tokenBuilderParams">The parameters used by the <see cref="TokenBuilder"/>.</param>
-	/// <returns></returns>
+	///
+	/// <param name="builder">
+	/// 	The web app builder.
+	/// </param>
+	///
+	/// <param name="tokenBuilderParams">
+	/// 	The parameters used by the <see cref="TokenBuilder"/>.
+	/// </param>
+	///
+	/// <returns>
+	/// 	The <see cref="AuthenticationBuilder"/> for further configurations.
+	/// </returns>
 	public static AuthenticationBuilder AddTokenBuilder(
 		this WebApplicationBuilder builder,
 		TokenBuilderParams tokenBuilderParams
 	)
 	{
-		switch (tokenBuilderParams)
-		{
+		switch (tokenBuilderParams) {
 			case { JwtConfigurator: not null }:
 				var hijackedConfigurator = (JwtBearerOptions opt) =>
 				{
@@ -53,22 +61,25 @@ public static partial class WebBuilderExtensions
 							opt.TokenValidationParameters = tokenBuilderParams.ValidationParams;
 						}
 					);
+
 			default:
 				return builder.Services
 					.AddSingleton<ITokenBuilder>(_ => new TokenBuilder(tokenBuilderParams))
 					.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-					.AddJwtBearer(opt =>
-					{
-						opt.SaveToken = true;
-						tokenBuilderParams.ValidationParams = opt.TokenValidationParameters = new TokenValidationParameters
+					.AddJwtBearer(
+						opt =>
 						{
-							ValidateIssuerSigningKey = true,
-							IssuerSigningKey = tokenBuilderParams.SigningKey,
-							TokenDecryptionKey = tokenBuilderParams.EncryptionKey,
-							ValidateAudience = false,
-							ValidateIssuer = false,
-						};
-					});
+							opt.SaveToken = true;
+							tokenBuilderParams.ValidationParams = opt.TokenValidationParameters = 
+								new TokenValidationParameters {
+									ValidateIssuerSigningKey = true,
+									IssuerSigningKey = tokenBuilderParams.SigningKey,
+									TokenDecryptionKey = tokenBuilderParams.EncryptionKey,
+									ValidateAudience = false,
+									ValidateIssuer = false,
+								};
+						}
+					);
 		}
 	}
 }

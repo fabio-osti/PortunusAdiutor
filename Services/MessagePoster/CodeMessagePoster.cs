@@ -8,12 +8,24 @@ using PortunusAdiutor.Static;
 namespace PortunusAdiutor.Services.MessagePoster;
 
 /// <summary>
-/// 	Implementation of <see cref="IMessagePoster{TUser, TKey}"/> with the plain text OTP.
+/// 	Implementation of <see cref="IMessagePoster{TUser, TKey}"/> 
+/// 	with access code.
 /// </summary>
-/// <typeparam name="TContext">Represents an Entity Framework database context used for identity.</typeparam>
-/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
-/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
-public class CodeMessagePoster<TContext, TUser, TKey> : MessagePosterBase<TContext, TUser, TKey>, IMessagePoster<TUser, TKey>
+///
+/// <typeparam name="TContext">
+/// 	Type of the DbContext.
+/// </typeparam>
+///
+/// <typeparam name="TUser">
+/// 	Type of the user.
+/// </typeparam>
+///
+/// <typeparam name="TKey">
+/// 	Type of the user primary key.
+/// </typeparam>
+public class CodeMessagePoster<TContext, TUser, TKey> : 
+	MessagePosterBase<TContext, TUser, TKey>,
+	IMessagePoster<TUser, TKey>
 where TContext : ManagedUserDbContext<TUser, TKey>
 where TUser : class, IManagedUser<TUser, TKey>
 where TKey : IEquatable<TKey>
@@ -23,8 +35,14 @@ where TKey : IEquatable<TKey>
 	/// <summary>
 	/// 	Initializes an instance of the class.
 	/// </summary>
-	/// <param name="posterParams">Parameters for sending messages.</param>
-	/// <param name="context">Database context.</param>
+	///
+	/// <param name="posterParams">
+	/// 	Parameters for sending messages.
+	/// </param>
+	///
+	/// <param name="context">
+	/// 	Database context.
+	/// </param>
 	public CodeMessagePoster(CodeMessagePosterParams posterParams, TContext context) : base(context)
 	{
 		_posterParams = posterParams;

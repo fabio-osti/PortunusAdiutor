@@ -9,7 +9,7 @@ using MessageBuilder = System.Func<string, string, MimeKit.MimeMessage>;
 namespace PortunusAdiutor.Services.MessagePoster;
 
 /// <summary>
-/// 	Parameters necessary for the link message posting.
+/// 	Parameters necessary for posting messages containing access codes.
 /// </summary>
 public class LinkMessagePosterParams
 {
@@ -19,10 +19,10 @@ public class LinkMessagePosterParams
 	public Uri SmtpUri { get; set; } = new(DefaultSmtpUriString);
 
 	/// <summary>
-	/// 	Credentials used for the SMTP server.
+	/// 	Credentials used for connecting to the SMTP server.
 	/// </summary>
-	public ICredentials SmtpCredentials{ get; set; } = DefaultCredentials;
-		
+	public ICredentials SmtpCredentials { get; set; } = DefaultCredentials;
+
 	/// <summary>
 	/// 	App endpoint for email validation.
 	/// </summary>
@@ -39,27 +39,28 @@ public class LinkMessagePosterParams
 	///		Sets or gets the builder of the email that should be sent if the user
 	///		forgets his password.
 	/// </summary>
-	public MessageBuilder PasswordRedefinitionMessageBuilder{ get; set; } = 
+	public MessageBuilder PasswordRedefinitionMessageBuilder { get; set; } =
 		DefaultPasswordRedefinitionMessageBuilder;
 
 	/// <summary>
 	///		Sets or gets the builder of the email that should be sent when the user 
 	///		is registered.
 	/// </summary>
-	public MessageBuilder EmailConfirmationMessageBuilder{ get; set; } = 
+	public MessageBuilder EmailConfirmationMessageBuilder { get; set; } =
 		DefaultEmailConfirmationMessageBuilder;
 
 	/// <summary>
 	/// 	Initialize an instance of <see cref="LinkMessagePosterParams"/>
 	/// 	with only the defaults as base.
 	/// </summary>
-	public LinkMessagePosterParams() {	}
+	public LinkMessagePosterParams() { }
 
 	/// <summary>
 	/// 	Initialize an instance of <see cref="LinkMessagePosterParams"/> 
 	/// 	using an <see cref="IConfiguration"/> object and
 	/// 	the defaults as base.
 	/// </summary>
+	///
 	/// <param name="config">
 	/// 	An <see cref="IConfiguration"/> instance that 
 	/// 	have the section "SMTP" defined.
@@ -72,7 +73,7 @@ public class LinkMessagePosterParams
 			SmtpUri = new Uri(smtpUri);
 		}
 
-		var smtpUser = sect["USERNAME"];
+		var smtpUser = sect["USRNM"];
 		if (smtpUser is not null) {
 			var smtpPassword = sect["PSWRD"];
 			SmtpCredentials =
@@ -111,8 +112,7 @@ public class LinkMessagePosterParams
 		message.From.Add(new MailboxAddress("", ""));
 		message.To.Add(new MailboxAddress("", email));
 		message.Subject = "Reset your password";
-		message.Body = new TextPart("plain")
-		{
+		message.Body = new TextPart("plain") {
 			Text = $"""
 				Hello,
 
@@ -139,8 +139,7 @@ public class LinkMessagePosterParams
 		message.From.Add(new MailboxAddress("", ""));
 		message.To.Add(new MailboxAddress("", email));
 		message.Subject = "Validate your email";
-		message.Body = new TextPart("plain")
-		{
+		message.Body = new TextPart("plain") {
 			Text = $"""
 				Hello,
 

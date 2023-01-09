@@ -10,9 +10,18 @@ namespace PortunusAdiutor.Services.UsersManager;
 /// <summary>
 /// 	Default implementation of <see cref="IUsersManager{TUser, TKey}"/>.
 /// </summary>
-/// <typeparam name="TContext">Represents an Entity Framework database context used for identity.</typeparam>
-/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
-/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
+///
+/// <typeparam name="TContext">
+/// 	Type of the DbContext.
+/// </typeparam>
+///
+/// <typeparam name="TUser">
+/// 	Type of the user.
+/// </typeparam>
+///
+/// <typeparam name="TKey">
+/// 	Type of the user primary key.
+/// </typeparam>
 public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	where TContext : ManagedUserDbContext<TUser, TKey>
 	where TUser : class, IManagedUser<TUser, TKey>
@@ -24,8 +33,14 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	/// <summary>
 	/// 	Initializes an instance of the class.
 	/// </summary>
-	/// <param name="messagePoster">Service for sending the messages.</param>
-	/// <param name="context">database context used for identity.</param>
+	///
+	/// <param name="messagePoster">
+	/// 	Service for sending the messages.
+	/// </param>
+	///
+	/// <param name="context">
+	/// 	Database context used for identity.
+	/// </param>
 	public UsersManager(
 		IMessagePoster<TUser, TKey> messagePoster,
 		TContext context

@@ -15,7 +15,10 @@ public class TokenBuilder : ITokenBuilder
 	/// <summary>
 	/// 	Initializes an instance of the class.
 	/// </summary>
-	/// <param name="builderParams">Parameters for building and validating tokens.</param>
+	///
+	/// <param name="builderParams">
+	/// 	Parameters for building and validating tokens.
+	/// </param>
 	public TokenBuilder(TokenBuilderParams builderParams)
 	{
 		_builderParams = builderParams;
@@ -41,8 +44,7 @@ public class TokenBuilder : ITokenBuilder
 	/// <inheritdoc/>
 	public string BuildToken(Claim[] claims)
 	{
-		var tokenDescriptor = new SecurityTokenDescriptor
-		{
+		var tokenDescriptor = new SecurityTokenDescriptor {
 			Expires = DateTime.UtcNow.AddHours(2),
 			Subject = new(claims)
 		};
@@ -52,8 +54,7 @@ public class TokenBuilder : ITokenBuilder
 	/// <inheritdoc/>
 	public string BuildToken(IDictionary<string, object> claims)
 	{
-		var tokenDescriptor = new SecurityTokenDescriptor
-		{
+		var tokenDescriptor = new SecurityTokenDescriptor {
 			Expires = DateTime.UtcNow.AddHours(2),
 			Claims = claims
 		};
@@ -67,8 +68,7 @@ public class TokenBuilder : ITokenBuilder
 	)
 	{
 		try {
-			validationParameters ??= new TokenValidationParameters
-			{
+			validationParameters ??= new TokenValidationParameters {
 				ValidateIssuer = false,
 				ValidateAudience = false
 			};

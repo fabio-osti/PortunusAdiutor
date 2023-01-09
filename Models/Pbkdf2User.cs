@@ -10,8 +10,14 @@ namespace PortunusAdiutor.Models;
 /// <summary>
 /// 	Implementation of <see cref="IManagedUser{TUser, TKey}"/> using PBKDF2 as derivation algorithm.
 /// </summary>
-/// <typeparam name="TUser">Represents an user in the identity system.</typeparam>
-/// <typeparam name="TKey">Represents the key of an user in the identity system.</typeparam>
+///
+/// <typeparam name="TUser">
+/// 	Type of the user.
+/// </typeparam>
+///
+/// <typeparam name="TKey">
+/// 	Type of the user primary key.
+/// </typeparam>
 public class Pbkdf2User<TUser, TKey> : IManagedUser<TUser, TKey>
 where TUser : Pbkdf2User<TUser, TKey>
 where TKey : IEquatable<TKey>
@@ -23,12 +29,26 @@ where TKey : IEquatable<TKey>
 	/// <summary>
 	/// 	Initializes an instance of the class.
 	/// </summary>
-	/// <param name="id">Id of the user.</param>
-	/// <param name="email">Email of the user.</param>
-	/// <param name="salt">Salt of the user.</param>
-	/// <param name="passwordHash">Hashed password of the user.</param>
+	///
+	/// <param name="id">
+	/// 	Id of the user.
+	/// </param>
+	///
+	/// <param name="email">
+	/// 	Email of the user.
+	/// </param>
+	///
+	/// <param name="salt">
+	/// 	Salt of the user.
+	/// </param>
+	///
+	/// <param name="passwordHash">
+	/// 	Hashed password of the user.
+	/// </param>
+	///
 	/// <remarks>
-	/// 	This constructor should only be used by EF to build an object representing an existing <see cref="Pbkdf2User{TUser, TKey}"/>.
+	/// 	This constructor should only be used by EF to build an object
+	/// 	representing an existing <see cref="Pbkdf2User{TUser, TKey}"/>.
 	/// </remarks>
 	public Pbkdf2User(TKey id, string email, byte[] salt, string passwordHash)
 	{
@@ -39,11 +59,19 @@ where TKey : IEquatable<TKey>
 	}
 
 	/// <summary>
-	/// 	Initializes na instance of the class.
+	/// 	Initializes an instance of the class.
 	/// </summary>
-	/// <param name="id">Id of the user</param>
-	/// <param name="email">Email of the user.</param>
-	/// <param name="password">Password of the user.</param>
+	///
+	/// <param name="id">
+	/// 	Id of the user</param>
+	///
+	/// <param name="email">
+	/// 	Email of the user.
+	/// </param>
+	///
+	/// <param name="password">
+	/// 	Password of the user.
+	/// </param>
 	public Pbkdf2User(TKey id, string email, string password)
 	{
 		Id = id;
@@ -81,14 +109,19 @@ where TKey : IEquatable<TKey>
 
 	/// <inheritdoc/>
 	public string Email { get; set; }
+
 	/// <inheritdoc/>
 	public string PasswordHash { get; set; }
+
 	/// <inheritdoc/>
 	public TKey Id { get; set; }
+
 	/// <inheritdoc/>
 	public bool EmailConfirmed { get; set; }
+
 	/// <inheritdoc/>
 	public byte[] Salt { get; set; }
+
 	/// <inheritdoc/>
 	public virtual Claim[] GetClaims()
 	{
@@ -101,6 +134,7 @@ where TKey : IEquatable<TKey>
 			new Claim(JwtCustomClaims.EmailConfirmed, EmailConfirmed.ToString())
 		};
 	}
+
 	/// <inheritdoc/>
 	public ICollection<SingleUseToken<TUser, TKey>>? SingleUseTokens { get; set; }
 }
