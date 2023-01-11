@@ -1,7 +1,7 @@
 import fs from 'fs'
 
 interface TestResult {
-	title: string,
+	description: string,
 	body: any,
 	success: boolean,
 	status: number
@@ -23,10 +23,10 @@ const filePath = (function () {
 		)
 })()
 
-export function getTestAccumulator(title: string) {
+export function getTestAccumulator(description: string) {
 	return function (body: any, success: boolean, status: number) {
 		tests.push({
-			title: title,
+			description: description,
 			body: body,
 			success: success,
 			status: status
@@ -38,7 +38,7 @@ function writeMD() {
 	const content = tests.reduce(
 		(acc, cur, i) =>
 			`${acc}` +
-			`## **${(i + 1).toLocaleString('en-US', formatOpt)}.** ${cur.title}: *[${cur.status}]* ${cur.success ? '✔️' : '❌'}\n` +
+			`## **${(i + 1).toLocaleString('en-US', formatOpt)}.** ${cur.description}: *[${cur.status}]* ${cur.success ? '✔️' : '❌'}\n` +
 			`\`\`\`json\n` +
 			`${JSON.stringify(cur.body, null, '\t')}\n` +
 			`\`\`\`\n`,
@@ -56,7 +56,7 @@ function writeTXT() {
 		(acc, cur, i) =>
 			acc +
 			(divisor = `<${line}[${(i + 1).toLocaleString('en-US', formatOpt)}]${line}>\n`) +
-			`${cur.success ? 'PASSED' : 'FAILED'} (${cur.status}): ${cur.title}\n` +
+			`${cur.success ? 'PASSED' : 'FAILED'} (${cur.status}): ${cur.description}\n` +
 			`${"-".repeat(80).trimEnd()}\n` +
 			`${JSON.stringify(cur.body, null, '\t')}\n` +
 			divisor +
@@ -81,7 +81,7 @@ function writeConsole() {
 	tests.forEach((cur, i) => {
 		const divisor = `<${line}[${(i + 1).toLocaleString('en-US', formatOpt)}]${line}>`
 		console.log(divisor)
-		console.log(`${cur.success ? 'PASSED' : 'FAILED'} (${cur.status}): ${cur.title}`)
+		console.log(`${cur.success ? 'PASSED' : 'FAILED'} (${cur.status}): ${cur.description}`)
 		console.log("-".repeat(columns))
 		console.log(cur.body)
 		console.log(divisor)

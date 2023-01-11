@@ -12,7 +12,8 @@ function getRandomEmail(domainExt: string) {
 }
 
 (async function () {
-	api.setBaseAddress("http://localhost:5032/")
+	console.clear()
+	api.setBaseAddress(input("Enter the base address of the app: "))
 	const failure = (r: Response): boolean => !r.ok;
 	try {
 		await expect.fromResponse({
@@ -44,7 +45,6 @@ function getRandomEmail(domainExt: string) {
 			expect: (r) => r["email-confirmed"] === "False" && r["is-admin"] === "False"
 		})
 
-		console.clear()
 		const ConfirmationXdcU1 = input(`Enter the confirmation code for ${emailU1}: `);
 		const cnfrCodeU1 = {
 			email: emailU1,
