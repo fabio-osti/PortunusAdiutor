@@ -15,10 +15,9 @@ function getRandomEmail(domainExt: string) {
 	api.setBaseAddress("http://localhost:5032/")
 	const failure = (r: Response): boolean => !r.ok;
 	try {
-		// Step 1
 		await expect.fromResponse({
 			response: await api.ping(),
-			logger: log.getTestAccumulator("Pings the server")
+			logger: log.getTestAccumulator("Should ping the server")
 		})
 		// <------------------------------|USER 1|------------------------------>
 		const emailU1 = getRandomEmail("com")
@@ -28,71 +27,62 @@ function getRandomEmail(domainExt: string) {
 			password: "$Pass123"
 		}
 
-		// Step 2
 		const tokenU1A = await expect.fromResponse({
 			response: await api.signUp(U1),
-			logger: log.getTestAccumulator("Creates first user")
+			logger: log.getTestAccumulator("Should create first user")
 		})
 
-		// Step 3
 		await expect.fromResponse({
 			response: await api.signUp(U1),
-			logger: log.getTestAccumulator("Fails to create another user with same email"),
+			logger: log.getTestAccumulator("Should fail to create another user with same email"),
 			expect: failure
 		});
 
-		// Step 4
 		await expect.fromResult({
 			response: await api.whoAmI(await tokenU1A),
-			logger: log.getTestAccumulator("Get claims where email-confirmed == \"False\" from token returned by step 2"),
-			expect: (r) => r["email-confirmed"] === "False"
+			logger: log.getTestAccumulator("Should get claims where email-confirmed == \"False\" and is-admin == \"False\" from token returned by sign up"),
+			expect: (r) => r["email-confirmed"] === "False" && r["is-admin"] === "False"
 		})
 
 		console.clear()
-		const xdcCnfrCodeU1 = input(`Enter the confirmation code for ${emailU1}: `);
+		const ConfirmationXdcU1 = input(`Enter the confirmation code for ${emailU1}: `);
 		const cnfrCodeU1 = {
 			email: emailU1,
 			password: "$Pass321",
-			xdc: xdcCnfrCodeU1
+			xdc: ConfirmationXdcU1
 		}
 
-		// Step 5
 		await expect.fromResponse({
 			response: await api.redefinePassword(cnfrCodeU1),
-			logger: log.getTestAccumulator("Fails to redefine password with confirmation code sent at step 2"),
+			logger: log.getTestAccumulator("Should fail to redefine password with confirmation code sent at sign up"),
 			expect: failure
 		});
 
-		// Step 6
 		await expect.fromResponse({
 			response: await api.confirmEmail(cnfrCodeU1),
-			logger: log.getTestAccumulator("Confirms first user email with confirmation code sent at step 2")
+			logger: log.getTestAccumulator("Should confirm first user email with confirmation code sent at sign up")
 		});
 
-		// Step 7
 		await expect.fromResponse({
 			response: await api.confirmEmail(cnfrCodeU1),
-			logger: log.getTestAccumulator("Fails to reconfirm first user email"),
+			logger: log.getTestAccumulator("Should fail to reconfirm first user email"),
 			expect: failure
 		});
 
-		// Step 8
 		await expect.fromResponse({
 			response: await api.signIn(cnfrCodeU1),
-			logger: log.getTestAccumulator("Fails to sign in with wrong password"),
+			logger: log.getTestAccumulator("Should fail to sign in with wrong password"),
 			expect: failure
 		})
 
-		// Step 9
 		const tokenU1B = await expect.fromResponse({
 			response: await api.signIn(U1),
-			logger: log.getTestAccumulator("Signs in")
+			logger: log.getTestAccumulator("Should sign in")
 		})
 
-		// Step 10
 		await expect.fromResult({
 			response: await api.whoAmI(await tokenU1B),
-			logger: log.getTestAccumulator("Get claims where email-confirmed == \"True\" from token returned by step 9"),
+			logger: log.getTestAccumulator("Should get claims where email-confirmed == \"True\" from token returned by sign in"),
 			expect: (r) => r["email-confirmed"] === "True"
 		})
 
@@ -103,66 +93,60 @@ function getRandomEmail(domainExt: string) {
 			password: "$Pass123"
 		}
 
-		// Step 11
 		await expect.fromResponse({
 			response: await api.signUp(U2),
-			logger: log.getTestAccumulator("Creates second user with admin privileges")
+			logger: log.getTestAccumulator("Should create second user with admin privileges")
 		})
 
-		// Step 12
 		await expect.fromResponse({
 			response: await api.sendPasswordRedefinition(U2),
-			logger: log.getTestAccumulator("Sends password redefinition to the second user")
+			logger: log.getTestAccumulator("Should send password redefinition to the second user")
 		})
 
-		// Step 13
 		await expect.fromResponse({
 			response: await api.confirmEmail({
 				email: emailU2,
-				xdc: xdcCnfrCodeU1
+				xdc: ConfirmationXdcU1
 			}),
-			logger: log.getTestAccumulator("Fails to confirm second user email with other first user code"),
+			logger: log.getTestAccumulator("Should fail to confirm second user email with other first user code"),
 			expect: failure
 		})
 
-		const xdcRdfnCodeU2 = input(`Enter the redefinition code for ${emailU2}: `)
+		const RedefinitionXdcU2 = input(`Enter the redefinition code for ${emailU2}: `)
 		const U2B = {
 			email: emailU2,
 			password: "Pass321$",
-			xdc: xdcRdfnCodeU2
+			xdc: RedefinitionXdcU2
 		};
 
-		// Step 14
 		await expect.fromResponse({
 			response: await api.confirmEmail(U2B),
-			logger: log.getTestAccumulator("Fails to confirm second user email with password redefinition code"),
+			logger: log.getTestAccumulator("Should fail to confirm second user email with password redefinition code"),
 			expect: failure
 		})
 
-		// Step 15
 		await expect.fromResponse({
 			response: await api.redefinePassword(U2B),
-			logger: log.getTestAccumulator("Redefines second user password with code sent at step 12")
+			logger: log.getTestAccumulator("Should redefine second user password with code sent")
 		})
 
-		// Step 16
+		// Makes sure the authentication endpoint doesn't authenticate anyone and that the password was really changed at redefinition
 		await expect.fromResponse({
 			response: await api.signIn(U2),
-			logger: log.getTestAccumulator("Fails to sign second user in with old password"),
+			logger: log.getTestAccumulator("Should fail to sign second user in with old password"),
 			expect: failure
 		})
 
-		// Step 17
 		const tokenU2A = await expect.fromResponse({
 			response: await api.signIn(U2B),
-			logger: log.getTestAccumulator("Signs in")
+			logger: log.getTestAccumulator("Should sign in")
 		})
 
-		// Step 18
+		// Makes sure the email wasn't confirmed by the (supposedly) attempts and that redefining the password doesn't cause the email to be confirmed
 		await expect.fromResult({
 			response: await api.whoAmI(await tokenU2A),
-			logger: log.getTestAccumulator("Get claims where email-confirmed == \"False\" from token returned by step 18"),
-			expect: (r) => r["email-confirmed"] === "False"
+			logger: log.getTestAccumulator("Should get claims where email-confirmed == \"False\" is-admin == \"True\" from token returned by step 18"),
+			expect: (r) => r["email-confirmed"] === "False" && r["is-admin"] === "True"
 		})
 
 		const xdcCnfrCodeU2 = input(`Enter the confirmation code for ${emailU2}: `)
@@ -172,22 +156,25 @@ function getRandomEmail(domainExt: string) {
 			xdc: xdcCnfrCodeU2
 		};
 
-		// Step 19
 		await expect.fromResponse({
 			response: await api.confirmEmail(cnfrCodeU2),
-			logger: log.getTestAccumulator("Confirms second user email with confirmation code sent at step 19")
+			logger: log.getTestAccumulator("Should confirm second user email with confirmation code sent at step 19")
 		});
 
-		// Step 20
 		const tokenU2B = await expect.fromResponse({
 			response: await api.signIn(U2B),
-			logger: log.getTestAccumulator("Signs in")
+			logger: log.getTestAccumulator("Should sign in")
 		})
 
-		// Step 21
 		await expect.fromResponse({
 			response: await api.getUsersCount(await tokenU2B),
-			logger: log.getTestAccumulator("Get users count (admin only endpoint)")
+			logger: log.getTestAccumulator("Should get users count (admin only endpoint)")
+		})
+
+		await expect.fromResponse({
+			response: await api.getUsersCount(await tokenU1B),
+			logger: log.getTestAccumulator("Should fail to get users count (admin only endpoint)"),
+			expect: r => r.status === 403
 		})
 	} catch (e) {
 	} finally {
