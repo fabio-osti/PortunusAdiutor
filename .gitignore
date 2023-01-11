@@ -368,7 +368,7 @@ latex
 doxyFile
 
 # Editor files
-.vscode/tasks.json
+.vscode
 .editorconfig
 
 # Secrets
