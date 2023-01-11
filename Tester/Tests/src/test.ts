@@ -145,7 +145,7 @@ function getRandomEmail(domainExt: string) {
 		// Makes sure the email wasn't confirmed by the (supposedly) attempts and that redefining the password doesn't cause the email to be confirmed
 		await expect.fromResult({
 			response: await api.whoAmI(await tokenU2A),
-			logger: log.getTestAccumulator("Should get claims where email-confirmed == \"False\" is-admin == \"True\" from token returned by step 18"),
+			logger: log.getTestAccumulator("Should get claims where email-confirmed == \"False\" is-admin == \"True\" from token returned by sign in"),
 			expect: (r) => r["email-confirmed"] === "False" && r["is-admin"] === "True"
 		})
 
