@@ -13,7 +13,7 @@ function getRandomEmail(domainExt: string) {
 
 (async function () {
 	console.clear()
-	api.setBaseAddress(input("Enter the base address of the app: "))
+	api.setBaseAddress("http://localhost:8080/")
 	const failure = (r: Response): boolean => !r.ok;
 	try {
 		await expect.fromResponse({

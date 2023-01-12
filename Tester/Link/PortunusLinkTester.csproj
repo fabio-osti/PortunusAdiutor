@@ -17,4 +17,10 @@
     <ProjectReference Include="..\..\PortunusAdiutor.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+      <ContentWithTargetPath Include="Content\**">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <TargetPath>%(RecursiveDir)\%(Filename)%(Extension)</TargetPath>
+      </ContentWithTargetPath>
+  </ItemGroup>
 </Project>

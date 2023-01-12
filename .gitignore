@@ -382,3 +382,4 @@ results/
 *.db
 *.db-shm
 *.db-wal
+docker-compose.yml

@@ -134,7 +134,7 @@ namespace PortunusTester.Controllers
 		{
 			try {
 				var confirmedUser = _userManager.ConfirmEmail(token);
-				var fileContents = System.IO.File.ReadAllText("./Content/success.html");
+				var fileContents = System.IO.File.ReadAllText("./success.html");
 				return Content(fileContents, "text/html");
 			} catch (PortunusException e) {
 				return Problem(e.ShortMessage);
@@ -148,7 +148,7 @@ namespace PortunusTester.Controllers
 		public IActionResult RedefinePassword(string token)
 		{
 			try {
-				var fileContents = System.IO.File.ReadAllText("./Content/redefine.html");
+				var fileContents = System.IO.File.ReadAllText("./redefine.html");
 				return Content(fileContents, "text/html");
 			} catch (PortunusException e) {
 				return Problem(e.ShortMessage);
@@ -167,7 +167,7 @@ namespace PortunusTester.Controllers
 					cred.Password!
 				);
 
-				var fileContents = System.IO.File.ReadAllText("./Content/success.html");
+				var fileContents = System.IO.File.ReadAllText("./success.html");
 				return Content(fileContents, "text/html");
 			} catch (PortunusException e) {
 				return Problem(e.ShortMessage);

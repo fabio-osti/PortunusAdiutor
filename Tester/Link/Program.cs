@@ -26,7 +26,7 @@ builder.AddAllPortunusServices<ApplicationDbContext, ApplicationUser, Guid>(
 	},
 	new LinkMessagePosterParams() 
 	{
-		SmtpUri = new("smtp://localhost:2525")
+		SmtpUri = new("smtp://smtp4dev:25")
 	}
 );
 builder.Services.AddAuthorization(
