@@ -149,7 +149,12 @@ function getRandomEmail(domainExt: string) {
 			expect: (r) => r["email-confirmed"] === "False" && r["is-admin"] === "True"
 		})
 
-		const xdcCnfrCodeU2 = input(`Enter the confirmation code for ${emailU2}: `)
+		await expect.fromResponse({
+			response: await api.sendEmailConfirmation(U2),
+			logger: log.getTestAccumulator("Should send email confirmation code to the second user")
+		})
+
+		const xdcCnfrCodeU2 = input(`Enter the second confirmation code sent for ${emailU2}: `)
 		const cnfrCodeU2 = {
 			email: emailU2,
 			password: "Pass321$",
