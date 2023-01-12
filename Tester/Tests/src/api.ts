@@ -56,25 +56,21 @@ export function signIn(cred: Credentials) {
 	})
 }
 
-export function sendEmailConfirmation(cred: Credentials) {
-	return fetch(_baseAddress + "Authorization/SendEmailConfirmation", {
+export function sendEmailConfirmation(email: string) {
+	return fetch(`${_baseAddress}Authorization/SendEmailConfirmation?email=${email}`, {
 		method: "POST",
 		headers: {
-			'Accept': 'application/json',
-			'Content-Type': 'application/json'
+			'Accept': 'application/json'
 		},
-		body: JSON.stringify(cred)
 	})
 }
 
-export function sendPasswordRedefinition(cred: Credentials) {
-	return fetch(_baseAddress + "Authorization/SendPasswordRedefinition", {
+export function sendPasswordRedefinition(email: string) {
+	return fetch(`${_baseAddress}Authorization/SendPasswordRedefinition?email=${email}`, {
 		method: "POST",
 		headers: {
-			'Accept': 'application/json',
-			'Content-Type': 'application/json'
+			'Accept': 'application/json'
 		},
-		body: JSON.stringify(cred)
 	})
 }
 

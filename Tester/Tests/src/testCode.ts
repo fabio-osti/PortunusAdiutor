@@ -99,7 +99,7 @@ function getRandomEmail(domainExt: string) {
 		})
 
 		await expect.fromResponse({
-			response: await api.sendPasswordRedefinition(U2),
+			response: await api.sendPasswordRedefinition(emailU2),
 			logger: log.getTestAccumulator("Should send password redefinition code to the second user")
 		})
 
@@ -150,7 +150,7 @@ function getRandomEmail(domainExt: string) {
 		})
 
 		await expect.fromResponse({
-			response: await api.sendEmailConfirmation(U2),
+			response: await api.sendEmailConfirmation(emailU2),
 			logger: log.getTestAccumulator("Should send email confirmation code to the second user")
 		})
 

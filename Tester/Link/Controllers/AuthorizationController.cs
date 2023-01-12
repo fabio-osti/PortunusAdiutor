@@ -97,11 +97,11 @@ namespace PortunusTester.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult SendEmailConfirmation([FromBody] CredentialsDto redefine)
+		public IActionResult SendEmailConfirmation(string email)
 		{
 			try {
 				var user =
-					_userManager.SendEmailConfirmation(e => e.Email == redefine.Email);
+					_userManager.SendEmailConfirmation(e => e.Email == email);
 
 				return Ok();
 			} catch (PortunusException e) {
@@ -113,11 +113,11 @@ namespace PortunusTester.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult SendPasswordRedefinition([FromBody] CredentialsDto redefine)
+		public IActionResult SendPasswordRedefinition(string email)
 		{
 			try {
 				var user =
-					_userManager.SendPasswordRedefinition(e => e.Email == redefine.Email);
+					_userManager.SendPasswordRedefinition(e => e.Email == email);
 
 				return Ok();
 			} catch (PortunusException e) {

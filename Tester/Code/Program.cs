@@ -12,20 +12,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddAllPortunusServices<ApplicationDbContext, ApplicationUser, Guid>(
 	options => options.UseSqlite("Data Source=app.db"),
-	new TokenBuilderParams
-	{
+	new TokenBuilderParams {
 		SigningKey =
 			new SymmetricSecurityKey(Convert.FromBase64String("7SOQv9BtXmZyiGXBqqGlUhBp1VS3mh8d6bf4epaPQNc=")),
 		EncryptionKey =
 			new SymmetricSecurityKey(Convert.FromBase64String("6BBJvRT7Pa9t7BSeq2yaHaZ78HkQzdnI1e1mgeLQ9Ds=")),
-		ValidationParams = new TokenValidationParameters
-		{
+		ValidationParams = new TokenValidationParameters {
 			ValidateAudience = false,
 			ValidateIssuer = false
 		}
 	},
-	new CodeMessagePosterParams() 
-	{
+	new CodeMessagePosterParams() {
 		SmtpUri = new("smtp://smtp4dev:25")
 	}
 );
@@ -45,10 +42,9 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+if (app.Environment.IsDevelopment()) {
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
