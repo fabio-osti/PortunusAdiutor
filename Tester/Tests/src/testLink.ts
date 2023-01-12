@@ -82,7 +82,7 @@ function getRandomEmail(domainExt: string) {
 
 		await expect.fromResponse({
 			response: await api.sendPasswordRedefinition(U2),
-			logger: log.getTestAccumulator("Should send password redefinition to the second user")
+			logger: log.getTestAccumulator("Should send password redefinition link to the second user")
 		})
 
 		input(`Redefine password of ${emailU2} to "Pass321$": `)
