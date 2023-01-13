@@ -3,8 +3,8 @@
 version: '3.4'
 
 services:
-  portunuscodetester:
-    image: portunuscodetester
+  portunuscodeexample:
+    image: portunuscodeexample
     build:
       context: .
       dockerfile: Tester/Code/Dockerfile

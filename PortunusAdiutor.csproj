@@ -26,9 +26,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Tester\**" />
-    <Compile Remove="Tester\**" />
-    <EmbeddedResource Remove="Tester\**" />
-    <None Remove="Tester\**" />
+    <Content Remove="Examples\**" />
+    <Compile Remove="Examples\**" />
+    <EmbeddedResource Remove="Examples\**" />
+    <None Remove="Examples\**" />
   </ItemGroup>
 </Project>

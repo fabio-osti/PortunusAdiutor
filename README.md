@@ -153,13 +153,14 @@ public class AuthorizationController : ControllerBase
 			ArgumentNullException
 				.ThrowIfNullOrEmpty(credentials.Password);
 			
+			// In a real app, use a safe way to give privileges to an user
 			var user = _userManager.CreateUser(
 				e => e.Email == credentials.Email,
 				() => new ApplicationUser(
 					credentials.Email,
 					credentials.Password,
-					// In a real app, use a safe way to give privileges to an user
-					credentials.Email.Substring(credentials.Email.Length-3) == "adm"
+					credentials.Email
+						.Substring(credentials.Email.Length-3) == "adm"
 				)
 			);
 
@@ -230,6 +231,7 @@ public class AuthorizationController : ControllerBase
 			var user = _userManager.FindUser(
 				e => e.Email == cred.Email
 			);
+
 			// Rebuild the token that gives access to the email confirmation
 			var token =
 				SingleUseToken<ApplicationUser, Guid>.GetTokenFrom(

@@ -366,20 +366,22 @@ FodyWeavers.xsd
 html
 latex
 doxyFile
+DOC/
 
 # Editor files
 .vscode
 .editorconfig
+.vscode/settings.json
+PortunusAdiutor.code-workspace
 
 # Secrets
 pat
 nuget.config
-PortunusAdiutor.code-workspace
-.vscode/settings.json
-db.session.sql
 
+docker-compose.yml
 results/
 *.db
 *.db-shm
 *.db-wal
-docker-compose.yml
+
+db.session.sql

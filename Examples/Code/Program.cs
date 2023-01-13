@@ -9,7 +9,6 @@ using PortunusTester.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.AddAllPortunusServices<ApplicationDbContext, ApplicationUser, Guid>(
 	options => options.UseSqlite("Data Source=app.db"),
 	new TokenBuilderParams {
