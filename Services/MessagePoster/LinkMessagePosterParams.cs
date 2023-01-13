@@ -65,6 +65,35 @@ public class LinkMessagePosterParams
 	/// 	An <see cref="IConfiguration"/> instance that 
 	/// 	have the section "SMTP" defined.
 	/// </param>
+	/// 
+	/// <remarks>
+	/// 	<list type="table">
+	/// 		<listheader>
+	/// 			<term>Property</term>
+	/// 			<description>Configuration Key</description>
+	/// 		</listheader>
+	/// 		<item>
+	/// 			<term><see cref="SmtpUri"/></term>
+	/// 			<description>"URI"</description>
+	/// 		</item>
+	/// 		<item>
+	/// 			<term><see cref="SmtpCredentials"/>(userName)</term>
+	/// 			<description>"USR"</description>
+	/// 		</item>
+	/// 		<item>
+	/// 			<term><see cref="SmtpCredentials"/>(password)</term>
+	/// 			<description>"PSW"</description>
+	/// 		</item>
+	/// 		<item>
+	/// 			<term><see cref="EmailConfirmationEndpoint"/></term>
+	/// 			<description>"ECE"</description>
+	/// 		</item>
+	/// 		<item>
+	/// 			<term><see cref="PasswordRedefinitionEndpoint"/></term>
+	/// 			<description>"PRE"</description>
+	/// 		</item>
+	/// 	</list>
+	///</remarks>
 	public LinkMessagePosterParams(IConfiguration config)
 	{
 		var sect = config.GetSection("SMTP");
@@ -73,9 +102,9 @@ public class LinkMessagePosterParams
 			SmtpUri = new Uri(smtpUri);
 		}
 
-		var smtpUser = sect["USRNM"];
+		var smtpUser = sect["USR"];
 		if (smtpUser is not null) {
-			var smtpPassword = sect["PSWRD"];
+			var smtpPassword = sect["PSW"];
 			SmtpCredentials =
 				new NetworkCredential(smtpUser, smtpPassword);
 		}

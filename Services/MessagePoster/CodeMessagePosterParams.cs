@@ -55,8 +55,25 @@ public class CodeMessagePosterParams
 	/// </param>
 	///
 	/// <remarks>
-	///
-	/// </remarks>
+	/// 	<list type="table">
+	/// 		<listheader>
+	/// 			<term>Property</term>
+	/// 			<description>Configuration Key</description>
+	/// 		</listheader>
+	/// 		<item>
+	/// 			<term><see cref="SmtpUri"/></term>
+	/// 			<description>"URI"</description>
+	/// 		</item>
+	/// 		<item>
+	/// 			<term><see cref="SmtpCredentials"/>(userName)</term>
+	/// 			<description>"USR"</description>
+	/// 		</item>
+	/// 		<item>
+	/// 			<term><see cref="SmtpCredentials"/>(password)</term>
+	/// 			<description>"PSW"</description>
+	/// 		</item>
+	/// 	</list>
+	///</remarks>
 	public CodeMessagePosterParams(IConfiguration config)
 	{
 		var sect = config.GetSection("SMTP");
@@ -65,9 +82,9 @@ public class CodeMessagePosterParams
 			SmtpUri = new(smtpUri);
 		}
 
-		var smtpUser = sect["USRNM"];
+		var smtpUser = sect["USR"];
 		if (smtpUser is not null) {
-			var smtpPassword = sect["PSWRD"];
+			var smtpPassword = sect["PSW"];
 			SmtpCredentials =
 				new NetworkCredential(smtpUser, smtpPassword);
 		}

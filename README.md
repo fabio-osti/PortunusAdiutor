@@ -290,4 +290,4 @@ For password redefinition and email confirmation (and in the future, two-steps-a
 
 ## See more
 
-The examples given here are of the CodeMessagePoster strategy, you can see the full examples at the Tester folder on the project.
+The examples given here are of the CodeMessagePoster strategy, you can see the full examples at the Examples folder on the project.
