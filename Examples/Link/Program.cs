@@ -4,7 +4,8 @@ using PortunusAdiutor.Extensions;
 using PortunusAdiutor.Services.MessagePoster;
 using PortunusAdiutor.Services.TokenBuilder;
 using PortunusAdiutor.Static;
-using PortunusTester.Data;
+using PortunusLinkExample.Data;
+using PortunusLinkExample.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

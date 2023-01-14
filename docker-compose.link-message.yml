@@ -7,7 +7,7 @@ services:
     image: portunuslinkexample
     build:
       context: .
-      dockerfile: Tester/Link/Dockerfile
+      dockerfile: Examples/Link/Dockerfile
     ports:
       - 8080:8080
     environment:

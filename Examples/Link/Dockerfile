@@ -11,10 +11,10 @@ USER appuser
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["Tester/Link/PortunusLinkExample.csproj", "Tester/Link/"]
-RUN dotnet restore "Tester/Link/PortunusLinkExample.csproj"
+COPY ["Examples/Link/PortunusLinkExample.csproj", "Examples/Link/"]
+RUN dotnet restore "Examples/Link/PortunusLinkExample.csproj"
 COPY . .
-WORKDIR "/src/Tester/Link"
+WORKDIR "/src/Examples/Link"
 RUN dotnet build "PortunusLinkExample.csproj" -c Release -o /app/build
 
 FROM build AS publish

@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PortunusTester.Data;
+using PortunusCodeExample.Data;
 
 #nullable disable
 
-namespace PortunusTester.Migrations
+namespace PortunusCodeExample.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20230103211601_Create")]

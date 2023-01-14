@@ -1,4 +1,4 @@
-namespace PortunusTester.Models
+namespace PortunusCodeExample.Models
 {
 	public record CredentialsDto
 	{

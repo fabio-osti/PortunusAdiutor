@@ -6,10 +6,10 @@ using PortunusAdiutor.Models;
 using PortunusAdiutor.Services.TokenBuilder;
 using PortunusAdiutor.Services.UsersManager;
 using PortunusAdiutor.Static;
-using PortunusTester.Data;
-using PortunusTester.Models;
+using PortunusCodeExample.Data;
+using PortunusCodeExample.Models;
 
-namespace PortunusTester.Controllers
+namespace PortunusCodeExample.Controllers
 {
 	[ApiController]
 	[Route("[controller]/[action]")]
