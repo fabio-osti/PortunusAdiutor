@@ -6,14 +6,19 @@ namespace PortunusAdiutor.Static;
 public static class MessageTypes
 {
 	/// <summary>
-	/// 	Message of type "email-confirmation-token".
+	/// 	Message of type "email confirmation".
 	/// </summary>
 	public const string EmailConfirmation = "email-confirmation-token";
 
 	/// <summary>
-	///		Message of type "password-redefinition".
+	///		Message of type "password redefinition".
 	/// </summary>
 	public const string PasswordRedefinition = "password-redefinition-token";
+
+	/// <summary>
+	/// 	Message of type "two steps authentication".
+	/// </summary>
+	public const string TwoStepsAuthentication = "two-steps-token";
 
 	/// <summary>
 	///		Gets a string associated with <paramref name="messageType"/>.
@@ -34,6 +39,7 @@ public static class MessageTypes
 	messageType switch {
 		MessageType.EmailConfirmation => EmailConfirmation,
 		MessageType.PasswordRedefinition => PasswordRedefinition,
+		MessageType.TwoStepsAuthentication => TwoStepsAuthentication,
 		_ => throw new ArgumentOutOfRangeException(nameof(messageType))
 	};
 }
@@ -50,5 +56,9 @@ public enum MessageType
 	/// <summary>
 	/// 	Message for password redefinition.
 	/// </summary>
-	PasswordRedefinition
+	PasswordRedefinition,
+	/// <summary>
+	/// 	Message for two steps authentication.
+	/// </summary>
+	TwoStepsAuthentication
 }
