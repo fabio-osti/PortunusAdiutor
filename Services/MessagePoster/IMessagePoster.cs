@@ -39,24 +39,4 @@ where TKey : IEquatable<TKey>
 	/// 	Receiver of the message.
 	/// </param>
 	void SendPasswordRedefinitionMessage(TUser user);
-
-	/// <summary>
-	/// 	Consumes a sent message.
-	/// </summary>
-	///
-	/// <param name="token">
-	/// 	The access key sent by the message.
-	/// </param>
-	///
-	/// <param name="messageType">
-	/// 	The type of message that was sent.
-	/// </param>
-	///
-	/// <returns>
-	/// 	The <typeparamref name="TKey"/> of the consumed <paramref name="token"/>.
-	/// </returns>
-	TKey ConsumeSut(
-		string token,
-		MessageType messageType
-	);
 }

@@ -23,14 +23,13 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// <typeparam name="TKey">
 /// 	Type of the user primary key.
 /// </typeparam>
-public class CodeMessagePoster<TContext, TUser, TKey> : 
-	MessagePosterBase<TContext, TUser, TKey>,
-	IMessagePoster<TUser, TKey>
+public class CodeMessagePoster<TContext, TUser, TKey> : IMessagePoster<TUser, TKey>
 where TContext : ManagedUserDbContext<TUser, TKey>
 where TUser : class, IManagedUser<TUser, TKey>
 where TKey : IEquatable<TKey>
 {
 	private readonly CodeMessagePosterParams _posterParams;
+	private readonly TContext _context;
 
 	/// <summary>
 	/// 	Initializes an instance of the class.
@@ -43,23 +42,30 @@ where TKey : IEquatable<TKey>
 	/// <param name="context">
 	/// 	Database context.
 	/// </param>
-	public CodeMessagePoster(CodeMessagePosterParams posterParams, TContext context) : base(context)
+	public CodeMessagePoster(
+		CodeMessagePosterParams posterParams, 
+		TContext context
+	)
 	{
 		_posterParams = posterParams;
+		_context = context;
 	}
 
 	/// <inheritdoc/>
 	public void SendEmailConfirmationMessage(TUser user)
 	{
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
-
-		var otp = GenAndSave(user.Id, MessageType.EmailConfirmation, out var xdc);
-
+		// Generates SUT
+		var otp = _context.GenAndSaveSingleUseToken(
+			user.Id, 
+			MessageType.EmailConfirmation, 
+			out var xdc
+		);
+		// Builds and sends message
 		var message = _posterParams.EmailConfirmationMessageBuilder(
 			user.Email,
 			xdc
 		);
-
 		SendMessage(message);
 	}
 
@@ -67,14 +73,17 @@ where TKey : IEquatable<TKey>
 	public void SendPasswordRedefinitionMessage(TUser user)
 	{
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
-
-		var otp = GenAndSave(user.Id, MessageType.PasswordRedefinition, out var xdc);
-
+		// Generates SUT
+		var otp = _context.GenAndSaveSingleUseToken(
+			user.Id, 
+			MessageType.PasswordRedefinition, 
+			out var xdc
+		);
+		// Builds and sends message
 		var message = _posterParams.PasswordRedefinitionMessageBuilder(
 			user.Email,
 			xdc
 		);
-
 		SendMessage(message);
 	}
 

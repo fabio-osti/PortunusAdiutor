@@ -94,7 +94,7 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	/// <inheritdoc/>
 	public TUser ConfirmEmail(string token)
 	{
-		var userId = _mailPoster.ConsumeSut(
+		var userId = _context.ConsumeSut(
 			token,
 			MessageType.EmailConfirmation
 		);
@@ -123,7 +123,7 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 		string newPassword
 	)
 	{
-		var userId = _mailPoster.ConsumeSut(
+		var userId = _context.ConsumeSut(
 			token,
 			MessageType.PasswordRedefinition
 		);

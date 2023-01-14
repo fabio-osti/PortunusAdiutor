@@ -1,5 +1,8 @@
+using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
+using PortunusAdiutor.Exceptions;
 using PortunusAdiutor.Models;
+using PortunusAdiutor.Static;
 
 namespace PortunusAdiutor.Data;
 
@@ -61,5 +64,79 @@ where TKey : IEquatable<TKey>
 			.HasOne<TUser>(e => e.User)
 			.WithMany(e => e.SingleUseTokens);
 
+	}
+
+	/// <summary>
+	/// 	Generates a <see cref="SingleUseToken{TUser, TKey}"/> for an 
+	/// 	<see cref="IManagedUser{TUser, TKey}"/> for an access of type 
+	/// 	<paramref name="type"/> and saves it on the database.
+	/// </summary>
+	///
+	/// <param name="userId">
+	/// 	Id of the <see cref="IManagedUser{TUser, TKey}"/>.
+	/// </param>
+	///
+	/// <param name="type">
+	/// 	Type of access granted by the the returning SUT.
+	/// </param>
+	///
+	/// <param name="xdc">
+	/// </param>
+	///
+	/// <returns>
+	/// 	The generated <see cref="SingleUseToken{TUser, TKey}"/>.
+	/// </returns>
+	public SingleUseToken<TUser, TKey> GenAndSaveSingleUseToken(
+		TKey userId,
+		MessageType type,
+		out string xdc
+	)
+	{
+		xdc = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
+
+		var userSut = new SingleUseToken<TUser, TKey>(userId, xdc, type.ToTypeString());
+
+		SingleUseTokens.Add(userSut);
+		SaveChanges();
+
+		return userSut;
+	}
+
+	/// <summary>
+	/// 	Consumes a sent message.
+	/// </summary>
+	///
+	/// <param name="token">
+	/// 	The access key sent by the message.
+	/// </param>
+	///
+	/// <param name="messageType">
+	/// 	The type of message that was sent.
+	/// </param>
+	///
+	/// <returns>
+	/// 	The key of the user to whom the token gives access to.
+	/// </returns>
+	public TKey ConsumeSut(
+		string token,
+		MessageType messageType
+	)
+	{
+		var userSut =
+			SingleUseTokens.Find(token);
+
+		if (userSut is null) {
+			throw new TokenNotFoundException();
+		}
+
+		var type = messageType.ToTypeString();
+		if (userSut.ExpiresOn < DateTime.UtcNow || userSut.Type != type) {
+			throw new InvalidPasswordException();
+		}
+
+		SingleUseTokens.Remove(userSut);
+		SaveChanges();
+
+		return userSut.UserId;
 	}
 }
