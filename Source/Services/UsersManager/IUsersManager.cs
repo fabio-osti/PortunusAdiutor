@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-
+using Microsoft.IdentityModel.Tokens;
 using PortunusAdiutor.Models;
 
 namespace PortunusAdiutor.Services.UsersManager;
@@ -52,6 +52,63 @@ where TKey : IEquatable<TKey>
 	/// 	Validated user.
 	/// </returns>
 	TUser ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword);
+
+	/// <summary>
+	/// 	Validates an user.
+	/// </summary>
+	///
+	/// <param name="userFinder">
+	/// 	Predicate for finding the user.
+	/// </param>
+	///
+	/// <param name="userPassword">
+	/// 	Plain text password to be validated.
+	/// </param>
+	/// 
+	/// <param name="token">Token representing the validated user.</param>
+	/// 
+	/// <returns>
+	/// 	Validated user.
+	/// </returns>
+	TUser ValidateUser(
+		Expression<Func<TUser, bool>> userFinder, 
+		string userPassword, 
+		out string token
+	);
+
+	/// <summary>
+	/// 	Validates an user.
+	/// </summary>
+	///
+	/// <param name="userFinder">
+	/// 	Predicate for finding the user.
+	/// </param>
+	///
+	/// <param name="userPassword">
+	/// 	Plain text password to be validated.
+	/// </param>
+	/// 
+	/// <param name="token">Token representing the validated user.</param>
+	/// 
+	/// <param name="tokenDescriptor">
+	/// 	Descriptor of the <paramref name="token"/>.
+	/// 	<remarks>
+	/// 		<see cref="SecurityTokenDescriptor.SigningCredentials"/>,
+	/// 		<see cref="SecurityTokenDescriptor.EncryptingCredentials"/> and
+	/// 		<see cref="SecurityTokenDescriptor.Subject"/>
+	/// 		will be overwritten.
+	/// 	</remarks>
+	/// </param>
+	///
+	/// <returns>
+	/// 	Validated user.
+	/// </returns>
+	TUser ValidateUser(
+		Expression<Func<TUser, bool>> userFinder, 
+		string userPassword, 
+		out string token, 
+		SecurityTokenDescriptor tokenDescriptor
+	);
 
 	/// <summary>
 	/// 	Sends a message to an user for email confirmation.

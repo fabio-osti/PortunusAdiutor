@@ -1,8 +1,10 @@
 using System.Linq.Expressions;
+using Microsoft.IdentityModel.Tokens;
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Exceptions;
 using PortunusAdiutor.Models;
 using PortunusAdiutor.Services.MessagePoster;
+using PortunusAdiutor.Services.TokenBuilder;
 using PortunusAdiutor.Static;
 
 namespace PortunusAdiutor.Services.UsersManager;
@@ -27,12 +29,17 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	where TUser : class, IManagedUser<TUser, TKey>
 	where TKey : IEquatable<TKey>
 {
+	private readonly ITokenBuilder _tokenBuilder;
 	private readonly IMessagePoster<TUser, TKey> _mailPoster;
 	private readonly TContext _context;
 
 	/// <summary>
 	/// 	Initializes an instance of the class.
 	/// </summary>
+	/// 
+	/// <param name="tokenBuilder">
+	/// 	Service for building JWT tokens.
+	/// </param>
 	///
 	/// <param name="messagePoster">
 	/// 	Service for sending the messages.
@@ -42,12 +49,34 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	/// 	Database context used for identity.
 	/// </param>
 	public UsersManager(
+		ITokenBuilder tokenBuilder,
 		IMessagePoster<TUser, TKey> messagePoster,
 		TContext context
 	)
 	{
+		_tokenBuilder = tokenBuilder;
 		_mailPoster = messagePoster;
 		_context = context;
+	}
+
+	private TUser FillToken(
+		TUser user,
+		out string token
+	)
+	{
+		token = _tokenBuilder.BuildToken(user.GetClaims());
+		return user;
+	}
+
+	private TUser FillToken(
+		TUser user,
+		out string token,
+		SecurityTokenDescriptor tokenDescriptor
+	)
+	{
+		tokenDescriptor.Subject = new(user.GetClaims());
+		token = _tokenBuilder.BuildToken(tokenDescriptor);
+		return user;
 	}
 
 	/// <inheritdoc/>
@@ -77,6 +106,24 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	}
 
 	/// <inheritdoc/>
+	public TUser ValidateUser(
+		Expression<Func<TUser, bool>> userFinder,
+		string userPassword,
+		out string token,
+		SecurityTokenDescriptor tokenDescriptor
+	) =>
+		FillToken(ValidateUser(userFinder, userPassword), out token, tokenDescriptor);
+
+	/// <inheritdoc/>
+	public TUser ValidateUser(
+		Expression<Func<TUser, bool>> userFinder,
+		string userPassword,
+		out string token
+	) =>
+		FillToken(ValidateUser(userFinder, userPassword), out token);
+	
+
+	/// <inheritdoc/>
 	public TUser SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
@@ -92,10 +139,10 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	}
 
 	/// <inheritdoc/>
-	public TUser ConfirmEmail(string token)
+	public TUser ConfirmEmail(string singleUseToken)
 	{
 		var userId = _context.ConsumeSut(
-			token,
+			singleUseToken,
 			MessageType.EmailConfirmation
 		);
 		var user = _context.Users.Find(userId);
@@ -119,12 +166,12 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 
 	/// <inheritdoc/>
 	public TUser RedefinePassword(
-		string token,
+		string singleUseToken,
 		string newPassword
 	)
 	{
 		var userId = _context.ConsumeSut(
-			token,
+			singleUseToken,
 			MessageType.PasswordRedefinition
 		);
 		var user = _context.Users.Find(userId);
