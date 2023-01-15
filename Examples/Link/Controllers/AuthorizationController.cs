@@ -54,8 +54,8 @@ namespace PortunusLinkExample.Controllers
 		public IActionResult SignUp([FromBody] CredentialsDto credentials)
 		{
 			try {
-				ArgumentNullException.ThrowIfNullOrEmpty(credentials.Email);
-				ArgumentNullException.ThrowIfNullOrEmpty(credentials.Password);
+				if (credentials.Email is null || credentials.Password is null)
+					return Problem("Email and Password can't be empty");
 
 				var user = _userManager.CreateUser(
 					e => e.Email == credentials.Email,
@@ -63,7 +63,7 @@ namespace PortunusLinkExample.Controllers
 						credentials.Email,
 						credentials.Password,
 						// In a real app, use a safe way to give privileges to an user
-						credentials.Email.Substring(credentials.Email.Length-3) == "adm"
+						credentials.Email.Substring(credentials.Email.Length - 3) == "adm"
 					)
 				);
 
@@ -80,9 +80,12 @@ namespace PortunusLinkExample.Controllers
 		public IActionResult SignIn([FromBody] CredentialsDto credentials)
 		{
 			try {
+				if (credentials.Email is null || credentials.Password is null)
+					return Problem("Email and Password can't be empty");
+
 				var user = _userManager.ValidateUser(
 					e => e.Email == credentials.Email,
-					credentials.Password!
+					credentials.Password
 				);
 
 				return Ok(_userManager.GetJwt(user));
@@ -157,12 +160,15 @@ namespace PortunusLinkExample.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult RedefinePassword(string token, [FromForm] CredentialsDto cred)
+		public IActionResult RedefinePassword(string token, [FromForm] CredentialsDto credentials)
 		{
 			try {
+				if (credentials.Password is null)
+					return Problem("Password can't be empty");
+
 				var redefinedUser = _userManager.RedefinePassword(
 					token,
-					cred.Password!
+					credentials.Password
 				);
 
 				var fileContents = System.IO.File.ReadAllText("./success.html");

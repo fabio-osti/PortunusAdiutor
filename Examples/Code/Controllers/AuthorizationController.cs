@@ -54,8 +54,8 @@ namespace PortunusCodeExample.Controllers
 		public IActionResult SignUp([FromBody] CredentialsDto credentials)
 		{
 			try {
-				ArgumentNullException.ThrowIfNullOrEmpty(credentials.Email);
-				ArgumentNullException.ThrowIfNullOrEmpty(credentials.Password);
+				if (credentials.Email is null || credentials.Password is null)
+					return Problem("Email and Password can't be empty");
 
 				var user = _userManager.CreateUser(
 					e => e.Email == credentials.Email,
@@ -80,9 +80,12 @@ namespace PortunusCodeExample.Controllers
 		public IActionResult SignIn([FromBody] CredentialsDto credentials)
 		{
 			try {
+				if (credentials.Email is null || credentials.Password is null)
+					return Problem("Email and Password can't be empty");
+
 				var user = _userManager.ValidateUser(
 					e => e.Email == credentials.Email,
-					credentials.Password!
+					credentials.Password
 				);
 
 				return Ok(_userManager.GetJwt(user));
@@ -128,14 +131,17 @@ namespace PortunusCodeExample.Controllers
 
 
 		[HttpPost]
-		public IActionResult ConfirmEmail([FromBody] CredentialsDto cred)
+		public IActionResult ConfirmEmail([FromBody] CredentialsDto credentials)
 		{
 			try {
-				var user = _userManager.FindUser(e => e.Email == cred.Email);
+				if (credentials.Email is null || credentials.Xdc is null)
+					return Problem("Email and XDC can't be empty");
+
+				var user = _userManager.FindUser(e => e.Email == credentials.Email);
 				var token =
 					SingleUseToken<ApplicationUser, Guid>.GetTokenFrom(
 						user.Id,
-						cred.Xdc!,
+						credentials.Xdc,
 						MessageTypes.EmailConfirmation
 					);
 				var confirmedUser = _userManager.ConfirmEmail(token);
@@ -150,19 +156,22 @@ namespace PortunusCodeExample.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult RedefinePassword([FromBody] CredentialsDto cred)
+		public IActionResult RedefinePassword([FromBody] CredentialsDto credentials)
 		{
 			try {
-				var user = _userManager.FindUser(e => e.Email == cred.Email);
+				if (credentials.Email is null || credentials.Xdc is null || credentials.Password is null)
+					return Problem("Email, XDC and Password can't be empty");
+
+				var user = _userManager.FindUser(e => e.Email == credentials.Email);
 				var token =
 					SingleUseToken<ApplicationUser, Guid>.GetTokenFrom(
 						user.Id,
-						cred.Xdc!,
+						credentials.Xdc!,
 						MessageTypes.PasswordRedefinition
 					);
 				var redefinedUser = _userManager.RedefinePassword(
 					token,
-					cred.Password!
+					credentials.Password!
 				);
 
 				return Ok();
