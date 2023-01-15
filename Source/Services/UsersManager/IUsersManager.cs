@@ -35,7 +35,7 @@ where TKey : IEquatable<TKey>
 	/// 	Created user.
 	/// </returns>
 	TUser CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder);
-
+	
 	/// <summary>
 	/// 	Validates an user.
 	/// </summary>
@@ -52,63 +52,6 @@ where TKey : IEquatable<TKey>
 	/// 	Validated user.
 	/// </returns>
 	TUser ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword);
-
-	/// <summary>
-	/// 	Validates an user.
-	/// </summary>
-	///
-	/// <param name="userFinder">
-	/// 	Predicate for finding the user.
-	/// </param>
-	///
-	/// <param name="userPassword">
-	/// 	Plain text password to be validated.
-	/// </param>
-	/// 
-	/// <param name="token">Token representing the validated user.</param>
-	/// 
-	/// <returns>
-	/// 	Validated user.
-	/// </returns>
-	TUser ValidateUser(
-		Expression<Func<TUser, bool>> userFinder, 
-		string userPassword, 
-		out string token
-	);
-
-	/// <summary>
-	/// 	Validates an user.
-	/// </summary>
-	///
-	/// <param name="userFinder">
-	/// 	Predicate for finding the user.
-	/// </param>
-	///
-	/// <param name="userPassword">
-	/// 	Plain text password to be validated.
-	/// </param>
-	/// 
-	/// <param name="token">Token representing the validated user.</param>
-	/// 
-	/// <param name="tokenDescriptor">
-	/// 	Descriptor of the <paramref name="token"/>.
-	/// 	<remarks>
-	/// 		<see cref="SecurityTokenDescriptor.SigningCredentials"/>,
-	/// 		<see cref="SecurityTokenDescriptor.EncryptingCredentials"/> and
-	/// 		<see cref="SecurityTokenDescriptor.Subject"/>
-	/// 		will be overwritten.
-	/// 	</remarks>
-	/// </param>
-	///
-	/// <returns>
-	/// 	Validated user.
-	/// </returns>
-	TUser ValidateUser(
-		Expression<Func<TUser, bool>> userFinder, 
-		string userPassword, 
-		out string token, 
-		SecurityTokenDescriptor tokenDescriptor
-	);
 
 	/// <summary>
 	/// 	Sends a message to an user for email confirmation.
@@ -178,4 +121,41 @@ where TKey : IEquatable<TKey>
 	/// 	User found.
 	/// </returns>
 	TUser FindUser(Expression<Func<TUser, bool>> userFinder);
+
+	/// <summary>
+	/// 	Gets JWT using the default <see cref="SecurityTokenDescriptor"/>.
+	/// </summary>
+	/// 
+	/// <param name="user">
+	/// 	Owner of token.
+	/// </param>
+	/// 
+	/// <returns>String representation of the JWT.</returns>
+	string GetJwt(TUser user);
+
+
+	/// <summary>
+	/// 	Gets JWT using <paramref name="tokenDescriptor"/>.
+	/// </summary>
+	/// 
+	/// <param name="user">
+	/// 	Owner of token.
+	/// </param>
+	/// 
+	/// <param name="tokenDescriptor">
+	/// 	Descriptor of the JWT.
+	/// </param>
+	/// 
+	/// <remarks>
+	/// 	The following members of <paramref name="tokenDescriptor"/> 
+	/// 	will be overwritten:
+	/// 	<list type="bullet">
+	/// 		<item><see cref="SecurityTokenDescriptor.SigningCredentials"/></item>
+	/// 		<item><see cref="SecurityTokenDescriptor.EncryptingCredentials"/></item>
+	/// 		<item><see cref="SecurityTokenDescriptor.Subject"/></item>
+	/// 	</list>
+	/// </remarks>
+	/// 
+	/// <returns>String representation of the JWT.</returns>
+	string GetJwt(TUser user, SecurityTokenDescriptor tokenDescriptor);
 }

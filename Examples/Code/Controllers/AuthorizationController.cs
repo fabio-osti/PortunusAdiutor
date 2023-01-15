@@ -17,19 +17,16 @@ namespace PortunusCodeExample.Controllers
 	{
 		private readonly ILogger<AuthorizationController> _logger;
 		private readonly ApplicationDbContext _context;
-		private readonly ITokenBuilder _tokenBuilder;
 		private readonly IUsersManager<ApplicationUser, Guid> _userManager;
 
 		public AuthorizationController(
 			ILogger<AuthorizationController> logger,
 			ApplicationDbContext context,
-			ITokenBuilder tokenBuilder,
 			IUsersManager<ApplicationUser, Guid> userManager
 		)
 		{
 			_logger = logger;
 			_context = context;
-			_tokenBuilder = tokenBuilder;
 			_userManager = userManager;
 		}
 
@@ -59,6 +56,7 @@ namespace PortunusCodeExample.Controllers
 			try {
 				ArgumentNullException.ThrowIfNullOrEmpty(credentials.Email);
 				ArgumentNullException.ThrowIfNullOrEmpty(credentials.Password);
+
 				var user = _userManager.CreateUser(
 					e => e.Email == credentials.Email,
 					() => new ApplicationUser(
@@ -69,7 +67,7 @@ namespace PortunusCodeExample.Controllers
 					)
 				);
 
-				return Ok(_tokenBuilder.BuildToken(user.GetClaims()));
+				return Ok(_userManager.GetJwt(user));
 			} catch (PortunusException e) {
 				return Problem(e.ShortMessage);
 			} catch (Exception e) {
@@ -87,7 +85,7 @@ namespace PortunusCodeExample.Controllers
 					credentials.Password!
 				);
 
-				return Ok(_tokenBuilder.BuildToken(user.GetClaims()));
+				return Ok(_userManager.GetJwt(user));
 			} catch (PortunusException e) {
 				return Problem(e.ShortMessage);
 			} catch (Exception e) {

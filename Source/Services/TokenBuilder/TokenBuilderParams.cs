@@ -132,4 +132,9 @@ public class TokenBuilderParams
 	/// 	If <see cref="ValidationParams"/> is defined, this will be ignored.
 	/// </remarks>
 	public TokenValidationParameters? ValidationParams { get; set; }
+
+	/// <summary>
+	/// 	Time to be added to current UTC time when building a token.
+	/// </summary>
+	public TimeSpan ExpirationTime { get; set; }
 }

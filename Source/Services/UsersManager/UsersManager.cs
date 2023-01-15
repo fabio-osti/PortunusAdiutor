@@ -59,26 +59,6 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 		_context = context;
 	}
 
-	private TUser FillToken(
-		TUser user,
-		out string token
-	)
-	{
-		token = _tokenBuilder.BuildToken(user.GetClaims());
-		return user;
-	}
-
-	private TUser FillToken(
-		TUser user,
-		out string token,
-		SecurityTokenDescriptor tokenDescriptor
-	)
-	{
-		tokenDescriptor.Subject = new(user.GetClaims());
-		token = _tokenBuilder.BuildToken(tokenDescriptor);
-		return user;
-	}
-
 	/// <inheritdoc/>
 	public TUser CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder)
 	{
@@ -104,24 +84,6 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 
 		return user;
 	}
-
-	/// <inheritdoc/>
-	public TUser ValidateUser(
-		Expression<Func<TUser, bool>> userFinder,
-		string userPassword,
-		out string token,
-		SecurityTokenDescriptor tokenDescriptor
-	) =>
-		FillToken(ValidateUser(userFinder, userPassword), out token, tokenDescriptor);
-
-	/// <inheritdoc/>
-	public TUser ValidateUser(
-		Expression<Func<TUser, bool>> userFinder,
-		string userPassword,
-		out string token
-	) =>
-		FillToken(ValidateUser(userFinder, userPassword), out token);
-	
 
 	/// <inheritdoc/>
 	public TUser SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
@@ -186,5 +148,21 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	public TUser FindUser(Expression<Func<TUser, bool>> userFinder)
 	{
 		return _context.Users.FirstOrDefault(userFinder) ?? throw new UserNotFoundException();
+	}
+
+	/// <inheritdoc/>
+	public string GetJwt(TUser user)
+	{
+		return _tokenBuilder.BuildToken(user.GetClaims());
+	}
+
+	/// <inheritdoc/>
+	public string GetJwt(
+		TUser user,
+		SecurityTokenDescriptor tokenDescriptor
+	)
+	{
+		tokenDescriptor.Subject = new(user.GetClaims());
+		return _tokenBuilder.BuildToken(tokenDescriptor);
 	}
 }
