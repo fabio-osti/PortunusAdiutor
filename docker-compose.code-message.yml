@@ -3,8 +3,8 @@
 version: '3.4'
 
 services:
-  portunuscodeexample:
-    image: portunuscodeexample
+  codemessageapi:
+    image: codemessageapi
     build:
       context: .
       dockerfile: Examples/Code/Dockerfile

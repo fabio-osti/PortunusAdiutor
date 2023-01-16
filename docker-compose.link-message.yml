@@ -3,8 +3,8 @@
 version: '3.4'
 
 services:
-  portunuslinkexample:
-    image: portunuslinkexample
+  linkmessageapi:
+    image: linkmessageapi
     build:
       context: .
       dockerfile: Examples/Link/Dockerfile
