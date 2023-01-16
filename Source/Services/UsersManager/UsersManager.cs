@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Microsoft.IdentityModel.Tokens;
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Exceptions;
+using PortunusAdiutor.Extensions;
 using PortunusAdiutor.Models;
 using PortunusAdiutor.Services.MessagePoster;
 using PortunusAdiutor.Services.TokenBuilder;
@@ -76,7 +77,7 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	public TUser ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		user = UserNotFoundException.ThrowIfUserNull<TUser, TKey>(user);
+		user.ThrowIfUserNull<TUser, TKey>();
 
 		if (!user.ValidatePassword(userPassword)) {
 			throw new InvalidPasswordException();
@@ -89,7 +90,7 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	public TUser SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		user = UserNotFoundException.ThrowIfUserNull<TUser, TKey>(user);
+		user.ThrowIfUserNull<TUser, TKey>();
 
 		if (user.EmailConfirmed) {
 			throw new EmailAlreadyConfirmedException();
@@ -108,7 +109,7 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 			MessageType.EmailConfirmation
 		);
 		var user = _context.Users.Find(userId);
-		user = UserNotFoundException.ThrowIfUserNull<TUser, TKey>(user);
+		user.ThrowIfUserNull<TUser, TKey>();
 		user.EmailConfirmed = true;
 		_context.SaveChanges();
 
@@ -119,7 +120,7 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	public TUser SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		user = UserNotFoundException.ThrowIfUserNull<TUser, TKey>(user);
+		user.ThrowIfUserNull<TUser, TKey>();
 
 		_mailPoster.SendPasswordRedefinitionMessage(user);
 
@@ -137,7 +138,7 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 			MessageType.PasswordRedefinition
 		);
 		var user = _context.Users.Find(userId);
-		user = UserNotFoundException.ThrowIfUserNull<TUser, TKey>(user);
+		user.ThrowIfUserNull<TUser, TKey>();
 		user.SetPassword(newPassword);
 		_context.SaveChanges();
 
