@@ -44,8 +44,8 @@ public class TokenBuilder : ITokenBuilder
 	/// <inheritdoc/>
 	public string BuildToken(Claim[] claims)
 	{
-		var tokenDescriptor = new SecurityTokenDescriptor {
-			Expires = DateTime.UtcNow.AddHours(2),
+		var tokenDescriptor = new SecurityTokenDescriptor() {
+			Expires = DateTime.UtcNow.Add(_builderParams.ExpirationTime),
 			Subject = new(claims)
 		};
 		return BuildToken(tokenDescriptor);
