@@ -108,19 +108,16 @@ public class AuthorizationController : ControllerBase
 {
 	private readonly ILogger<AuthorizationController> _logger;
 	private readonly ApplicationDbContext _context;
-	private readonly ITokenBuilder _tokenBuilder;
 	private readonly IUsersManager<ApplicationUser, Guid> _userManager;
 
 	public AuthorizationController(
 		ILogger<AuthorizationController> logger,
 		ApplicationDbContext context,
-		ITokenBuilder tokenBuilder,
 		IUsersManager<ApplicationUser, Guid> userManager
 	)
 	{
 		_logger = logger;
 		_context = context;
-		_tokenBuilder = tokenBuilder;
 		_userManager = userManager;
 	}
 
@@ -148,23 +145,20 @@ public class AuthorizationController : ControllerBase
 	public IActionResult SignUp([FromBody] CredentialsDto credentials)
 	{
 		try {
-			ArgumentNullException
-				.ThrowIfNullOrEmpty(credentials.Email);
-			ArgumentNullException
-				.ThrowIfNullOrEmpty(credentials.Password);
-			
-			// In a real app, use a safe way to give privileges to an user
+			if (credentials.Email is null || credentials.Password is null)
+				return Problem("Email and Password can't be empty");
+
 			var user = _userManager.CreateUser(
 				e => e.Email == credentials.Email,
 				() => new ApplicationUser(
 					credentials.Email,
 					credentials.Password,
-					credentials.Email
-						.Substring(credentials.Email.Length-3) == "adm"
+					// In a real app, use a safe way to give privileges to an user
+					credentials.Email.Substring(credentials.Email.Length-3) == "adm"
 				)
 			);
 
-			return Ok(_tokenBuilder.BuildToken(user.GetClaims()));
+			return Ok(_userManager.GetJwt(user));
 		} catch (PortunusException e) {
 			return Problem(e.ShortMessage);
 		} catch (Exception e) {
@@ -177,12 +171,15 @@ public class AuthorizationController : ControllerBase
 	public IActionResult SignIn([FromBody] CredentialsDto credentials)
 	{
 		try {
+			if (credentials.Email is null || credentials.Password is null)
+				return Problem("Email and Password can't be empty");
+
 			var user = _userManager.ValidateUser(
 				e => e.Email == credentials.Email,
-				credentials.Password!
+				credentials.Password
 			);
 
-			return Ok(_tokenBuilder.BuildToken(user.GetClaims()));
+			return Ok(_userManager.GetJwt(user));
 		} catch (PortunusException e) {
 			return Problem(e.ShortMessage);
 		} catch (Exception e) {
@@ -225,18 +222,17 @@ public class AuthorizationController : ControllerBase
 
 
 	[HttpPost]
-	public IActionResult ConfirmEmail([FromBody] CredentialsDto cred)
+	public IActionResult ConfirmEmail([FromBody] CredentialsDto credentials)
 	{
 		try {
-			var user = _userManager.FindUser(
-				e => e.Email == cred.Email
-			);
+			if (credentials.Email is null || credentials.Xdc is null)
+				return Problem("Email and XDC can't be empty");
 
-			// Rebuild the token that gives access to the email confirmation
+			var user = _userManager.FindUser(e => e.Email == credentials.Email);
 			var token =
 				SingleUseToken<ApplicationUser, Guid>.GetTokenFrom(
 					user.Id,
-					cred.Xdc!,
+					credentials.Xdc,
 					MessageTypes.EmailConfirmation
 				);
 			var confirmedUser = _userManager.ConfirmEmail(token);
@@ -251,23 +247,22 @@ public class AuthorizationController : ControllerBase
 	}
 
 	[HttpPost]
-	public IActionResult RedefinePassword([FromBody] CredentialsDto cred)
+	public IActionResult RedefinePassword([FromBody] CredentialsDto credentials)
 	{
 		try {
-			var user = _userManager.FindUser(
-				e => e.Email == cred.Email
-			);
+			if (credentials.Email is null || credentials.Xdc is null || credentials.Password is null)
+				return Problem("Email, XDC and Password can't be empty");
 
-			// Rebuild the token that gives access to the password redefinition
+			var user = _userManager.FindUser(e => e.Email == credentials.Email);
 			var token =
 				SingleUseToken<ApplicationUser, Guid>.GetTokenFrom(
 					user.Id,
-					cred.Xdc!,
+					credentials.Xdc!,
 					MessageTypes.PasswordRedefinition
 				);
 			var redefinedUser = _userManager.RedefinePassword(
 				token,
-				cred.Password!
+				credentials.Password!
 			);
 
 			return Ok();
