@@ -57,7 +57,7 @@ where TKey : IEquatable<TKey>
 	{
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 		// Generates SUT
-		var sut = _context.GenAndSaveSingleUseToken(
+		var sut = _context.GenAndSaveToken(
 			user.Id, 
 			MessageType.EmailConfirmation, 
 			out _
@@ -75,7 +75,7 @@ where TKey : IEquatable<TKey>
 	{
 		ArgumentException.ThrowIfNullOrEmpty(user.Email);
 		// Generates SUT
-		var sut = _context.GenAndSaveSingleUseToken(
+		var sut = _context.GenAndSaveToken(
 			user.Id, 
 			MessageType.PasswordRedefinition, 
 			out _

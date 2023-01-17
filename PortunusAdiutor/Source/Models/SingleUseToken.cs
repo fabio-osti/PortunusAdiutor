@@ -39,7 +39,7 @@ where TKey : IEquatable<TKey>
 	/// </param>
 	///
 	/// <returns>
-/// 	The token.
+	/// 	The token.
 	/// </returns>
 	public static string GetTokenFrom(TKey userId, string xdc, string type)
 	{
