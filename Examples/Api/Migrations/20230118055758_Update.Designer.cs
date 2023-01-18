@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PortunusCodeExample.Data;
 
@@ -10,14 +11,38 @@ using PortunusCodeExample.Data;
 namespace PortunusCodeExample.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230118055758_Update")]
+    partial class Update
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.1");
 
-            modelBuilder.Entity("ApplicationUser", b =>
+            modelBuilder.Entity("PortunusAdiutor.Models.UserToken<PortunusCodeExample.Models.ApplicationUser>", b =>
+                {
+                    b.Property<string>("Token")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ExpiresOn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Token");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserTokens");
+                });
+
+            modelBuilder.Entity("PortunusCodeExample.Models.ApplicationUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -41,37 +66,18 @@ namespace PortunusCodeExample.Migrations
                         .IsRequired()
                         .HasColumnType("BLOB");
 
+                    b.Property<bool>("TwoFactorAuthenticationEnabled")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("PortunusAdiutor.Models.SingleUseToken<ApplicationUser, System.Guid>", b =>
+            modelBuilder.Entity("PortunusAdiutor.Models.UserToken<PortunusCodeExample.Models.ApplicationUser>", b =>
                 {
-                    b.Property<string>("Token")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ExpiresOn")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Token");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("SingleUseTokens");
-                });
-
-            modelBuilder.Entity("PortunusAdiutor.Models.SingleUseToken<ApplicationUser, System.Guid>", b =>
-                {
-                    b.HasOne("ApplicationUser", "User")
-                        .WithMany("SingleUseTokens")
+                    b.HasOne("PortunusCodeExample.Models.ApplicationUser", "User")
+                        .WithMany("UserTokens")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -79,9 +85,9 @@ namespace PortunusCodeExample.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ApplicationUser", b =>
+            modelBuilder.Entity("PortunusCodeExample.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("SingleUseTokens");
+                    b.Navigation("UserTokens");
                 });
 #pragma warning restore 612, 618
         }

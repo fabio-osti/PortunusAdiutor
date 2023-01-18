@@ -12,6 +12,7 @@ namespace PortunusCodeExample.Models
 		) : base(Guid.NewGuid(), email, password)
 		{
 			IsAdmin = admin;
+			TwoFactorAuthenticationEnabled = admin;
 		}
 
 		public ApplicationUser(

@@ -45,14 +45,32 @@ function getRandomEmail(domainExt: string) {
 			expect: (r) => r["email-confirmed"] === "False" && r["is-admin"] === "False"
 		})
 
-		input(`Confirm ${emailU1} and press enter here: `);
-		const wrongPass = {
+		const ConfirmationXdcU1 = input(`Enter the confirmation code for ${emailU1}: `);
+		const cnfrCodeU1 = {
 			email: emailU1,
-			password: "$Pass321"
+			password: "$Pass321",
+			xdc: ConfirmationXdcU1
 		}
 
 		await expect.fromResponse({
-			response: await api.signIn(wrongPass),
+			response: await api.redefinePassword(cnfrCodeU1),
+			logger: log.getTestAccumulator("Should fail to redefine password with confirmation code sent at sign up"),
+			expect: failure
+		});
+
+		await expect.fromResponse({
+			response: await api.confirmEmail(cnfrCodeU1),
+			logger: log.getTestAccumulator("Should confirm first user email with confirmation code sent at sign up")
+		});
+
+		await expect.fromResponse({
+			response: await api.confirmEmail(cnfrCodeU1),
+			logger: log.getTestAccumulator("Should fail to reconfirm first user email"),
+			expect: failure
+		});
+
+		await expect.fromResponse({
+			response: await api.signIn(cnfrCodeU1),
 			logger: log.getTestAccumulator("Should fail to sign in with wrong password"),
 			expect: failure
 		})
@@ -82,14 +100,35 @@ function getRandomEmail(domainExt: string) {
 
 		await expect.fromResponse({
 			response: await api.sendPasswordRedefinition(emailU2),
-			logger: log.getTestAccumulator("Should send password redefinition link to the second user")
+			logger: log.getTestAccumulator("Should send password redefinition code to the second user")
 		})
 
-		input(`Redefine password of ${emailU2} to "Pass321$": `)
+		await expect.fromResponse({
+			response: await api.confirmEmail({
+				email: emailU2,
+				xdc: ConfirmationXdcU1
+			}),
+			logger: log.getTestAccumulator("Should fail to confirm second user email with other first user code"),
+			expect: failure
+		})
+
+		const RedefinitionXdcU2 = input(`Enter the redefinition code for ${emailU2}: `)
 		const U2B = {
 			email: emailU2,
-			password: "Pass321$"
+			password: "Pass321$",
+			xdc: RedefinitionXdcU2
 		};
+
+		await expect.fromResponse({
+			response: await api.confirmEmail(U2B),
+			logger: log.getTestAccumulator("Should fail to confirm second user email with password redefinition code"),
+			expect: failure
+		})
+
+		await expect.fromResponse({
+			response: await api.redefinePassword(U2B),
+			logger: log.getTestAccumulator("Should redefine second user password with code sent")
+		})
 
 		// Makes sure the authentication endpoint doesn't authenticate anyone and that the password was really changed at redefinition
 		await expect.fromResponse({
@@ -98,8 +137,24 @@ function getRandomEmail(domainExt: string) {
 			expect: failure
 		})
 
+		const U2C = {
+			email: emailU2,
+			password: "Pass321$"
+		};
+		await expect.fromResponse({
+			response: await api.signIn(U2C),
+			logger: log.getTestAccumulator("Should send 2FA message")
+		})
+
+		const twoFactorXdcU2 = input(`Enter the 2FA code for ${emailU2}: `)
+		const U2D = {
+			email: emailU2,
+			password: "Pass321$",
+			xdc: twoFactorXdcU2
+		};
+
 		const tokenU2A = await expect.fromResponse({
-			response: await api.signIn(U2B),
+			response: await api.signIn(U2D),
 			logger: log.getTestAccumulator("Should sign in")
 		})
 
@@ -110,10 +165,25 @@ function getRandomEmail(domainExt: string) {
 			expect: (r) => r["email-confirmed"] === "False" && r["is-admin"] === "True"
 		})
 
-		input(`Confirm ${emailU2} and press enter here: `);
+		await expect.fromResponse({
+			response: await api.sendEmailConfirmation(emailU2),
+			logger: log.getTestAccumulator("Should send email confirmation code to the second user")
+		})
+
+		const xdcCnfrCodeU2 = input(`Enter the second confirmation code sent for ${emailU2}: `)
+		const cnfrCodeU2 = {
+			email: emailU2,
+			password: "Pass321$",
+			xdc: xdcCnfrCodeU2
+		};
+
+		await expect.fromResponse({
+			response: await api.confirmEmail(cnfrCodeU2),
+			logger: log.getTestAccumulator("Should confirm second user email with confirmation code sent at step 19")
+		});
 
 		const tokenU2B = await expect.fromResponse({
-			response: await api.signIn(U2B),
+			response: await api.signIn(U2D),
 			logger: log.getTestAccumulator("Should sign in")
 		})
 

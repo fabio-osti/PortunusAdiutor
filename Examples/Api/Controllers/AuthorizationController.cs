@@ -85,10 +85,15 @@ namespace PortunusCodeExample.Controllers
 
 				var user = _userManager.ValidateUser(
 					e => e.Email == credentials.Email,
-					credentials.Password
+					credentials.Password,
+					credentials.Xdc
 				);
 
 				return Ok(_userManager.GetJwt(user));
+			} catch (Required2FAException) {
+				// Yes, I know, not best practices using exception for expected cases, will fix.
+				_userManager.SendTwoFactorAuthentication(e => e.Email == credentials.Email);
+				return Accepted();
 			} catch (PortunusException e) {
 				return Problem(e.ShortMessage);
 			} catch (Exception e) {

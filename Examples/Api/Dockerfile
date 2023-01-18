@@ -11,16 +11,16 @@ USER appuser
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["Examples/Code/PortunusCodeExample.csproj", "Examples/Code/"]
-RUN dotnet restore "Examples/Code/PortunusCodeExample.csproj"
+COPY ["Examples/Api/ApiPortunusAdiutor.csproj", "Examples/Api/"]
+RUN dotnet restore "Examples/Api/ApiPortunusAdiutor.csproj"
 COPY . .
-WORKDIR "/src/Examples/Code"
-RUN dotnet build "PortunusCodeExample.csproj" -c Release -o /app/build
+WORKDIR "/src/Examples/Api"
+RUN dotnet build "ApiPortunusAdiutor.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "PortunusCodeExample.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "ApiPortunusAdiutor.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "PortunusCodeExample.dll"]
+ENTRYPOINT ["dotnet", "ApiPortunusAdiutor.dll"]
