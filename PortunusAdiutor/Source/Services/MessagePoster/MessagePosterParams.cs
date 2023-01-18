@@ -9,9 +9,9 @@ using MessageBuilder = System.Func<string, string, MimeKit.MimeMessage>;
 namespace PortunusAdiutor.Services.MessagePoster;
 
 /// <summary>
-/// 	Parameters necessary for posting messages containing access codes.
+/// 	Parameters necessary for posting messages containing access links.
 /// </summary>
-public class LinkMessagePosterParams
+public class MessagePosterParams
 {
 	/// <summary>
 	/// 	Uri used for the SMTP server.
@@ -22,18 +22,6 @@ public class LinkMessagePosterParams
 	/// 	Credentials used for connecting to the SMTP server.
 	/// </summary>
 	public ICredentials SmtpCredentials { get; set; } = DefaultCredentials;
-
-	/// <summary>
-	/// 	App endpoint for email validation.
-	/// </summary>
-	public string EmailConfirmationEndpoint { get; set; } =
-		DefaultEmailConfirmationEndpoint;
-
-	/// <summary>
-	/// 	App endpoint for password redefinition.
-	/// </summary>
-	public string PasswordRedefinitionEndpoint { get; set; } =
-		DefaultPasswordRedefinitionEndpoint;
 
 	/// <summary>
 	///		Sets or gets the builder of the email that should be sent if the user
@@ -50,13 +38,13 @@ public class LinkMessagePosterParams
 		DefaultEmailConfirmationMessageBuilder;
 
 	/// <summary>
-	/// 	Initialize an instance of <see cref="LinkMessagePosterParams"/>
+	/// 	Initialize an instance of <see cref="MessagePosterParams"/>
 	/// 	with only the defaults as base.
 	/// </summary>
-	public LinkMessagePosterParams() { }
+	public MessagePosterParams() { }
 
 	/// <summary>
-	/// 	Initialize an instance of <see cref="LinkMessagePosterParams"/> 
+	/// 	Initialize an instance of <see cref="MessagePosterParams"/> 
 	/// 	using an <see cref="IConfiguration"/> object and
 	/// 	the defaults as base.
 	/// </summary>
@@ -65,7 +53,7 @@ public class LinkMessagePosterParams
 	/// 	An <see cref="IConfiguration"/> instance that 
 	/// 	have the section "SMTP" defined.
 	/// </param>
-	/// 
+	///
 	/// <remarks>
 	/// 	<list type="table">
 	/// 		<listheader>
@@ -84,22 +72,14 @@ public class LinkMessagePosterParams
 	/// 			<term><see cref="SmtpCredentials"/>(password)</term>
 	/// 			<description>"PSW"</description>
 	/// 		</item>
-	/// 		<item>
-	/// 			<term><see cref="EmailConfirmationEndpoint"/></term>
-	/// 			<description>"ECE"</description>
-	/// 		</item>
-	/// 		<item>
-	/// 			<term><see cref="PasswordRedefinitionEndpoint"/></term>
-	/// 			<description>"PRE"</description>
-	/// 		</item>
 	/// 	</list>
 	///</remarks>
-	public LinkMessagePosterParams(IConfiguration config)
+	public MessagePosterParams(IConfiguration config)
 	{
 		var sect = config.GetSection("SMTP");
 		var smtpUri = sect["URI"];
 		if (smtpUri is not null) {
-			SmtpUri = new Uri(smtpUri);
+			SmtpUri = new(smtpUri);
 		}
 
 		var smtpUser = sect["USR"];
@@ -108,32 +88,14 @@ public class LinkMessagePosterParams
 			SmtpCredentials =
 				new NetworkCredential(smtpUser, smtpPassword);
 		}
-
-		var emailConfirmationEndpoint = sect["ECE"];
-		if (emailConfirmationEndpoint is not null) {
-			EmailConfirmationEndpoint = emailConfirmationEndpoint;
-		}
-
-		var passwordRedefinitionEndpoint = sect["PRE"];
-		if (passwordRedefinitionEndpoint is not null) {
-			PasswordRedefinitionEndpoint = passwordRedefinitionEndpoint;
-		}
 	}
 
-	// DEFAULT VALUES
 	private const string DefaultSmtpUriString = "smtp://localhost:2525";
-
-	private const string DefaultEmailConfirmationEndpoint =
-		"http://localhost:8080/Authorization/ConfirmEmail?token=";
-
-	private const string DefaultPasswordRedefinitionEndpoint =
-		"http://localhost:8080/Authorization/RedefinePassword?token=";
-
 	private static ICredentials DefaultCredentials => new NetworkCredential();
 
 	private static MimeMessage DefaultPasswordRedefinitionMessageBuilder(
 		string email,
-		string link
+		string code
 	)
 	{
 		var message = new MimeMessage();
@@ -147,9 +109,9 @@ public class LinkMessagePosterParams
 
 				A new password was requested for your account,
 
-				Please confirm that it was you by opening this link: 
+				Please confirm that it was you by entering this code: 
 				
-				{link}
+				{code}
 
 				If you didn't make this request, then you can ignore this email.
 				"""
@@ -160,7 +122,7 @@ public class LinkMessagePosterParams
 
 	private static MimeMessage DefaultEmailConfirmationMessageBuilder(
 		string email,
-		string link
+		string code
 	)
 	{
 		var message = new MimeMessage();
@@ -174,9 +136,9 @@ public class LinkMessagePosterParams
 
 				Your account have been registered, 
 
-				Please confirm that it was you by opening this link: 
+				Please confirm that it was you by entering this code: 
 
-				{link}
+				{code}
 
 				If you didn't make this request, then you can ignore this email.
 				"""

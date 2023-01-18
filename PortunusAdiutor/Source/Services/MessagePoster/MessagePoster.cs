@@ -8,7 +8,6 @@ using PortunusAdiutor.Static;
 namespace PortunusAdiutor.Services.MessagePoster;
 
 /// <summary>
-/// 	Implementation of <see cref="IMessagePoster{TUser, TKey}"/> 
 /// 	with access code.
 /// </summary>
 ///
@@ -20,15 +19,8 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// 	Type of the user.
 /// </typeparam>
 ///
-/// <typeparam name="TKey">
-/// 	Type of the user primary key.
-/// </typeparam>
-public class CodeMessagePoster<TContext, TUser, TKey> : IMessagePoster<TUser, TKey>
-where TContext : ManagedUserDbContext<TUser, TKey>
-where TUser : class, IManagedUser<TUser, TKey>
-where TKey : IEquatable<TKey>
 {
-	private readonly CodeMessagePosterParams _posterParams;
+	private readonly MessagePosterParams _posterParams;
 	private readonly TContext _context;
 
 	/// <summary>
@@ -42,8 +34,8 @@ where TKey : IEquatable<TKey>
 	/// <param name="context">
 	/// 	Database context.
 	/// </param>
-	public CodeMessagePoster(
-		CodeMessagePosterParams posterParams, 
+	public MessagePoster(
+		MessagePosterParams posterParams, 
 		TContext context
 	)
 	{
