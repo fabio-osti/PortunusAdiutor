@@ -55,7 +55,7 @@ public class TokenBuilder : ITokenBuilder
 	public string BuildToken(IDictionary<string, object> claims)
 	{
 		var tokenDescriptor = new SecurityTokenDescriptor {
-			Expires = DateTime.UtcNow.AddHours(2),
+			Expires = DateTime.UtcNow.Add(_builderParams.ExpirationTime),
 			Claims = claims
 		};
 		return BuildToken(tokenDescriptor);
