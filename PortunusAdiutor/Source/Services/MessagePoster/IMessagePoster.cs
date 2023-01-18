@@ -34,4 +34,14 @@ where TUser : class, IManagedUser<TUser>
 	/// 	Receiver of the message.
 	/// </param>
 	void SendPasswordRedefinitionMessage(TUser user);
+
+	/// <summary>
+	/// 	Sends message asking for a 2FA code for 
+	/// 	<paramref name="user"/>
+	/// </summary>
+	///
+	/// <param name="user">
+	/// 	Receiver of the message.
+	/// </param>
+	void SendTwoFactorAuthenticationMessage(TUser user);
 }

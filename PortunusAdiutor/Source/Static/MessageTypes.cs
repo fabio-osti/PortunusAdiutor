@@ -39,7 +39,7 @@ public static class MessageTypes
 	messageType switch {
 		MessageType.EmailConfirmation => EmailConfirmation,
 		MessageType.PasswordRedefinition => PasswordRedefinition,
-		MessageType.TwoStepsAuthentication => TwoStepsAuthentication,
+		MessageType.TwoFactorAuthentication => TwoStepsAuthentication,
 		_ => throw new ArgumentOutOfRangeException(nameof(messageType))
 	};
 }
@@ -60,5 +60,5 @@ public enum MessageType
 	/// <summary>
 	/// 	Message for two steps authentication.
 	/// </summary>
-	TwoStepsAuthentication
+	TwoFactorAuthentication
 }

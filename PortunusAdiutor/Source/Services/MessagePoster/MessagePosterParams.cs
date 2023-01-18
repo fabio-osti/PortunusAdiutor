@@ -38,6 +38,13 @@ public class MessagePosterParams
 		DefaultEmailConfirmationMessageBuilder;
 
 	/// <summary>
+	///		Sets or gets the builder of the email that should be sent when the user 
+	///		requests a 2FA code.
+	/// </summary>
+	public MessageBuilder TwoFactorAuthenticationMessageBuilder { get; set; } =
+		DefaultTwoFactorAuthenticationMessageBuilder;
+
+	/// <summary>
 	/// 	Initialize an instance of <see cref="MessagePosterParams"/>
 	/// 	with only the defaults as base.
 	/// </summary>
@@ -135,6 +142,33 @@ public class MessagePosterParams
 				Hello,
 
 				Your account have been registered, 
+
+				Please confirm that it was you by entering this code: 
+
+				{code}
+
+				If you didn't make this request, then you can ignore this email.
+				"""
+		};
+
+		return message;
+	}
+
+	private static MimeMessage DefaultTwoFactorAuthenticationMessageBuilder(
+		string email,
+		string code
+	)
+	{
+		var message = new MimeMessage();
+
+		message.From.Add(new MailboxAddress("", ""));
+		message.To.Add(new MailboxAddress("", email));
+		message.Subject = "Validate your email";
+		message.Body = new TextPart("plain") {
+			Text = $"""
+				Hello,
+
+				There was an attempt to authenticate a device, 
 
 				Please confirm that it was you by entering this code: 
 

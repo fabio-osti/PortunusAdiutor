@@ -49,9 +49,8 @@ where TUser : class, IManagedUser<TUser>
 	/// <inheritdoc/>
 	public void SendEmailConfirmationMessage(TUser user)
 	{
-		ArgumentException.ThrowIfNullOrEmpty(user.Email);
-		// Generates SUT
-		var otp = _context.GenAndSaveToken(
+		// Generates TOKEN
+		var token = _context.GenAndSaveToken(
 			user.Id, 
 			MessageType.EmailConfirmation, 
 			out var xdc
@@ -67,15 +66,31 @@ where TUser : class, IManagedUser<TUser>
 	/// <inheritdoc/>
 	public void SendPasswordRedefinitionMessage(TUser user)
 	{
-		ArgumentException.ThrowIfNullOrEmpty(user.Email);
-		// Generates SUT
-		var otp = _context.GenAndSaveToken(
+		// Generates TOKEN
+		var token = _context.GenAndSaveToken(
 			user.Id, 
 			MessageType.PasswordRedefinition, 
 			out var xdc
 		);
 		// Builds and sends message
 		var message = _posterParams.PasswordRedefinitionMessageBuilder(
+			user.Email,
+			xdc
+		);
+		SendMessage(message);
+	}
+
+	/// <inheritdoc/>
+	public void SendTwoFactorAuthenticationMessage(TUser user)
+	{
+		// Generates TOKEN
+		var token = _context.GenAndSaveToken(
+			user.Id, 
+			MessageType.TwoFactorAuthentication, 
+			out var xdc
+		);
+		// Builds and sends message
+		var message = _posterParams.TwoFactorAuthenticationMessageBuilder(
 			user.Email,
 			xdc
 		);
