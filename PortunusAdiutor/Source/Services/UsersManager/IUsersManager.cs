@@ -151,7 +151,6 @@ where TUser : class, IManagedUser<TUser>
 	/// <returns>String representation of the JWT.</returns>
 	string GetJwt(TUser user);
 
-
 	/// <summary>
 	/// 	Gets JWT using <paramref name="tokenDescriptor"/>.
 	/// </summary>
