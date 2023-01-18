@@ -163,7 +163,7 @@ public class MessagePosterParams
 
 		message.From.Add(new MailboxAddress("", ""));
 		message.To.Add(new MailboxAddress("", email));
-		message.Subject = "Validate your email";
+		message.Subject = "Authenticate your device";
 		message.Body = new TextPart("plain") {
 			Text = $"""
 				Hello,
