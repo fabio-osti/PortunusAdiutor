@@ -16,7 +16,6 @@ namespace PortunusAdiutor.Models;
 /// </typeparam>
 public class Pbkdf2User<TUser> : IManagedUser<TUser>
 where TUser : Pbkdf2User<TUser>
-
 {
 	private const KeyDerivationPrf DefaultPrf = KeyDerivationPrf.HMACSHA512;
 	private const int DefaultIterCount = 262140;

@@ -10,10 +10,8 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// <typeparam name="TUser">
 /// 	Type of the user.
 /// </typeparam>
-///
 public interface IMessagePoster<TUser>
 where TUser : class, IManagedUser<TUser>
-
 {
 	/// <summary>
 	/// 	Sends message asking for the confirmation of the 

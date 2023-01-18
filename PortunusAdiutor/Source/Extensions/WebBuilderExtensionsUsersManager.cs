@@ -30,7 +30,6 @@ public static partial class WebBuilderExtensions
 	public static void AddUsersManager<TContext, TUser>(this WebApplicationBuilder builder)
 	where TContext : ManagedUserDbContext<TUser>
 	where TUser : class, IManagedUser<TUser>
-	
 	{
 		builder.Services
 			.AddSingleton<IUsersManager<TUser>, UsersManager<TContext, TUser>>();

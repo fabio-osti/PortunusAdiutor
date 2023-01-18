@@ -19,11 +19,9 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// <typeparam name="TUser">
 /// 	Type of the user.
 /// </typeparam>
-///
 public class MessagePoster<TContext, TUser> : IMessagePoster<TUser>
 where TContext : ManagedUserDbContext<TUser>
 where TUser : class, IManagedUser<TUser>
-
 {
 	private readonly MessagePosterParams _posterParams;
 	private readonly TContext _context;

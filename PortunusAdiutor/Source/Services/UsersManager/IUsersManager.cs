@@ -11,10 +11,8 @@ namespace PortunusAdiutor.Services.UsersManager;
 /// <typeparam name="TUser">
 /// 	Type of the user.
 /// </typeparam>
-///
 public interface IUsersManager<TUser>
 where TUser : class, IManagedUser<TUser>
-
 {
 	/// <summary>
 	/// 	Creates an user.

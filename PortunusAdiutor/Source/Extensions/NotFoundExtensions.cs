@@ -35,7 +35,6 @@ static public class NotFoundExtensions
 	/// </exception>
 	public static TUser ThrowIfUserNull<TUser>([NotNull] this TUser? user)
 	where TUser : class, IManagedUser<TUser>
-	
 	{
 		return user ?? throw new UserNotFoundException();
 	}
@@ -64,7 +63,6 @@ static public class NotFoundExtensions
 		[NotNull] this UserToken<TUser>? token
 	)
 	where TUser : class, IManagedUser<TUser>
-	
 	{
 		return token ?? throw new TokenNotFoundException();
 	}

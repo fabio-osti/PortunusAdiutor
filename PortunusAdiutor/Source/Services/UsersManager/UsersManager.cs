@@ -21,7 +21,6 @@ namespace PortunusAdiutor.Services.UsersManager;
 /// <typeparam name="TUser">
 /// 	Type of the user.
 /// </typeparam>
-///
 public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 	where TContext : ManagedUserDbContext<TUser>
 	where TUser : class, IManagedUser<TUser>

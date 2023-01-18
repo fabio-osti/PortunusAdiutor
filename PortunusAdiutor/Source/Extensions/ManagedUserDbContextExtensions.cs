@@ -39,7 +39,6 @@ static public class ManagedUserDbContextExtensions
 		out string xdc
 	)
 	where TUser : class, IManagedUser<TUser>
-	
 	{
 		xdc = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
 
@@ -80,7 +79,6 @@ static public class ManagedUserDbContextExtensions
 		bool singleUse = true
 	)
 	where TUser : class, IManagedUser<TUser>
-	
 	{
 		var UserToken = context.UserTokens.Find(token);
 

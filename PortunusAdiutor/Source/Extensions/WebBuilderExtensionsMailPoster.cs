@@ -38,7 +38,6 @@ public static partial class WebBuilderExtensions
 	)
 	where TContext : ManagedUserDbContext<TUser>
 	where TUser : class, IManagedUser<TUser>
-	
 	{
 		builder.Services.AddSingleton<IMessagePoster<TUser>>(
 			e => new MessagePoster<TContext, TUser>(

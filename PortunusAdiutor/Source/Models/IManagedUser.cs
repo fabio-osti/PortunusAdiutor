@@ -10,9 +10,7 @@ namespace PortunusAdiutor.Models;
 /// <typeparam name="TUser">
 /// 	Type of the user.
 /// </typeparam>
-///
 public interface IManagedUser<TUser>
-
 {
 	/// <summary>
 	/// 	Sets an user password to <paramref name="password"/>.

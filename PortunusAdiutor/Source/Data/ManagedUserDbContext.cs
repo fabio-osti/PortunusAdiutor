@@ -13,10 +13,8 @@ namespace PortunusAdiutor.Data;
 /// <typeparam name="TUser">
 /// 	Type of the user.
 /// </typeparam>
-///
 public class ManagedUserDbContext<TUser> : DbContext
 where TUser : class, IManagedUser<TUser>
-
 {
 #pragma warning disable CS8618
 	/// <summary>

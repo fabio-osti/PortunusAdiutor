@@ -13,7 +13,6 @@ namespace PortunusAdiutor.Models;
 /// <typeparam name="TUser">
 /// 	Type of the user.
 /// </typeparam>
-///
 public class UserToken<TUser>
 {
 	/// <summary>

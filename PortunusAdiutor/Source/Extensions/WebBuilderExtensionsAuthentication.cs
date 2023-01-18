@@ -58,7 +58,6 @@ public static partial class WebBuilderExtensions
 	)
 	where TContext : ManagedUserDbContext<TUser>
 	where TUser : class, IManagedUser<TUser>
-	
 	{
 		builder.Services.AddDbContext<TContext>(contextConfigurator, ServiceLifetime.Singleton);
 		var authenticationBuilder = builder.AddTokenBuilder(tokenBuilderParams);
