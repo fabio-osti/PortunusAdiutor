@@ -10,7 +10,7 @@ using PortunusCodeExample.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.AddAllPortunusServices<ApplicationDbContext, ApplicationUser, Guid>(
+builder.AddAllPortunusServices<ApplicationDbContext, ApplicationUser>(
 	options => options.UseSqlite("Data Source=app.db"),
 	new TokenBuilderParams {
 		SigningKey =
@@ -22,7 +22,7 @@ builder.AddAllPortunusServices<ApplicationDbContext, ApplicationUser, Guid>(
 			ValidateIssuer = false
 		}
 	},
-	new CodeMessagePosterParams() {
+	new MessagePosterParams() {
 		SmtpUri = new("smtp://smtp4dev:25")
 	}
 );

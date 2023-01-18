@@ -11,7 +11,7 @@ using PortunusAdiutor.Static;
 namespace PortunusAdiutor.Services.UsersManager;
 
 /// <summary>
-/// 	Default implementation of <see cref="IUsersManager{TUser, TKey}"/>.
+/// 	Default implementation of <see cref="IUsersManager{TUser}"/>.
 /// </summary>
 ///
 /// <typeparam name="TContext">
@@ -22,16 +22,13 @@ namespace PortunusAdiutor.Services.UsersManager;
 /// 	Type of the user.
 /// </typeparam>
 ///
-/// <typeparam name="TKey">
-/// 	Type of the user primary key.
-/// </typeparam>
-public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
-	where TContext : ManagedUserDbContext<TUser, TKey>
-	where TUser : class, IManagedUser<TUser, TKey>
-	where TKey : IEquatable<TKey>
+public class UsersManager<TContext, TUser> : IUsersManager<TUser>
+	where TContext : ManagedUserDbContext<TUser>
+	where TUser : class, IManagedUser<TUser>
+	
 {
 	private readonly ITokenBuilder _tokenBuilder;
-	private readonly IMessagePoster<TUser, TKey> _mailPoster;
+	private readonly IMessagePoster<TUser> _mailPoster;
 	private readonly TContext _context;
 
 	/// <summary>
@@ -51,7 +48,7 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	/// </param>
 	public UsersManager(
 		ITokenBuilder tokenBuilder,
-		IMessagePoster<TUser, TKey> messagePoster,
+		IMessagePoster<TUser> messagePoster,
 		TContext context
 	)
 	{
@@ -77,7 +74,7 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	public TUser ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		user.ThrowIfUserNull<TUser, TKey>();
+		user.ThrowIfUserNull<TUser>();
 
 		if (!user.ValidatePassword(userPassword)) {
 			throw new InvalidPasswordException();
@@ -90,7 +87,7 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	public TUser SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		user.ThrowIfUserNull<TUser, TKey>();
+		user.ThrowIfUserNull<TUser>();
 
 		if (user.EmailConfirmed) {
 			throw new EmailAlreadyConfirmedException();
@@ -109,7 +106,7 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 			MessageType.EmailConfirmation
 		);
 		var user = _context.Users.Find(userId);
-		user.ThrowIfUserNull<TUser, TKey>();
+		user.ThrowIfUserNull<TUser>();
 		user.EmailConfirmed = true;
 		_context.SaveChanges();
 
@@ -120,7 +117,7 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 	public TUser SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		user.ThrowIfUserNull<TUser, TKey>();
+		user.ThrowIfUserNull<TUser>();
 
 		_mailPoster.SendPasswordRedefinitionMessage(user);
 
@@ -138,7 +135,7 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 			MessageType.PasswordRedefinition
 		);
 		var user = _context.Users.Find(userId);
-		user.ThrowIfUserNull<TUser, TKey>();
+		user.ThrowIfUserNull<TUser>();
 		user.SetPassword(newPassword);
 		_context.SaveChanges();
 

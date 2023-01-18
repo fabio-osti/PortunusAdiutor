@@ -11,7 +11,7 @@ namespace PortunusAdiutor.Extensions;
 public static partial class WebBuilderExtensions
 {
 	/// <summary>
-	/// 	Adds <see cref="UsersManager{TContext, TUser, TKey}"/> 
+	/// 	Adds <see cref="UsersManager{TContext, TUser}"/> 
 	/// 	to the <see cref="ServiceCollection"/>.
 	/// </summary>
 	///
@@ -23,19 +23,16 @@ public static partial class WebBuilderExtensions
 	/// 	Type of the user.
 	/// </typeparam>
 	///
-	/// <typeparam name="TKey">
-	/// 	Type of the user primary key.
-	/// </typeparam>
 	///
 	/// <param name="builder">
 	/// 	The web app builder.
 	/// </param>
-	public static void AddUsersManager<TContext, TUser, TKey>(this WebApplicationBuilder builder)
-	where TContext : ManagedUserDbContext<TUser, TKey>
-	where TUser : class, IManagedUser<TUser, TKey>
-	where TKey : IEquatable<TKey>
+	public static void AddUsersManager<TContext, TUser>(this WebApplicationBuilder builder)
+	where TContext : ManagedUserDbContext<TUser>
+	where TUser : class, IManagedUser<TUser>
+	
 	{
 		builder.Services
-			.AddSingleton<IUsersManager<TUser, TKey>, UsersManager<TContext, TUser, TKey>>();
+			.AddSingleton<IUsersManager<TUser>, UsersManager<TContext, TUser>>();
 	}
 }

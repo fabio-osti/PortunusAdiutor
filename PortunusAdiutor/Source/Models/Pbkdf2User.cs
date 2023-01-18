@@ -8,19 +8,15 @@ using PortunusAdiutor.Static;
 namespace PortunusAdiutor.Models;
 
 /// <summary>
-/// 	Implementation of <see cref="IManagedUser{TUser, TKey}"/> using PBKDF2 as derivation algorithm.
+/// 	Implementation of <see cref="IManagedUser{TUser}"/> using PBKDF2 as derivation algorithm.
 /// </summary>
 ///
 /// <typeparam name="TUser">
 /// 	Type of the user.
 /// </typeparam>
-///
-/// <typeparam name="TKey">
-/// 	Type of the user primary key.
-/// </typeparam>
-public class Pbkdf2User<TUser, TKey> : IManagedUser<TUser, TKey>
-where TUser : Pbkdf2User<TUser, TKey>
-where TKey : IEquatable<TKey>
+public class Pbkdf2User<TUser> : IManagedUser<TUser>
+where TUser : Pbkdf2User<TUser>
+
 {
 	private const KeyDerivationPrf DefaultPrf = KeyDerivationPrf.HMACSHA512;
 	private const int DefaultIterCount = 262140;
@@ -48,9 +44,9 @@ where TKey : IEquatable<TKey>
 	///
 	/// <remarks>
 	/// 	This constructor should only be used by EF to build an object
-	/// 	representing an existing <see cref="Pbkdf2User{TUser, TKey}"/>.
+	/// 	representing an existing <see cref="Pbkdf2User{TUser}"/>.
 	/// </remarks>
-	public Pbkdf2User(TKey id, string email, byte[] salt, string passwordHash)
+	public Pbkdf2User(Guid id, string email, byte[] salt, string passwordHash)
 	{
 		Id = id;
 		PasswordHash = passwordHash;
@@ -72,7 +68,7 @@ where TKey : IEquatable<TKey>
 	/// <param name="password">
 	/// 	Password of the user.
 	/// </param>
-	public Pbkdf2User(TKey id, string email, string password)
+	public Pbkdf2User(Guid id, string email, string password)
 	{
 		Id = id;
 		Email = email;
@@ -114,7 +110,7 @@ where TKey : IEquatable<TKey>
 	public string PasswordHash { get; set; }
 
 	/// <inheritdoc/>
-	public TKey Id { get; set; }
+	public Guid Id { get; set; }
 
 	/// <inheritdoc/>
 	public bool EmailConfirmed { get; set; }
@@ -136,5 +132,5 @@ where TKey : IEquatable<TKey>
 	}
 
 	/// <inheritdoc/>
-	public ICollection<SingleUseToken<TUser, TKey>>? SingleUseTokens { get; set; }
+	public ICollection<SingleUseToken<TUser>>? SingleUseTokens { get; set; }
 }

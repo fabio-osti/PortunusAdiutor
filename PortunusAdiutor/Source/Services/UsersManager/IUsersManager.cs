@@ -12,12 +12,9 @@ namespace PortunusAdiutor.Services.UsersManager;
 /// 	Type of the user.
 /// </typeparam>
 ///
-/// <typeparam name="TKey">
-/// 	Type of the user primary key.
-/// </typeparam>
-public interface IUsersManager<TUser, TKey>
-where TUser : class, IManagedUser<TUser, TKey>
-where TKey : IEquatable<TKey>
+public interface IUsersManager<TUser>
+where TUser : class, IManagedUser<TUser>
+
 {
 	/// <summary>
 	/// 	Creates an user.

@@ -18,7 +18,7 @@ public static partial class WebBuilderExtensions
 {
 	/// <summary>
 	/// 	Adds all services to the <see cref="ServiceCollection"/> 
-	/// 	with <see cref="LinkMessagePoster{TContext, TUser, TKey}"/>.
+	/// 	with <see cref="MessagePoster{TContext, TUser}"/>.
 	/// </summary>
 	///
 	/// <typeparam name="TContext">
@@ -29,63 +29,6 @@ public static partial class WebBuilderExtensions
 	/// 	Type of the user.
 	/// </typeparam>
 	///
-	/// <typeparam name="TKey">
-	/// 	Type of the user primary key.
-	/// </typeparam>
-	///
-	/// <param name="builder">
-	/// 	The web app builder.
-	/// </param>
-	///
-	/// <param name="contextConfigurator">
-	/// 	The configurator for the <typeparamref name="TContext"/>.
-	/// </param>
-	///
-	/// <param name="tokenBuilderParams">
-	/// 	The parameters used by the <see cref="TokenBuilder"/>.
-	/// </param>
-	///
-	/// <param name="mailLinkPosterParams">
-	/// 	The parameters used by the 
-	/// 	<see cref="LinkMessagePoster{TContext, TUser, TKey}"/>.
-	/// </param>
-	///
-	/// <returns>
-	/// 	An <see cref="AuthenticationBuilder"/> for further configurations.
-	/// </returns>
-	public static AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TKey>(
-		this WebApplicationBuilder builder,
-		Action<DbContextOptionsBuilder> contextConfigurator,
-		TokenBuilderParams tokenBuilderParams,
-		LinkMessagePosterParams mailLinkPosterParams
-	)
-	where TContext : ManagedUserDbContext<TUser, TKey>
-	where TUser : class, IManagedUser<TUser, TKey>
-	where TKey : IEquatable<TKey>
-	{
-		builder.Services.AddDbContext<TContext>(contextConfigurator, ServiceLifetime.Singleton);
-		var authenticationBuilder = builder.AddTokenBuilder(tokenBuilderParams);
-		builder.AddMailLinkPoster<TContext, TUser, TKey>(mailLinkPosterParams);
-		builder.AddUsersManager<TContext, TUser, TKey>();
-		return authenticationBuilder;
-	}
-
-	/// <summary>
-	/// 	Adds all services to the <see cref="ServiceCollection"/> 
-	/// 	with <see cref="CodeMessagePoster{TContext, TUser, TKey}"/>.
-	/// </summary>
-	///
-	/// <typeparam name="TContext">
-	/// 	Type of the DbContext.
-	/// </typeparam>
-	///
-	/// <typeparam name="TUser">
-	/// 	Type of the user.
-	/// </typeparam>
-	///
-	/// <typeparam name="TKey">
-	/// 	Type of the user primary key.
-	/// </typeparam>
 	///
 	/// <param name="builder">
 	/// 	The web app builder.
@@ -101,26 +44,26 @@ public static partial class WebBuilderExtensions
 	///
 	/// <param name="mailCodePosterParams">
 	/// 	The parameters used by the 
-	/// 	<see cref="CodeMessagePoster{TContext, TUser, TKey}"/>.
+	/// 	<see cref="MessagePoster{TContext, TUser}"/>.
 	/// </param>
 	///
 	/// <returns>
 	/// 	An <see cref="AuthenticationBuilder"/> for further configurations.
 	/// </returns>
-	public static AuthenticationBuilder AddAllPortunusServices<TContext, TUser, TKey>(
+	public static AuthenticationBuilder AddAllPortunusServices<TContext, TUser>(
 		this WebApplicationBuilder builder,
 		Action<DbContextOptionsBuilder> contextConfigurator,
 		TokenBuilderParams tokenBuilderParams,
-		CodeMessagePosterParams mailCodePosterParams
+		MessagePosterParams mailCodePosterParams
 	)
-	where TContext : ManagedUserDbContext<TUser, TKey>
-	where TUser : class, IManagedUser<TUser, TKey>
-	where TKey : IEquatable<TKey>
+	where TContext : ManagedUserDbContext<TUser>
+	where TUser : class, IManagedUser<TUser>
+	
 	{
 		builder.Services.AddDbContext<TContext>(contextConfigurator, ServiceLifetime.Singleton);
 		var authenticationBuilder = builder.AddTokenBuilder(tokenBuilderParams);
-		builder.AddMailCodePoster<TContext, TUser, TKey>(mailCodePosterParams);
-		builder.AddUsersManager<TContext, TUser, TKey>();
+		builder.AddMessagePoster<TContext, TUser>(mailCodePosterParams);
+		builder.AddUsersManager<TContext, TUser>();
 		return authenticationBuilder;
 	}
 }

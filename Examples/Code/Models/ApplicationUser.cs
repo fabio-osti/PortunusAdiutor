@@ -3,7 +3,7 @@ using PortunusAdiutor.Models;
 
 namespace PortunusCodeExample.Models
 {
-	public class ApplicationUser : Pbkdf2User<ApplicationUser, Guid>
+	public class ApplicationUser : Pbkdf2User<ApplicationUser>
 	{
 		public ApplicationUser(
 			string email,

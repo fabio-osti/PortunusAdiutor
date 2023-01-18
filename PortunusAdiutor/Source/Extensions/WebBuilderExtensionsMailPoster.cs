@@ -11,7 +11,7 @@ namespace PortunusAdiutor.Extensions;
 public static partial class WebBuilderExtensions
 {
 	/// <summary>
-	/// 	Adds <see cref="CodeMessagePoster{TContext, TUser, TKey}"/>
+	/// 	Adds <see cref="MessagePoster{TContext, TUser}"/>
 	/// 	to the <see cref="ServiceCollection"/>.
 	/// </summary>
 	///
@@ -23,9 +23,6 @@ public static partial class WebBuilderExtensions
 	/// 	Type of the user.
 	/// </typeparam>
 	///
-	/// <typeparam name="TKey">
-	/// 	Type of the user primary key.
-	/// </typeparam>
 	///
 	/// <param name="builder">
 	/// 	The web app builder.
@@ -33,59 +30,18 @@ public static partial class WebBuilderExtensions
 	///
 	/// <param name="mailParams">
 	/// 	The parameters used by the 
-	/// 	<see cref="CodeMessagePoster{TContext, TUser, TKey}"/>.
+	/// 	<see cref="MessagePoster{TContext, TUser}"/>.
 	/// </param>
-	public static void AddMailCodePoster<TContext, TUser, TKey>(
+	public static void AddMessagePoster<TContext, TUser>(
 		this WebApplicationBuilder builder,
-		CodeMessagePosterParams mailParams
+		MessagePosterParams mailParams
 	)
-	where TContext : ManagedUserDbContext<TUser, TKey>
-	where TUser : class, IManagedUser<TUser, TKey>
-	where TKey : IEquatable<TKey>
+	where TContext : ManagedUserDbContext<TUser>
+	where TUser : class, IManagedUser<TUser>
+	
 	{
-		builder.Services.AddSingleton<IMessagePoster<TUser, TKey>>(
-			e => new CodeMessagePoster<TContext, TUser, TKey>(
-				mailParams,
-				e.GetRequiredService<TContext>()
-			)
-		);
-	}
-
-	/// <summary>
-	/// 	Adds <see cref="LinkMessagePoster{TContext, TUser, TKey}"/> 
-	/// 	to the <see cref="ServiceCollection"/>.
-	/// </summary>
-	///
-	/// <typeparam name="TContext">
-	/// 	Type of the DbContext.
-	/// </typeparam>
-	///
-	/// <typeparam name="TUser">
-	/// 	Type of the user.
-	/// </typeparam>
-	///
-	/// <typeparam name="TKey">
-	/// 	Type of the user primary key.
-	/// </typeparam>
-	///
-	/// <param name="builder">
-	/// 	The web app builder.
-	/// </param>
-	///
-	/// <param name="mailParams">
-	/// 	The parameters used by the 
-	/// 	<see cref="LinkMessagePoster{TContext, TUser, TKey}"/>.
-	/// </param>
-	public static void AddMailLinkPoster<TContext, TUser, TKey>(
-		this WebApplicationBuilder builder,
-		LinkMessagePosterParams mailParams
-	)
-	where TContext : ManagedUserDbContext<TUser, TKey>
-	where TUser : class, IManagedUser<TUser, TKey>	
-	where TKey : IEquatable<TKey>
-	{
-		builder.Services.AddSingleton<IMessagePoster<TUser, TKey>>(
-			e => new LinkMessagePoster<TContext, TUser, TKey>(
+		builder.Services.AddSingleton<IMessagePoster<TUser>>(
+			e => new MessagePoster<TContext, TUser>(
 				mailParams,
 				e.GetRequiredService<TContext>()
 			)

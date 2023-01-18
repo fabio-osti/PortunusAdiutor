@@ -14,12 +14,9 @@ namespace PortunusAdiutor.Data;
 /// 	Type of the user.
 /// </typeparam>
 ///
-/// <typeparam name="TKey">
-/// 	Type of the user primary key.
-/// </typeparam>
-public class ManagedUserDbContext<TUser, TKey> : DbContext
-where TUser : class, IManagedUser<TUser, TKey>
-where TKey : IEquatable<TKey>
+public class ManagedUserDbContext<TUser> : DbContext
+where TUser : class, IManagedUser<TUser>
+
 {
 #pragma warning disable CS8618
 	/// <summary>
@@ -44,7 +41,7 @@ where TKey : IEquatable<TKey>
 	/// 	Gets or sets the <see cref="DbSet{TEntity}"/> 
 	/// 	containing all SingleUseTokens.
 	/// </summary>
-	public DbSet<SingleUseToken<TUser, TKey>> SingleUseTokens { get; protected set; }
+	public DbSet<SingleUseToken<TUser>> SingleUseTokens { get; protected set; }
 
 	/// <inheritdoc/>
 	protected override void OnModelCreating(ModelBuilder builder)
@@ -55,7 +52,7 @@ where TKey : IEquatable<TKey>
 		usrBuilder.
 			HasKey(e => e.Id);
 
-		var sutBuilder = builder.Entity<SingleUseToken<TUser, TKey>>();
+		var sutBuilder = builder.Entity<SingleUseToken<TUser>>();
 
 		sutBuilder
 			.HasKey(e => e.Token);

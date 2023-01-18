@@ -6,19 +6,19 @@ using PortunusAdiutor.Models;
 using PortunusAdiutor.Static;
 
 /// <summary>
-/// 	Extensions on <see cref="ManagedUserDbContext{TUser, TKey}"/>.
+/// 	Extensions on <see cref="ManagedUserDbContext{TUser}"/>.
 /// </summary>
 static public class ManagedUserDbContextExtensions
 {
 	/// <summary>
-	/// 	Generates a <see cref="SingleUseToken{TUser, TKey}"/> for an 
-	/// 	<see cref="IManagedUser{TUser, TKey}"/> for an access of type 
+	/// 	Generates a <see cref="SingleUseToken{TUser}"/> for an 
+	/// 	<see cref="IManagedUser{TUser}"/> for an access of type 
 	/// 	<paramref name="type"/> and saves it on the database.
 	/// </summary>
 	/// <param name="context"></param>
 	///
 	/// <param name="userId">
-	/// 	Id of the <see cref="IManagedUser{TUser, TKey}"/>.
+	/// 	Id of the <see cref="IManagedUser{TUser}"/>.
 	/// </param>
 	///
 	/// <param name="type">
@@ -30,20 +30,20 @@ static public class ManagedUserDbContextExtensions
 	/// </param>
 	///
 	/// <returns>
-	/// 	The generated <see cref="SingleUseToken{TUser, TKey}"/>.
+	/// 	The generated <see cref="SingleUseToken{TUser}"/>.
 	/// </returns>
-	static public SingleUseToken<TUser, TKey> GenAndSaveToken<TUser, TKey>(
-		this ManagedUserDbContext<TUser, TKey> context,
-		TKey userId,
+	static public SingleUseToken<TUser> GenAndSaveToken<TUser>(
+		this ManagedUserDbContext<TUser> context,
+		Guid userId,
 		MessageType type,
 		out string xdc
 	)
-	where TUser : class, IManagedUser<TUser, TKey>
-	where TKey : IEquatable<TKey>
+	where TUser : class, IManagedUser<TUser>
+	
 	{
 		xdc = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
 
-		var userSut = new SingleUseToken<TUser, TKey>(userId, xdc, type.ToTypeString());
+		var userSut = new SingleUseToken<TUser>(userId, xdc, type.ToTypeString());
 
 		context.SingleUseTokens.Add(userSut);
 		context.SaveChanges();
@@ -73,31 +73,31 @@ static public class ManagedUserDbContextExtensions
 	/// <returns>
 	/// 	The key of the user to whom the token gives access to.
 	/// </returns>
-	static public TKey ConsumeToken<TUser, TKey>(
-		this ManagedUserDbContext<TUser, TKey> context,
+	static public Guid ConsumeToken<TUser>(
+		this ManagedUserDbContext<TUser> context,
 		string token,
 		MessageType messageType,
 		bool singleUse = true
 	)
-	where TUser : class, IManagedUser<TUser, TKey>
-	where TKey : IEquatable<TKey>
+	where TUser : class, IManagedUser<TUser>
+	
 	{
-		var SingleuseToken = context.SingleUseTokens.Find(token);
+		var SingleUseToken = context.SingleUseTokens.Find(token);
 
-		if (SingleuseToken is null) {
+		if (SingleUseToken is null) {
 			throw new TokenNotFoundException();
 		}
 
 		var type = messageType.ToTypeString();
-		if (SingleuseToken.ExpiresOn < DateTime.UtcNow || SingleuseToken.Type != type) {
+		if (SingleUseToken.ExpiresOn < DateTime.UtcNow || SingleUseToken.Type != type) {
 			throw new InvalidPasswordException();
 		}
 
 		if (singleUse) {
-			context.SingleUseTokens.Remove(SingleuseToken);
+			context.SingleUseTokens.Remove(SingleUseToken);
 		}
 		context.SaveChanges();
 
-		return SingleuseToken.UserId;
+		return SingleUseToken.UserId;
 	}
 }

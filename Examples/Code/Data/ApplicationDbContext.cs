@@ -4,7 +4,7 @@ using PortunusCodeExample.Models;
 
 namespace PortunusCodeExample.Data
 {
-	public class ApplicationDbContext : ManagedUserDbContext<ApplicationUser, Guid>
+	public class ApplicationDbContext : ManagedUserDbContext<ApplicationUser>
 	{
 #pragma warning disable CS8618
 		public ApplicationDbContext(DbContextOptions options) : base(options) { }

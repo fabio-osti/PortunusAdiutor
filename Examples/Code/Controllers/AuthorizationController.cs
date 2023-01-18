@@ -17,12 +17,12 @@ namespace PortunusCodeExample.Controllers
 	{
 		private readonly ILogger<AuthorizationController> _logger;
 		private readonly ApplicationDbContext _context;
-		private readonly IUsersManager<ApplicationUser, Guid> _userManager;
+		private readonly IUsersManager<ApplicationUser> _userManager;
 
 		public AuthorizationController(
 			ILogger<AuthorizationController> logger,
 			ApplicationDbContext context,
-			IUsersManager<ApplicationUser, Guid> userManager
+			IUsersManager<ApplicationUser> userManager
 		)
 		{
 			_logger = logger;
@@ -139,7 +139,7 @@ namespace PortunusCodeExample.Controllers
 
 				var user = _userManager.FindUser(e => e.Email == credentials.Email);
 				var token =
-					SingleUseToken<ApplicationUser, Guid>.GetTokenFrom(
+					SingleUseToken<ApplicationUser>.GetTokenFrom(
 						user.Id,
 						credentials.Xdc,
 						MessageTypes.EmailConfirmation
@@ -164,7 +164,7 @@ namespace PortunusCodeExample.Controllers
 
 				var user = _userManager.FindUser(e => e.Email == credentials.Email);
 				var token =
-					SingleUseToken<ApplicationUser, Guid>.GetTokenFrom(
+					SingleUseToken<ApplicationUser>.GetTokenFrom(
 						user.Id,
 						credentials.Xdc!,
 						MessageTypes.PasswordRedefinition

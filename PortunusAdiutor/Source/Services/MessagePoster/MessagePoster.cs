@@ -8,6 +8,7 @@ using PortunusAdiutor.Static;
 namespace PortunusAdiutor.Services.MessagePoster;
 
 /// <summary>
+/// 	Implementation of <see cref="IMessagePoster{TUser}"/> 
 /// 	with access code.
 /// </summary>
 ///
@@ -19,6 +20,10 @@ namespace PortunusAdiutor.Services.MessagePoster;
 /// 	Type of the user.
 /// </typeparam>
 ///
+public class MessagePoster<TContext, TUser> : IMessagePoster<TUser>
+where TContext : ManagedUserDbContext<TUser>
+where TUser : class, IManagedUser<TUser>
+
 {
 	private readonly MessagePosterParams _posterParams;
 	private readonly TContext _context;

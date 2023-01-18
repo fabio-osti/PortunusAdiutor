@@ -11,11 +11,8 @@ namespace PortunusAdiutor.Models;
 /// 	Type of the user.
 /// </typeparam>
 ///
-/// <typeparam name="TKey">
-/// 	Type of the user primary key.
-/// </typeparam>
-public interface IManagedUser<TUser, TKey>
-where TKey : IEquatable<TKey>
+public interface IManagedUser<TUser>
+
 {
 	/// <summary>
 	/// 	Sets an user password to <paramref name="password"/>.
@@ -49,7 +46,7 @@ where TKey : IEquatable<TKey>
 	/// <summary>
 	/// 	Gets or sets the id.
 	/// </summary>
-	TKey Id { get; set; }
+	Guid Id { get; set; }
 
 	/// <summary>
 	/// 	Gets or sets if this user email is confirmed.
@@ -72,7 +69,7 @@ where TKey : IEquatable<TKey>
 	Claim[] GetClaims();
 
 	/// <summary>
-	/// 	Gets or sets <see cref="SingleUseToken{TUser, TKey}"/> related to this user.
+	/// 	Gets or sets <see cref="SingleUseToken{TUser}"/> related to this user.
 	/// </summary>
-	ICollection<SingleUseToken<TUser, TKey>>? SingleUseTokens { get; set; }
+	ICollection<SingleUseToken<TUser>>? SingleUseTokens { get; set; }
 }

@@ -4,7 +4,7 @@ An identity-less helper with setting up JWT authorization.
 
 ## Creating a DbContext and User model
 
-The user model must implement IManagedUser\<TUser, TKey>, the recommended way is trough inheritance of any implementation provided by this library.
+The user model must implement IManagedUser\<TUser>, the recommended way is trough inheritance of any implementation provided by this library.
 
 Example:
 ```csharp
@@ -39,7 +39,7 @@ public class ApplicationUser : Pbkdf2User<ApplicationUser, Guid>
 }
 ```
 
-The context must inherit from ManagedUserDbContext\<TUser, TKey>.
+The context must inherit from ManagedUserDbContext\<TUser>.
 
 Example:
 ```csharp
@@ -52,7 +52,7 @@ public class ApplicationDbContext : ManagedUserDbContext<ApplicationUser, Guid>
 
 ## Adding it to your app
 
-The recommended way of providing the services to your app is through the AddAllPortunusServices\<TContext, TUser, TKey> extensions method on the app builder.
+The recommended way of providing the services to your app is through the AddAllPortunusServices\<TContext, TUser> extensions method on the app builder.
 
 Example:
 ```csharp
@@ -93,7 +93,7 @@ builder.Services.AddAuthorization(
 
 ## Usage
 
-To use it, inject the IUserManager\<TUser, TKey> and ITokenBuilder.
+To use it, inject the IUserManager\<TUser> and ITokenBuilder.
 
 Exceptions caused by invalid user interactions (such as signing in with the wrong password or signing up with a duplicate email) are treated with PortunusException.
 

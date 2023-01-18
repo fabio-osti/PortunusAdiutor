@@ -14,11 +14,8 @@ namespace PortunusAdiutor.Models;
 /// 	Type of the user.
 /// </typeparam>
 ///
-/// <typeparam name="TKey">
-/// 	Type of the user primary key.
-/// </typeparam>
-public class SingleUseToken<TUser, TKey>
-where TKey : IEquatable<TKey>
+public class SingleUseToken<TUser>
+
 {
 	/// <summary>
 	/// 	Gets a unique token representing the <paramref name="userId"/>, 
@@ -41,7 +38,7 @@ where TKey : IEquatable<TKey>
 	/// <returns>
 	/// 	The token.
 	/// </returns>
-	public static string GetTokenFrom(TKey userId, string xdc, string type)
+	public static string GetTokenFrom(Guid userId, string xdc, string type)
 	{
 		var concat = Encoding.UTF8.GetBytes(userId.ToString() + type + xdc);
 		return Base64UrlEncoder.Encode(SHA512.HashData(concat));
@@ -63,7 +60,7 @@ where TKey : IEquatable<TKey>
 	/// 	The string representation of the <see cref="MessageType"/> 
 	/// 	that will include this token.
 	/// </param>
-	public SingleUseToken(TKey userId, string xdc, string type)
+	public SingleUseToken(Guid userId, string xdc, string type)
 	{
 		Token = GetTokenFrom(userId, xdc, type);
 		UserId = userId;
@@ -71,7 +68,7 @@ where TKey : IEquatable<TKey>
 		ExpiresOn = DateTime.UtcNow.AddMinutes(15);
 	}
 
-	private SingleUseToken(TKey userId, string token, string type, DateTime expiresOn)
+	private SingleUseToken(Guid userId, string token, string type, DateTime expiresOn)
 	{
 		UserId = userId;
 		Token = token;
@@ -80,16 +77,16 @@ where TKey : IEquatable<TKey>
 	}
 
 	/// <summary>
-	///  	The user this <see cref="SingleUseToken{TUser, TKey}"/> 
+	///  	The user this <see cref="SingleUseToken{TUser}"/> 
 	///  	gives access to.
 	/// </summary>
 	public TUser? User { get; init; }
 
 	/// <summary>
 	/// 	The primary key of the user this 
-	/// 	<see cref="SingleUseToken{TUser, TKey}"/> gives access to.
+	/// 	<see cref="SingleUseToken{TUser}"/> gives access to.
 	/// </summary>
-	public TKey UserId { get; init; }
+	public Guid UserId { get; init; }
 
 	/// <summary>
 	/// 	The one use password.
@@ -98,13 +95,13 @@ where TKey : IEquatable<TKey>
 
 	/// <summary>
 	/// 	The type of access given to
-	/// 	by this <see cref="SingleUseToken{TUser, TKey}"/>.
+	/// 	by this <see cref="SingleUseToken{TUser}"/>.
 	/// </summary>
 	public string Type { get; init; }
 
 	/// <summary>
 	///		Expiration <see cref="DateTime"/> 
-	///		of this <see cref="SingleUseToken{TUser, TKey}"/>.
+	///		of this <see cref="SingleUseToken{TUser}"/>.
 	/// </summary>
 	public DateTime ExpiresOn { get; init; }
 }
