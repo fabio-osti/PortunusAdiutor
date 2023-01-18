@@ -132,5 +132,5 @@ where TUser : Pbkdf2User<TUser>
 	}
 
 	/// <inheritdoc/>
-	public ICollection<SingleUseToken<TUser>>? SingleUseTokens { get; set; }
+	public ICollection<UserToken<TUser>>? UserTokens { get; set; }
 }

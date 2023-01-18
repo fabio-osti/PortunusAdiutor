@@ -39,9 +39,9 @@ where TUser : class, IManagedUser<TUser>
 
 	/// <summary>
 	/// 	Gets or sets the <see cref="DbSet{TEntity}"/> 
-	/// 	containing all SingleUseTokens.
+	/// 	containing all UserTokens.
 	/// </summary>
-	public DbSet<SingleUseToken<TUser>> SingleUseTokens { get; protected set; }
+	public DbSet<UserToken<TUser>> UserTokens { get; protected set; }
 
 	/// <inheritdoc/>
 	protected override void OnModelCreating(ModelBuilder builder)
@@ -52,14 +52,14 @@ where TUser : class, IManagedUser<TUser>
 		usrBuilder.
 			HasKey(e => e.Id);
 
-		var sutBuilder = builder.Entity<SingleUseToken<TUser>>();
+		var sutBuilder = builder.Entity<UserToken<TUser>>();
 
 		sutBuilder
 			.HasKey(e => e.Token);
 
 		sutBuilder
 			.HasOne<TUser>(e => e.User)
-			.WithMany(e => e.SingleUseTokens);
+			.WithMany(e => e.UserTokens);
 
 	}
 }

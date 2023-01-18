@@ -230,7 +230,7 @@ public class AuthorizationController : ControllerBase
 
 			var user = _userManager.FindUser(e => e.Email == credentials.Email);
 			var token =
-				SingleUseToken<ApplicationUser, Guid>.GetTokenFrom(
+				UserToken<ApplicationUser, Guid>.GetTokenFrom(
 					user.Id,
 					credentials.Xdc,
 					MessageTypes.EmailConfirmation
@@ -255,7 +255,7 @@ public class AuthorizationController : ControllerBase
 
 			var user = _userManager.FindUser(e => e.Email == credentials.Email);
 			var token =
-				SingleUseToken<ApplicationUser, Guid>.GetTokenFrom(
+				UserToken<ApplicationUser, Guid>.GetTokenFrom(
 					user.Id,
 					credentials.Xdc!,
 					MessageTypes.PasswordRedefinition
@@ -276,12 +276,12 @@ public class AuthorizationController : ControllerBase
 }
 ```
 
-## SingleUseTokens and IMessagePoster
+## UserTokens and IMessagePoster
 
 For password redefinition and email confirmation (and in the future, two-steps-authentication) this library provides two strategies to work with:
 
-- CodeMessagePoster: which sends a message to the user email containing a 6 digits code that can be consumed, along the UserID and the type of message that was sent, to rebuild the SingleUseToken, that should be used within the app.
-- LinkMessagePoster: which sends a link of an endpoint appended to the SingleUseToken directly that should perform the desired operation.
+- CodeMessagePoster: which sends a message to the user email containing a 6 digits code that can be consumed, along the UserID and the type of message that was sent, to rebuild the UserToken, that should be used within the app.
+- LinkMessagePoster: which sends a link of an endpoint appended to the UserToken directly that should perform the desired operation.
 
 ## See more
 

@@ -69,7 +69,7 @@ public interface IManagedUser<TUser>
 	Claim[] GetClaims();
 
 	/// <summary>
-	/// 	Gets or sets <see cref="SingleUseToken{TUser}"/> related to this user.
+	/// 	Gets or sets <see cref="UserToken{TUser}"/> related to this user.
 	/// </summary>
-	ICollection<SingleUseToken<TUser>>? SingleUseTokens { get; set; }
+	ICollection<UserToken<TUser>>? UserTokens { get; set; }
 }

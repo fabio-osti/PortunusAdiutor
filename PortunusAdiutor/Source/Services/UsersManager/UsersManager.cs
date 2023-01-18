@@ -99,10 +99,10 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 	}
 
 	/// <inheritdoc/>
-	public TUser ConfirmEmail(string singleUseToken)
+	public TUser ConfirmEmail(string userToken)
 	{
 		var userId = _context.ConsumeToken(
-			singleUseToken,
+			userToken,
 			MessageType.EmailConfirmation
 		);
 		var user = _context.Users.Find(userId);
@@ -126,12 +126,12 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 
 	/// <inheritdoc/>
 	public TUser RedefinePassword(
-		string singleUseToken,
+		string userToken,
 		string newPassword
 	)
 	{
 		var userId = _context.ConsumeToken(
-			singleUseToken,
+			userToken,
 			MessageType.PasswordRedefinition
 		);
 		var user = _context.Users.Find(userId);

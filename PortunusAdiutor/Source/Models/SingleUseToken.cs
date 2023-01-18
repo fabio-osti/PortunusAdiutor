@@ -14,8 +14,7 @@ namespace PortunusAdiutor.Models;
 /// 	Type of the user.
 /// </typeparam>
 ///
-public class SingleUseToken<TUser>
-
+public class UserToken<TUser>
 {
 	/// <summary>
 	/// 	Gets a unique token representing the <paramref name="userId"/>, 
@@ -60,7 +59,7 @@ public class SingleUseToken<TUser>
 	/// 	The string representation of the <see cref="MessageType"/> 
 	/// 	that will include this token.
 	/// </param>
-	public SingleUseToken(Guid userId, string xdc, string type)
+	public UserToken(Guid userId, string xdc, string type)
 	{
 		Token = GetTokenFrom(userId, xdc, type);
 		UserId = userId;
@@ -68,7 +67,7 @@ public class SingleUseToken<TUser>
 		ExpiresOn = DateTime.UtcNow.AddMinutes(15);
 	}
 
-	private SingleUseToken(Guid userId, string token, string type, DateTime expiresOn)
+	private UserToken(Guid userId, string token, string type, DateTime expiresOn)
 	{
 		UserId = userId;
 		Token = token;
@@ -77,14 +76,14 @@ public class SingleUseToken<TUser>
 	}
 
 	/// <summary>
-	///  	The user this <see cref="SingleUseToken{TUser}"/> 
+	///  	The user this <see cref="UserToken{TUser}"/> 
 	///  	gives access to.
 	/// </summary>
 	public TUser? User { get; init; }
 
 	/// <summary>
 	/// 	The primary key of the user this 
-	/// 	<see cref="SingleUseToken{TUser}"/> gives access to.
+	/// 	<see cref="UserToken{TUser}"/> gives access to.
 	/// </summary>
 	public Guid UserId { get; init; }
 
@@ -95,13 +94,13 @@ public class SingleUseToken<TUser>
 
 	/// <summary>
 	/// 	The type of access given to
-	/// 	by this <see cref="SingleUseToken{TUser}"/>.
+	/// 	by this <see cref="UserToken{TUser}"/>.
 	/// </summary>
 	public string Type { get; init; }
 
 	/// <summary>
 	///		Expiration <see cref="DateTime"/> 
-	///		of this <see cref="SingleUseToken{TUser}"/>.
+	///		of this <see cref="UserToken{TUser}"/>.
 	/// </summary>
 	public DateTime ExpiresOn { get; init; }
 }

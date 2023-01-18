@@ -11,7 +11,7 @@ using PortunusAdiutor.Static;
 static public class ManagedUserDbContextExtensions
 {
 	/// <summary>
-	/// 	Generates a <see cref="SingleUseToken{TUser}"/> for an 
+	/// 	Generates a <see cref="UserToken{TUser}"/> for an 
 	/// 	<see cref="IManagedUser{TUser}"/> for an access of type 
 	/// 	<paramref name="type"/> and saves it on the database.
 	/// </summary>
@@ -30,9 +30,9 @@ static public class ManagedUserDbContextExtensions
 	/// </param>
 	///
 	/// <returns>
-	/// 	The generated <see cref="SingleUseToken{TUser}"/>.
+	/// 	The generated <see cref="UserToken{TUser}"/>.
 	/// </returns>
-	static public SingleUseToken<TUser> GenAndSaveToken<TUser>(
+	static public UserToken<TUser> GenAndSaveToken<TUser>(
 		this ManagedUserDbContext<TUser> context,
 		Guid userId,
 		MessageType type,
@@ -43,9 +43,9 @@ static public class ManagedUserDbContextExtensions
 	{
 		xdc = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
 
-		var userSut = new SingleUseToken<TUser>(userId, xdc, type.ToTypeString());
+		var userSut = new UserToken<TUser>(userId, xdc, type.ToTypeString());
 
-		context.SingleUseTokens.Add(userSut);
+		context.UserTokens.Add(userSut);
 		context.SaveChanges();
 
 		return userSut;
@@ -82,22 +82,22 @@ static public class ManagedUserDbContextExtensions
 	where TUser : class, IManagedUser<TUser>
 	
 	{
-		var SingleUseToken = context.SingleUseTokens.Find(token);
+		var UserToken = context.UserTokens.Find(token);
 
-		if (SingleUseToken is null) {
+		if (UserToken is null) {
 			throw new TokenNotFoundException();
 		}
 
 		var type = messageType.ToTypeString();
-		if (SingleUseToken.ExpiresOn < DateTime.UtcNow || SingleUseToken.Type != type) {
+		if (UserToken.ExpiresOn < DateTime.UtcNow || UserToken.Type != type) {
 			throw new InvalidPasswordException();
 		}
 
 		if (singleUse) {
-			context.SingleUseTokens.Remove(SingleUseToken);
+			context.UserTokens.Remove(UserToken);
 		}
 		context.SaveChanges();
 
-		return SingleUseToken.UserId;
+		return UserToken.UserId;
 	}
 }

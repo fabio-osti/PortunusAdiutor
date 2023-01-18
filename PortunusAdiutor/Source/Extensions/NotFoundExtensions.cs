@@ -8,7 +8,7 @@ namespace PortunusAdiutor.Extensions;
 /// 	Extensions to throw when 
 /// 	<see cref="IManagedUser{TUser}"/>
 /// 	or
-/// 	<see cref="SingleUseToken{TUser}"/>
+/// 	<see cref="UserToken{TUser}"/>
 /// 	are not found (null)
 /// </summary>
 static public class NotFoundExtensions
@@ -60,8 +60,8 @@ static public class NotFoundExtensions
 	/// <exception cref="UserNotFoundException">
 	/// 	Throws if <paramref name="token"/> is null.
 	/// </exception>
-	public static SingleUseToken<TUser> ThrowIfTokenNull<TUser>(
-		[NotNull] this SingleUseToken<TUser>? token
+	public static UserToken<TUser> ThrowIfTokenNull<TUser>(
+		[NotNull] this UserToken<TUser>? token
 	)
 	where TUser : class, IManagedUser<TUser>
 	

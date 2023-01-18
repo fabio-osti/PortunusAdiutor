@@ -139,7 +139,7 @@ namespace PortunusCodeExample.Controllers
 
 				var user = _userManager.FindUser(e => e.Email == credentials.Email);
 				var token =
-					SingleUseToken<ApplicationUser>.GetTokenFrom(
+					UserToken<ApplicationUser>.GetTokenFrom(
 						user.Id,
 						credentials.Xdc,
 						MessageTypes.EmailConfirmation
@@ -164,7 +164,7 @@ namespace PortunusCodeExample.Controllers
 
 				var user = _userManager.FindUser(e => e.Email == credentials.Email);
 				var token =
-					SingleUseToken<ApplicationUser>.GetTokenFrom(
+					UserToken<ApplicationUser>.GetTokenFrom(
 						user.Id,
 						credentials.Xdc!,
 						MessageTypes.PasswordRedefinition
