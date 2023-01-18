@@ -75,6 +75,9 @@ where TUser : Pbkdf2User<TUser>
 	}
 
 	/// <inheritdoc/>
+	public Guid Id { get; set; }
+
+	/// <inheritdoc/>
 	[MemberNotNull(nameof(Salt), nameof(PasswordHash))]
 	public void SetPassword(string password)
 	{
@@ -90,18 +93,6 @@ where TUser : Pbkdf2User<TUser>
 		return PasswordHash == DeriveKey(password);
 	}
 
-	private string DeriveKey(string password)
-	{
-		var hashed = KeyDerivation.Pbkdf2(
-			password,
-			Salt,
-			DefaultPrf,
-			DefaultIterCount,
-			DefaultHashedSize
-		);
-		return Convert.ToBase64String(hashed);
-	}
-
 	/// <inheritdoc/>
 	public string Email { get; set; }
 
@@ -109,13 +100,13 @@ where TUser : Pbkdf2User<TUser>
 	public string PasswordHash { get; set; }
 
 	/// <inheritdoc/>
-	public Guid Id { get; set; }
+	public byte[] Salt { get; set; }
 
 	/// <inheritdoc/>
 	public bool EmailConfirmed { get; set; }
 
 	/// <inheritdoc/>
-	public byte[] Salt { get; set; }
+	public bool TwoFactorAuthenticationEnabled { get; set; }
 
 	/// <inheritdoc/>
 	public virtual Claim[] GetClaims()
@@ -132,4 +123,16 @@ where TUser : Pbkdf2User<TUser>
 
 	/// <inheritdoc/>
 	public ICollection<UserToken<TUser>>? UserTokens { get; set; }
+	
+	private string DeriveKey(string password)
+	{
+		var hashed = KeyDerivation.Pbkdf2(
+			password,
+			Salt,
+			DefaultPrf,
+			DefaultIterCount,
+			DefaultHashedSize
+		);
+		return Convert.ToBase64String(hashed);
+	}
 }

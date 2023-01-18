@@ -13,6 +13,11 @@ namespace PortunusAdiutor.Models;
 public interface IManagedUser<TUser>
 {
 	/// <summary>
+	/// 	Gets or sets the id.
+	/// </summary>
+	Guid Id { get; set; }
+
+	/// <summary>
 	/// 	Sets an user password to <paramref name="password"/>.
 	/// </summary>
 	///
@@ -32,19 +37,20 @@ public interface IManagedUser<TUser>
 	bool ValidatePassword(string password);
 
 	/// <summary>
-	/// 	Gets or sets the email.
-	/// </summary>
-	string Email { get; set; }
-
-	/// <summary>
 	/// 	Gets or sets the hashed password.
 	/// </summary>
 	string PasswordHash { get; set; }
 
 	/// <summary>
-	/// 	Gets or sets the id.
+	/// 	Gets or sets the salt used by <see cref="SetPassword(string)"/>
+	/// 	and <see cref="ValidatePassword(string)"/>.
 	/// </summary>
-	Guid Id { get; set; }
+	byte[] Salt { get; set; }
+
+	/// <summary>
+	/// 	Gets or sets the email.
+	/// </summary>
+	string Email { get; set; }
 
 	/// <summary>
 	/// 	Gets or sets if this user email is confirmed.
@@ -52,10 +58,9 @@ public interface IManagedUser<TUser>
 	bool EmailConfirmed { get; set; }
 
 	/// <summary>
-	/// 	Gets or sets the salt used by <see cref="SetPassword(string)"/>
-	/// 	and <see cref="ValidatePassword(string)"/>.
-	/// </summary>
-	byte[] Salt { get; set; }
+	/// 	Gets or sets if this user has 2FA enabled.
+	/// </summary>	
+	bool TwoFactorAuthenticationEnabled { get; set; }
 
 	/// <summary>
 	/// 	Gets a collection of this user <see cref="Claim"/>.
