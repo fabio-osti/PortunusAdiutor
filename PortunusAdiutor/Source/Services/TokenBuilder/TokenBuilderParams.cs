@@ -136,5 +136,7 @@ public class TokenBuilderParams
 	/// <summary>
 	/// 	Time to be added to current UTC time when building a token.
 	/// </summary>
-	public TimeSpan ExpirationTime { get; set; }
+	public TimeSpan ExpirationTime { get; set; } = defaultExpirationTime;
+
+	static private readonly TimeSpan defaultExpirationTime = new(2, 0, 0);
 }
