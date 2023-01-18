@@ -16,9 +16,9 @@ public static class MessageTypes
 	public const string PasswordRedefinition = "password-redefinition-token";
 
 	/// <summary>
-	/// 	Message of type "two steps authentication".
+	/// 	Message of type "two factor authentication".
 	/// </summary>
-	public const string TwoStepsAuthentication = "two-steps-token";
+	public const string TwoFactorAuthentication = "two-factor-token";
 
 	/// <summary>
 	///		Gets a string associated with <paramref name="messageType"/>.
@@ -39,7 +39,7 @@ public static class MessageTypes
 	messageType switch {
 		MessageType.EmailConfirmation => EmailConfirmation,
 		MessageType.PasswordRedefinition => PasswordRedefinition,
-		MessageType.TwoFactorAuthentication => TwoStepsAuthentication,
+		MessageType.TwoFactorAuthentication => TwoFactorAuthentication,
 		_ => throw new ArgumentOutOfRangeException(nameof(messageType))
 	};
 }

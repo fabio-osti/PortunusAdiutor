@@ -70,13 +70,30 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 	}
 
 	/// <inheritdoc/>
-	public TUser ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword)
+	public TUser ValidateUser(
+		Expression<Func<TUser, bool>> userFinder, 
+		string userPassword,
+		string? twoFactorCode = null
+	)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		user.ThrowIfUserNull<TUser>();
+		user.ThrowIfUserNull();
 
 		if (!user.ValidatePassword(userPassword)) {
 			throw new InvalidPasswordException();
+		}
+
+		if (user.TwoFactorAuthenticationEnabled) {
+			var token =	UserToken<TUser>.GetTokenFrom(
+				user.Id,
+				NotFoundExtensions.ThrowIf2FANull(twoFactorCode),
+				MessageTypes.TwoFactorAuthentication
+			);
+			_context.ConsumeToken(
+				token,
+				MessageType.TwoFactorAuthentication,
+				false
+			);
 		}
 
 		return user;
@@ -86,7 +103,7 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 	public TUser SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		user.ThrowIfUserNull<TUser>();
+		user.ThrowIfUserNull();
 
 		if (user.EmailConfirmed) {
 			throw new EmailAlreadyConfirmedException();
@@ -105,7 +122,7 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 			MessageType.EmailConfirmation
 		);
 		var user = _context.Users.Find(userId);
-		user.ThrowIfUserNull<TUser>();
+		user.ThrowIfUserNull();
 		user.EmailConfirmed = true;
 		_context.SaveChanges();
 
@@ -116,9 +133,20 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 	public TUser SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		user.ThrowIfUserNull<TUser>();
+		user.ThrowIfUserNull();
 
 		_mailPoster.SendPasswordRedefinitionMessage(user);
+
+		return user;
+	}
+
+	/// <inheritdoc/>
+	public TUser SendTwoFactorAuthentication(Expression<Func<TUser, bool>> userFinder)
+	{
+		var user = _context.Users.FirstOrDefault(userFinder);
+		user.ThrowIfUserNull();
+
+		_mailPoster.SendTwoFactorAuthenticationMessage(user);
 
 		return user;
 	}
@@ -134,7 +162,7 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 			MessageType.PasswordRedefinition
 		);
 		var user = _context.Users.Find(userId);
-		user.ThrowIfUserNull<TUser>();
+		user.ThrowIfUserNull();
 		user.SetPassword(newPassword);
 		_context.SaveChanges();
 

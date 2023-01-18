@@ -4,6 +4,8 @@ using PortunusAdiutor.Models;
 
 namespace PortunusAdiutor.Services.UsersManager;
 
+// TODO: Use Maybe<TUser> as return type for most methods.
+
 /// <summary>
 /// 	Manages users on the database context.
 /// </summary>
@@ -30,7 +32,7 @@ where TUser : class, IManagedUser<TUser>
 	/// 	Created user.
 	/// </returns>
 	TUser CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder);
-	
+
 	/// <summary>
 	/// 	Validates an user.
 	/// </summary>
@@ -42,11 +44,19 @@ where TUser : class, IManagedUser<TUser>
 	/// <param name="userPassword">
 	/// 	Plain text password to be validated.
 	/// </param>
+	/// 
+	/// <param name="twoFactorCode">
+	/// 	Code for users with 2FA enabled.
+	/// </param>
 	///
 	/// <returns>
 	/// 	Validated user.
 	/// </returns>
-	TUser ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword);
+	TUser ValidateUser(
+		Expression<Func<TUser, bool>> userFinder, 
+		string userPassword,
+		string? twoFactorCode = null
+	);
 
 	/// <summary>
 	/// 	Sends a message to an user for email confirmation.
@@ -104,6 +114,19 @@ where TUser : class, IManagedUser<TUser>
 	/// </returns>
 	TUser RedefinePassword(string token, string newPassword);
 
+	/// <summary>
+	/// 	Sends a message to an user for 2FA.
+	/// </summary>
+	///
+	/// <param name="userFinder">
+	/// 	Predicate for finding the user.
+	/// </param>
+	///
+	/// <returns>
+	/// 	User to whom the 2FA message was sent.
+	/// </returns>
+	TUser SendTwoFactorAuthentication(Expression<Func<TUser, bool>> userFinder);
+	
 	/// <summary>
 	/// 	Helper to find an user on the DB.
 	/// </summary>
