@@ -22,7 +22,7 @@ static public class ManagedUserDbContextExtensions
 	/// </param>
 	///
 	/// <param name="type">
-	/// 	Type of access granted by the the returning SUT.
+	/// 	Type of access granted by the returning TOKEN.
 	/// </param>
 	///
 	/// <param name="xdc">
@@ -42,12 +42,12 @@ static public class ManagedUserDbContextExtensions
 	{
 		xdc = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
 
-		var userSut = new UserToken<TUser>(userId, xdc, type.ToTypeString());
+		var userToken = new UserToken<TUser>(userId, xdc, type.ToTypeString());
 
-		context.UserTokens.Add(userSut);
+		context.UserTokens.Add(userToken);
 		context.SaveChanges();
 
-		return userSut;
+		return userToken;
 	}
 
 	/// <summary>

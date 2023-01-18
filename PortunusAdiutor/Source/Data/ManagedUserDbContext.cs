@@ -45,17 +45,17 @@ where TUser : class, IManagedUser<TUser>
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
 		base.OnModelCreating(builder);
-		var usrBuilder = builder.Entity<TUser>();
+		var userBuilder = builder.Entity<TUser>();
 
-		usrBuilder.
+		userBuilder.
 			HasKey(e => e.Id);
 
-		var sutBuilder = builder.Entity<UserToken<TUser>>();
+		var tokenBuilder = builder.Entity<UserToken<TUser>>();
 
-		sutBuilder
+		tokenBuilder
 			.HasKey(e => e.Token);
 
-		sutBuilder
+		tokenBuilder
 			.HasOne<TUser>(e => e.User)
 			.WithMany(e => e.UserTokens);
 
