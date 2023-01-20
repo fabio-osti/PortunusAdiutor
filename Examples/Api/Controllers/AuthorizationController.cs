@@ -66,7 +66,7 @@ namespace PortunusCodeExample.Controllers
 						credentials.Email.Substring(credentials.Email.Length-3) == "adm"
 					)
 				);
-
+				_userManager.SendEmailConfirmation(e => e.Email == credentials.Email);
 				return Ok(_userManager.GetJwt(user));
 			} catch (PortunusException e) {
 				return Problem(e.ShortMessage);
