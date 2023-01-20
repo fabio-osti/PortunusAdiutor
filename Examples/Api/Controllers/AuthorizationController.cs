@@ -66,7 +66,7 @@ namespace PortunusCodeExample.Controllers
 						credentials.Email.Substring(credentials.Email.Length-3) == "adm"
 					)
 				);
-				_userManager.SendEmailConfirmation(e => e.Email == credentials.Email);
+				_userManager.SendEmailConfirmation(user);
 				return Ok(_userManager.GetJwt(user));
 			} catch (PortunusException e) {
 				return Problem(e.ShortMessage);
@@ -83,8 +83,9 @@ namespace PortunusCodeExample.Controllers
 				if (credentials.Email is null || credentials.Password is null)
 					return Problem("Email and Password can't be empty");
 
-				var user = _userManager.ValidateUser(
-					e => e.Email == credentials.Email,
+				var user = _userManager.FindUser(e => e.Email == credentials.Email);
+				_userManager.ValidateUser(
+					user,
 					credentials.Password,
 					credentials.Xdc
 				);
@@ -92,7 +93,9 @@ namespace PortunusCodeExample.Controllers
 				return Ok(_userManager.GetJwt(user));
 			} catch (Required2FAException) {
 				// Yes, I know, not best practices using exception for expected cases, will fix.
-				_userManager.SendTwoFactorAuthentication(e => e.Email == credentials.Email);
+				_userManager.SendTwoFactorAuthentication(
+					_userManager.FindUser(e => e.Email == credentials.Email)
+				);
 				return Accepted();
 			} catch (PortunusException e) {
 				return Problem(e.ShortMessage);
@@ -106,8 +109,9 @@ namespace PortunusCodeExample.Controllers
 		public IActionResult SendEmailConfirmation(string email)
 		{
 			try {
-				var user =
-					_userManager.SendEmailConfirmation(e => e.Email == email);
+				_userManager.SendEmailConfirmation(
+					_userManager.FindUser(e => e.Email == email)
+				);
 
 				return Ok();
 			} catch (PortunusException e) {
@@ -122,8 +126,9 @@ namespace PortunusCodeExample.Controllers
 		public IActionResult SendPasswordRedefinition(string email)
 		{
 			try {
-				var user =
-					_userManager.SendPasswordRedefinition(e => e.Email == email);
+				_userManager.SendPasswordRedefinition(
+					_userManager.FindUser(e => e.Email == email)
+				);
 
 				return Ok();
 			} catch (PortunusException e) {
@@ -149,7 +154,7 @@ namespace PortunusCodeExample.Controllers
 						credentials.Xdc,
 						MessageTypes.EmailConfirmation
 					);
-				var confirmedUser = _userManager.ConfirmEmail(token);
+				_userManager.ConfirmEmail(token);
 
 				return Ok();
 			} catch (PortunusException e) {
@@ -174,7 +179,7 @@ namespace PortunusCodeExample.Controllers
 						credentials.Xdc!,
 						MessageTypes.PasswordRedefinition
 					);
-				var redefinedUser = _userManager.RedefinePassword(
+				_userManager.RedefinePassword(
 					token,
 					credentials.Password!
 				);

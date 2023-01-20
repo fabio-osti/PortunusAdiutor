@@ -37,8 +37,8 @@ where TUser : class, IManagedUser<TUser>
 	/// 	Validates an user.
 	/// </summary>
 	///
-	/// <param name="userFinder">
-	/// 	Predicate for finding the user.
+	/// <param name="user">
+	/// 	User to be validated.
 	/// </param>
 	///
 	/// <param name="userPassword">
@@ -48,12 +48,8 @@ where TUser : class, IManagedUser<TUser>
 	/// <param name="twoFactorCode">
 	/// 	Code for users with 2FA enabled.
 	/// </param>
-	///
-	/// <returns>
-	/// 	Validated user.
-	/// </returns>
-	TUser ValidateUser(
-		Expression<Func<TUser, bool>> userFinder, 
+	void ValidateUser(
+		TUser user, 
 		string userPassword,
 		string? twoFactorCode = null
 	);
@@ -62,14 +58,14 @@ where TUser : class, IManagedUser<TUser>
 	/// 	Sends a message to an user for email confirmation.
 	/// </summary>
 	///
-	/// <param name="userFinder">
-	/// 	Predicate for finding the user.
+	/// <param name="user">
+	/// 	User to be sent the message.
 	/// </param>
 	///
 	/// <returns>
 	/// 	User to whom the email confirmation message was sent.
 	/// </returns>
-	TUser SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder);
+	void SendEmailConfirmation(TUser user);
 
 	/// <summary>
 	/// 	Confirm the email of the user to whom this <paramref name="token"/> belongs to.
@@ -82,20 +78,20 @@ where TUser : class, IManagedUser<TUser>
 	/// <returns>
 	/// 	User that had his email confirmed.
 	/// </returns>
-	TUser ConfirmEmail(string token);
+	void ConfirmEmail(string token);
 
 	/// <summary>
 	/// 	Sends a message to an user for password redefinition.
 	/// </summary>
 	///
-	/// <param name="userFinder">
-	/// 	Predicate for finding the user.
+	/// <param name="user">
+	/// 	User to be sent the message.
 	/// </param>
 	///
 	/// <returns>
 	/// 	User to whom the password redefinition message was sent.
 	/// </returns>
-	TUser SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder);
+	void SendPasswordRedefinition(TUser user);
 
 	/// <summary>
 	/// 	Redefines the password of the user to whom this <paramref name="token"/> belongs to.
@@ -112,20 +108,20 @@ where TUser : class, IManagedUser<TUser>
 	/// <returns>
 	/// 	User that had his password redefined.
 	/// </returns>
-	TUser RedefinePassword(string token, string newPassword);
+	void RedefinePassword(string token, string newPassword);
 
 	/// <summary>
 	/// 	Sends a message to an user for 2FA.
 	/// </summary>
 	///
-	/// <param name="userFinder">
-	/// 	Predicate for finding the user.
+	/// <param name="user">
+	/// 	User to be sent the message.
 	/// </param>
 	///
 	/// <returns>
 	/// 	User to whom the 2FA message was sent.
 	/// </returns>
-	TUser SendTwoFactorAuthentication(Expression<Func<TUser, bool>> userFinder);
+	void SendTwoFactorAuthentication(TUser user);
 	
 	/// <summary>
 	/// 	Helper to find an user on the DB.

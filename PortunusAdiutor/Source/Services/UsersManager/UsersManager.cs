@@ -69,15 +69,12 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 	}
 
 	/// <inheritdoc/>
-	public TUser ValidateUser(
-		Expression<Func<TUser, bool>> userFinder, 
+	public void ValidateUser(
+		TUser user, 
 		string userPassword,
 		string? twoFactorCode = null
 	)
 	{
-		var user = _context.Users.FirstOrDefault(userFinder);
-		user.ThrowIfUserNull();
-
 		if (!user.ValidatePassword(userPassword)) {
 			throw new InvalidPasswordException();
 		}
@@ -94,27 +91,20 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 				false
 			);
 		}
-
-		return user;
 	}
 
 	/// <inheritdoc/>
-	public TUser SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
+	public void SendEmailConfirmation(TUser user)
 	{
-		var user = _context.Users.FirstOrDefault(userFinder);
-		user.ThrowIfUserNull();
-
 		if (user.EmailConfirmed) {
 			throw new EmailAlreadyConfirmedException();
 		}
 
 		_mailPoster.SendEmailConfirmationMessage(user);
-
-		return user;
 	}
 
 	/// <inheritdoc/>
-	public TUser ConfirmEmail(string userToken)
+	public void ConfirmEmail(string userToken)
 	{
 		var userId = _context.ConsumeToken(
 			userToken,
@@ -124,34 +114,22 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 		user.ThrowIfUserNull();
 		user.EmailConfirmed = true;
 		_context.SaveChanges();
-
-		return user;
 	}
 
 	/// <inheritdoc/>
-	public TUser SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
+	public void SendPasswordRedefinition(TUser user)
 	{
-		var user = _context.Users.FirstOrDefault(userFinder);
-		user.ThrowIfUserNull();
-
 		_mailPoster.SendPasswordRedefinitionMessage(user);
-
-		return user;
 	}
 
 	/// <inheritdoc/>
-	public TUser SendTwoFactorAuthentication(Expression<Func<TUser, bool>> userFinder)
+	public void SendTwoFactorAuthentication(TUser user)
 	{
-		var user = _context.Users.FirstOrDefault(userFinder);
-		user.ThrowIfUserNull();
-
 		_mailPoster.SendTwoFactorAuthenticationMessage(user);
-
-		return user;
 	}
 
 	/// <inheritdoc/>
-	public TUser RedefinePassword(
+	public void RedefinePassword(
 		string userToken,
 		string newPassword
 	)
@@ -164,8 +142,6 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 		user.ThrowIfUserNull();
 		user.SetPassword(newPassword);
 		_context.SaveChanges();
-
-		return user;
 	}
 
 	/// <inheritdoc/>
