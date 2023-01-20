@@ -64,7 +64,6 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 		}
 
 		var user = _context.Users.Add(userBuilder()).Entity;
-		_mailPoster.SendEmailConfirmationMessage(user);
 		_context.SaveChanges();
 		return user;
 	}
