@@ -1,13 +1,9 @@
-using System.Security.Cryptography;
-using System.Text;
-
-using Microsoft.IdentityModel.Tokens;
 using PortunusAdiutor.Static;
 
 namespace PortunusAdiutor.Models;
 
 /// <summary>
-/// 	Class representing a single use password for special access.
+/// 	Class representing a password for special access.
 /// </summary>
 ///
 /// <typeparam name="TUser">
@@ -31,7 +27,7 @@ public class UserToken<TUser>
 	/// 	The string representation of the <see cref="MessageType"/> 
 	/// 	that will include this token.
 	/// </param>
-	public UserToken(Guid userId, string token, string type)
+	public UserToken(Guid userId, string token, MessageType type)
 	{
 		Token = token;
 		UserId = userId;
@@ -39,7 +35,7 @@ public class UserToken<TUser>
 		ExpiresOn = DateTime.UtcNow.AddMinutes(15);
 	}
 
-	private UserToken(Guid userId, string token, string type, DateTime expiresOn)
+	private UserToken(Guid userId, string token, MessageType type, DateTime expiresOn)
 	{
 		UserId = userId;
 		Token = token;
@@ -68,7 +64,7 @@ public class UserToken<TUser>
 	/// 	The type of access given to
 	/// 	by this <see cref="UserToken{TUser}"/>.
 	/// </summary>
-	public string Type { get; init; }
+	public MessageType Type { get; init; }
 
 	/// <summary>
 	///		Expiration <see cref="DateTime"/> 

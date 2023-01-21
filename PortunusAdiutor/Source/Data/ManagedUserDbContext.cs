@@ -53,7 +53,7 @@ where TUser : class, IManagedUser<TUser>
 		var tokenBuilder = builder.Entity<UserToken<TUser>>();
 
 		tokenBuilder
-			.HasKey(e => new {e.UserId, e.Token});
+			.HasKey(e => new {e.UserId, e.Token, e.Type});
 
 		tokenBuilder
 			.HasOne<TUser>(e => e.User)

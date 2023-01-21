@@ -35,7 +35,7 @@ where TUser : class, IManagedUser<TUser>
 	/// <returns>
 	/// 	Created user.
 	/// </returns>
-	TUser CreateUser(
+	UserResult<TUser> CreateUser(
 		Expression<Func<TUser, bool>> userFinder,
 		Func<TUser> userBuilder,
 		bool sendConfirmationMail = true
@@ -56,7 +56,7 @@ where TUser : class, IManagedUser<TUser>
 	/// <param name="twoFactorCode">
 	/// 	Code for users with 2FA enabled.
 	/// </param>
-	TUser ValidateUser(
+	UserResult<TUser> ValidateUser(
 		Expression<Func<TUser, bool>> userFinder,
 		string userPassword,
 		string? twoFactorCode = null
@@ -77,7 +77,7 @@ where TUser : class, IManagedUser<TUser>
 	/// <returns>
 	/// 	User that had his email confirmed.
 	/// </returns>
-	void ConfirmEmail(
+	UserResult<TUser> ConfirmEmail(
 		Expression<Func<TUser, bool>> userFinder,
 		string token
 	);
@@ -101,7 +101,7 @@ where TUser : class, IManagedUser<TUser>
 	/// <returns>
 	/// 	User that had his password redefined.
 	/// </returns>
-	void RedefinePassword(
+	UserResult<TUser> RedefinePassword(
 		Expression<Func<TUser, bool>> userFinder, 
 		string token, 
 		string newPassword
@@ -118,7 +118,9 @@ where TUser : class, IManagedUser<TUser>
 	/// <returns>
 	/// 	User to whom the email confirmation message was sent.
 	/// </returns>
-	void SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder);
+	UserResult<TUser> SendEmailConfirmation(
+		Expression<Func<TUser, bool>> userFinder
+	);
 
 	/// <summary>
 	/// 	Sends a message to an user for password redefinition.
@@ -131,7 +133,9 @@ where TUser : class, IManagedUser<TUser>
 	/// <returns>
 	/// 	User to whom the password redefinition message was sent.
 	/// </returns>
-	void SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder);
+	UserResult<TUser> SendPasswordRedefinition(
+		Expression<Func<TUser, bool>> userFinder
+	);
 
 	/// <summary>
 	/// 	Sends a message to an user for 2FA.
@@ -144,7 +148,9 @@ where TUser : class, IManagedUser<TUser>
 	/// <returns>
 	/// 	User to whom the 2FA message was sent.
 	/// </returns>
-	void SendTwoFactorAuthentication(Expression<Func<TUser, bool>> userFinder);
+	UserResult<TUser> SendTwoFactorAuthentication(
+		Expression<Func<TUser, bool>> userFinder
+	);
 
 	/// <summary>
 	/// 	Helper to find an user on the DB.
@@ -157,7 +163,9 @@ where TUser : class, IManagedUser<TUser>
 	/// <returns>
 	/// 	User found.
 	/// </returns>
-	TUser FindUser(Expression<Func<TUser, bool>> userFinder);
+	TUser FindUser(
+		Expression<Func<TUser, bool>> userFinder
+	);
 
 	/// <summary>
 	/// 	Gets JWT using the default <see cref="SecurityTokenDescriptor"/>.

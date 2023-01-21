@@ -57,14 +57,14 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 	}
 
 	/// <inheritdoc/>
-	public TUser CreateUser(
+	public UserResult<TUser> CreateUser(
 		Expression<Func<TUser, bool>> userFinder, 
 		Func<TUser> userBuilder,
 		bool sendConfirmationMail = true
 	)
 	{
 		if (_context.Users.FirstOrDefault(userFinder) is not null) {
-			throw new UserAlreadyExistsException();
+			return new(UserResultStatus.UserAlreadyExists);
 		}
 
 		var user = _context.Users.Add(userBuilder()).Entity;
@@ -74,26 +74,31 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 			_mailPoster.SendEmailConfirmationMessage(user);
 		}
 
-		return user;
+		return new(user);
 	}
 
 	/// <inheritdoc/>
-	public TUser ValidateUser(
+	public UserResult<TUser> ValidateUser(
 		Expression<Func<TUser, bool>> userFinder, 
 		string userPassword,
 		string? token = null
 	)
 	{
-		var user = _context.Users.FirstOrDefault(userFinder) 
-			?? throw new UserNotFoundException();
+		var user = _context.Users.FirstOrDefault(userFinder);
+
+		if (user is null) {
+			return new(UserResultStatus.UserNotFound);
+		}
+
 		if (!user.ValidatePassword(userPassword)) {
-			throw new InvalidPasswordException();
+			return new(UserResultStatus.InvalidPassword);
 		}
 
 		if (user.TwoFactorAuthenticationEnabled) {
 			if (token is null) {
-				throw new TwoFactorRequiredException();
+				return new(UserResultStatus.TwoFactorRequired);
 			}
+
 			_context.ConsumeToken(
 				user.Id,
 				token,
@@ -101,69 +106,111 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 				false
 			);
 		}
-		return user;
+		return new(user);
 	}
 
 	/// <inheritdoc/>
-	public void ConfirmEmail(
+	public UserResult<TUser> ConfirmEmail(
 		Expression<Func<TUser, bool>> userFinder, 
 		string token
 	)
 	{
-		var user = _context.Users.FirstOrDefault(userFinder) 
-			?? throw new UserNotFoundException();
-		_context.ConsumeToken(
+		var user = _context.Users.FirstOrDefault(userFinder);
+
+		if (user is null) {
+			return new(UserResultStatus.UserNotFound);
+		}
+
+		var result = _context.ConsumeToken(
 			user.Id,
 			token,
 			MessageType.EmailConfirmation
 		);
+
+		if (result != UserResultStatus.Ok) {
+			return new(result);
+		}
+
 		user.EmailConfirmed = true;
 		_context.SaveChanges();
+
+		return new(user);
 	}
 
 	/// <inheritdoc/>
-	public void RedefinePassword(
+	public UserResult<TUser> RedefinePassword(
 		Expression<Func<TUser, bool>> userFinder,
 		string token,
 		string newPassword
 	)
 	{
-		var user = _context.Users.FirstOrDefault(userFinder) 
-			?? throw new UserNotFoundException();
-		_context.ConsumeToken(
+		var user = _context.Users.FirstOrDefault(userFinder);
+
+		if (user is null) {
+			return new(UserResultStatus.UserNotFound);
+		}
+
+		var result = _context.ConsumeToken(
 			user.Id,
 			token,
 			MessageType.PasswordRedefinition
 		);
+
+		if (result != UserResultStatus.Ok) {
+			return new(result);
+		}
+
 		user.SetPassword(newPassword);
 		_context.SaveChanges();
+
+		return new(user);
+		
 	}
 
 	/// <inheritdoc/>
-	public void SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
+	public UserResult<TUser> SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
 	{
-		var user = _context.Users.FirstOrDefault(userFinder) 
-			?? throw new UserNotFoundException();
-		if (user.EmailConfirmed) {
-			throw new EmailAlreadyConfirmedException();
+		var user = _context.Users.FirstOrDefault(userFinder);
+
+		if (user is null) {
+			return new(UserResultStatus.UserNotFound);
 		}
+
+		if (user.EmailConfirmed) {
+			return new(UserResultStatus.UserAlreadyConfirmed);
+		}
+
 		_mailPoster.SendEmailConfirmationMessage(user);
+
+		return new(user);
 	}
 
 	/// <inheritdoc/>
-	public void SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
+	public UserResult<TUser> SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
 	{
-		var user = _context.Users.FirstOrDefault(userFinder) 
-			?? throw new UserNotFoundException();
+		var user = _context.Users.FirstOrDefault(userFinder);
+
+		if (user is null) {
+			return new(UserResultStatus.UserNotFound);
+		}
+
 		_mailPoster.SendPasswordRedefinitionMessage(user);
+
+		return new(user);
 	}
 
 	/// <inheritdoc/>
-	public void SendTwoFactorAuthentication(Expression<Func<TUser, bool>> userFinder)
+	public UserResult<TUser> SendTwoFactorAuthentication(Expression<Func<TUser, bool>> userFinder)
 	{
-		var user = _context.Users.FirstOrDefault(userFinder) 
-			?? throw new UserNotFoundException();
+		var user = _context.Users.FirstOrDefault(userFinder);
+
+		if (user is null) {
+			return new(UserResultStatus.UserNotFound);
+		}
+
 		_mailPoster.SendTwoFactorAuthenticationMessage(user);
+
+		return new(user);
 	}
 
 	/// <inheritdoc/>

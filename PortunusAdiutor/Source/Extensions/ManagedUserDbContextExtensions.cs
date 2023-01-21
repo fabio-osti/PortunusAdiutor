@@ -42,7 +42,7 @@ static public class ManagedUserDbContextExtensions
 	{
 		token = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
 
-		var userToken = new UserToken<TUser>(userId, token, type.ToTypeString());
+		var userToken = new UserToken<TUser>(userId, token, type);
 
 		context.UserTokens.Add(userToken);
 		context.SaveChanges();
@@ -75,7 +75,7 @@ static public class ManagedUserDbContextExtensions
 	/// <returns>
 	/// 	The key of the user to whom the token gives access to.
 	/// </returns>
-	static public Guid ConsumeToken<TUser>(
+	static public UserResultStatus ConsumeToken<TUser>(
 		this ManagedUserDbContext<TUser> context,
 		Guid userId,
 		string token,
@@ -84,26 +84,20 @@ static public class ManagedUserDbContextExtensions
 	)
 	where TUser : class, IManagedUser<TUser>
 	{
-		var userToken = context.UserTokens.Find(userId, token);
+		var userToken = context.UserTokens.Find(userId, token, messageType);
 
-		if (userToken is null) {
-			throw new InvalidTokenException();
-		}
-
-		if (userToken.Type != messageType.ToTypeString()) {
-			throw new InvalidPasswordException();
-		}
-
-		var type = messageType.ToTypeString();
-		if (userToken.ExpiresOn < DateTime.UtcNow || userToken.Type != type) {
-			throw new InvalidPasswordException();
+		if (
+			userToken is null
+			|| userToken.ExpiresOn < DateTime.UtcNow
+		) {
+			return UserResultStatus.InvalidToken;
 		}
 
 		if (singleUse) {
 			context.UserTokens.Remove(userToken);
+			context.SaveChanges();
 		}
-		context.SaveChanges();
 
-		return userToken.UserId;
+		return UserResultStatus.Ok;
 	}
 }

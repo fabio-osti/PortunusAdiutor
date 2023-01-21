@@ -58,7 +58,7 @@ namespace PortunusCodeExample.Controllers
 					return Problem("Email and Password can't be empty");
 
 				// In a real app, use a safe way to give privileges to an user
-				var user = _userManager.CreateUser(
+				var userResult = _userManager.CreateUser(
 					e => e.Email == credentials.Email,
 					() => new ApplicationUser(
 						credentials.Email,
@@ -67,7 +67,7 @@ namespace PortunusCodeExample.Controllers
 					)
 				);
 
-				return Ok(_userManager.GetJwt(user));
+				return Ok(_userManager.GetJwt(userResult.User));
 			} catch (PortunusException e) {
 				return Problem(e.ShortMessage);
 			} catch (Exception e) {
@@ -83,17 +83,18 @@ namespace PortunusCodeExample.Controllers
 				if (credentials.Email is null || credentials.Password is null)
 					return Problem("Email and Password can't be empty");
 
-				var user = _userManager.ValidateUser(
+				var userResult = _userManager.ValidateUser(
 					e => e.Email == credentials.Email,
 					credentials.Password,
 					credentials.Xdc
 				);
 
-				return Ok(_userManager.GetJwt(user));
-			} catch (TwoFactorRequiredException) {
-				// Yes, TwoFactorRequired best practices using exception for expected cases, will fix.
-				_userManager.SendTwoFactorAuthentication(e => e.Email == credentials.Email);
-				return Accepted();
+				if (userResult.Status == UserResultStatus.TwoFactorRequired) {
+					_userManager.SendTwoFactorAuthentication(e => e.Email == credentials.Email);
+					return Ok(0);
+				}
+
+				return Ok(_userManager.GetJwt(userResult.User));
 			} catch (PortunusException e) {
 				return Problem(e.ShortMessage);
 			} catch (Exception e) {
@@ -106,11 +107,13 @@ namespace PortunusCodeExample.Controllers
 		public IActionResult SendEmailConfirmation(string email)
 		{
 			try {
-				_userManager.SendEmailConfirmation(e => e.Email == email);
+				var result = _userManager.SendEmailConfirmation(e => e.Email == email);
 
-				return Ok();
-			} catch (PortunusException e) {
-				return Problem(e.ShortMessage);
+				if (result.Status == UserResultStatus.Ok) {
+					return Ok();
+				} else {
+					return Problem(result.Status.GetDescription());
+				}
 			} catch (Exception e) {
 				_logger.LogError(e, "An error has occurred.");
 				return Problem();
@@ -121,11 +124,13 @@ namespace PortunusCodeExample.Controllers
 		public IActionResult SendPasswordRedefinition(string email)
 		{
 			try {
-				_userManager.SendPasswordRedefinition(e => e.Email == email);
+				var result = _userManager.SendPasswordRedefinition(e => e.Email == email);
 
-				return Ok();
-			} catch (PortunusException e) {
-				return Problem(e.ShortMessage);
+				if (result.Status == UserResultStatus.Ok) {
+					return Ok();
+				} else {
+					return Problem(result.Status.GetDescription());
+				}
 			} catch (Exception e) {
 				_logger.LogError(e, "An error has occurred.");
 				return Problem();
@@ -140,12 +145,16 @@ namespace PortunusCodeExample.Controllers
 				if (credentials.Email is null || credentials.Xdc is null)
 					return Problem("Email and XDC can't be empty");
 
-				_userManager.ConfirmEmail(
+				var result = _userManager.ConfirmEmail(
 					e => e.Email == credentials.Email,
 					credentials.Xdc
 				);
 
-				return Ok();
+				if (result.Status == UserResultStatus.Ok) {
+					return Ok();
+				} else {
+					return Problem(result.Status.GetDescription());
+				}
 			} catch (PortunusException e) {
 				return Problem(e.ShortMessage);
 			} catch (Exception e) {
@@ -161,13 +170,17 @@ namespace PortunusCodeExample.Controllers
 				if (credentials.Email is null || credentials.Xdc is null || credentials.Password is null)
 					return Problem("Email, XDC and Password can't be empty");
 
-				_userManager.RedefinePassword(
+				var result = _userManager.RedefinePassword(
 					e => e.Email == credentials.Email,
 					credentials.Xdc,
 					credentials.Password!
 				);
 
-				return Ok();
+				if (result.Status == UserResultStatus.Ok) {
+					return Ok();
+				} else {
+					return Problem(result.Status.GetDescription());
+				}
 			} catch (PortunusException e) {
 				return Problem(e.ShortMessage);
 			} catch (Exception e) {
