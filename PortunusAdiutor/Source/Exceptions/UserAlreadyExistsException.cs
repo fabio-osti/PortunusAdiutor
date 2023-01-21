@@ -9,6 +9,6 @@ public class UserAlreadyExistsException : PortunusException
 	/// <summary>
 	/// 	Initializes the exception.
 	/// </summary>
-	public UserAlreadyExistsException() :
-		base("This user already exists.") { }
+	public UserAlreadyExistsException() 
+		: base("This user already exists.") { }
 }

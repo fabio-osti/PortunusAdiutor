@@ -16,33 +16,6 @@ namespace PortunusAdiutor.Models;
 public class UserToken<TUser>
 {
 	/// <summary>
-	/// 	Gets a unique token representing the <paramref name="userId"/>, 
-	/// 	<paramref name="xdc"/> and <paramref name="type"/>.
-	/// </summary>
-	///
-	/// <param name="userId">
-	/// 	The primary key of the user that the token will authenticate.
-	/// </param>
-	///
-	/// <param name="xdc">
-	/// 	An 'X' digits code.
-	/// </param>
-	///
-	/// <param name="type">
-	/// 	The string representation of the <see cref="MessageType"/> 
-	/// 	that will include this token.
-	/// </param>
-	///
-	/// <returns>
-	/// 	The token.
-	/// </returns>
-	public static string GetTokenFrom(Guid userId, string xdc, string type)
-	{
-		var concat = Encoding.UTF8.GetBytes(userId.ToString() + type + xdc);
-		return Base64UrlEncoder.Encode(SHA512.HashData(concat));
-	}
-
-	/// <summary>
 	/// 	Initializes an instance of the class.
 	/// </summary>
 	///
@@ -50,7 +23,7 @@ public class UserToken<TUser>
 	/// 	The primary key of the user that the token will authenticate.
 	/// </param>
 	///
-	/// <param name="xdc">
+	/// <param name="token">
 	/// 	A 'X' digits code.
 	/// </param>
 	///
@@ -58,9 +31,9 @@ public class UserToken<TUser>
 	/// 	The string representation of the <see cref="MessageType"/> 
 	/// 	that will include this token.
 	/// </param>
-	public UserToken(Guid userId, string xdc, string type)
+	public UserToken(Guid userId, string token, string type)
 	{
-		Token = GetTokenFrom(userId, xdc, type);
+		Token = token;
 		UserId = userId;
 		Type = type;
 		ExpiresOn = DateTime.UtcNow.AddMinutes(15);
@@ -87,7 +60,7 @@ public class UserToken<TUser>
 	public Guid UserId { get; init; }
 
 	/// <summary>
-	/// 	The one use password.
+	/// 	The token.
 	/// </summary>
 	public string Token { get; init; }
 

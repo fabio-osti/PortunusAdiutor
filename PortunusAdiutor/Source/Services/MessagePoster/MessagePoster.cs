@@ -50,15 +50,15 @@ where TUser : class, IManagedUser<TUser>
 	public void SendEmailConfirmationMessage(TUser user)
 	{
 		// Generates TOKEN
-		var token = _context.GenAndSaveToken(
+		_context.GenAndSaveToken(
 			user.Id, 
 			MessageType.EmailConfirmation, 
-			out var xdc
+			out var token
 		);
 		// Builds and sends message
 		var message = _posterParams.EmailConfirmationMessageBuilder(
 			user.Email,
-			xdc
+			token
 		);
 		SendMessage(message);
 	}
@@ -67,15 +67,15 @@ where TUser : class, IManagedUser<TUser>
 	public void SendPasswordRedefinitionMessage(TUser user)
 	{
 		// Generates TOKEN
-		var token = _context.GenAndSaveToken(
+		_context.GenAndSaveToken(
 			user.Id, 
 			MessageType.PasswordRedefinition, 
-			out var xdc
+			out var token
 		);
 		// Builds and sends message
 		var message = _posterParams.PasswordRedefinitionMessageBuilder(
 			user.Email,
-			xdc
+			token
 		);
 		SendMessage(message);
 	}
@@ -84,15 +84,15 @@ where TUser : class, IManagedUser<TUser>
 	public void SendTwoFactorAuthenticationMessage(TUser user)
 	{
 		// Generates TOKEN
-		var token = _context.GenAndSaveToken(
+		_context.GenAndSaveToken(
 			user.Id, 
 			MessageType.TwoFactorAuthentication, 
-			out var xdc
+			out var token
 		);
 		// Builds and sends message
 		var message = _posterParams.TwoFactorAuthenticationMessageBuilder(
 			user.Email,
-			xdc
+			token
 		);
 		SendMessage(message);
 	}

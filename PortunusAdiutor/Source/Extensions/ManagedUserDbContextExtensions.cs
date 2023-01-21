@@ -25,7 +25,7 @@ static public class ManagedUserDbContextExtensions
 	/// 	Type of access granted by the returning TOKEN.
 	/// </param>
 	///
-	/// <param name="xdc">
+	/// <param name="token">
 	/// 	The generated "X"-Digits Code
 	/// </param>
 	///
@@ -36,13 +36,13 @@ static public class ManagedUserDbContextExtensions
 		this ManagedUserDbContext<TUser> context,
 		Guid userId,
 		MessageType type,
-		out string xdc
+		out string token
 	)
 	where TUser : class, IManagedUser<TUser>
 	{
-		xdc = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
+		token = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
 
-		var userToken = new UserToken<TUser>(userId, xdc, type.ToTypeString());
+		var userToken = new UserToken<TUser>(userId, token, type.ToTypeString());
 
 		context.UserTokens.Add(userToken);
 		context.SaveChanges();
@@ -56,6 +56,9 @@ static public class ManagedUserDbContextExtensions
 	/// 
 	/// <param name="context">
 	/// </param>
+    /// 
+	/// <param name="userId">
+    /// </param>
 	///
 	/// <param name="token">
 	/// 	The access key sent by the message.
@@ -74,28 +77,33 @@ static public class ManagedUserDbContextExtensions
 	/// </returns>
 	static public Guid ConsumeToken<TUser>(
 		this ManagedUserDbContext<TUser> context,
+		Guid userId,
 		string token,
 		MessageType messageType,
 		bool singleUse = true
 	)
 	where TUser : class, IManagedUser<TUser>
 	{
-		var UserToken = context.UserTokens.Find(token);
+		var userToken = context.UserTokens.Find(userId, token);
 
-		if (UserToken is null) {
-			throw new TokenNotFoundException();
+		if (userToken is null) {
+			throw new InvalidTokenException();
+		}
+
+		if (userToken.Type != messageType.ToTypeString()) {
+			throw new InvalidPasswordException();
 		}
 
 		var type = messageType.ToTypeString();
-		if (UserToken.ExpiresOn < DateTime.UtcNow || UserToken.Type != type) {
+		if (userToken.ExpiresOn < DateTime.UtcNow || userToken.Type != type) {
 			throw new InvalidPasswordException();
 		}
 
 		if (singleUse) {
-			context.UserTokens.Remove(UserToken);
+			context.UserTokens.Remove(userToken);
 		}
 		context.SaveChanges();
 
-		return UserToken.UserId;
+		return userToken.UserId;
 	}
 }

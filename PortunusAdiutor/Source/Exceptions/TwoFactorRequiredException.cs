@@ -4,11 +4,11 @@ namespace PortunusAdiutor.Exceptions;
 /// 	Represents error that occur when an user have 2FA
 /// 	enabled, but no code was provided.
 /// </summary>
-public class Required2FAException : PortunusException
+public class TwoFactorRequiredException : PortunusException
 {
 	/// <summary>
 	/// 	Initializes the exception.
 	/// </summary>
-	public Required2FAException() 
-		: base("2FA is required for this user.") { }
+	public TwoFactorRequiredException() 
+		: base("Two-Factor Authentication is required for this user.") { }
 }

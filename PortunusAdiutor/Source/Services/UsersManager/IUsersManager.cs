@@ -27,18 +27,26 @@ where TUser : class, IManagedUser<TUser>
 	/// <param name="userBuilder">
 	/// 	Builder of the user.
 	/// </param>
+    /// 
+	/// <param name="sendConfirmationMail">
+    /// 	
+    /// </param>
 	///
 	/// <returns>
 	/// 	Created user.
 	/// </returns>
-	TUser CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder);
+	TUser CreateUser(
+		Expression<Func<TUser, bool>> userFinder,
+		Func<TUser> userBuilder,
+		bool sendConfirmationMail = true
+	);
 
 	/// <summary>
 	/// 	Validates an user.
 	/// </summary>
 	///
-	/// <param name="user">
-	/// 	User to be validated.
+	/// <param name="userFinder">
+	/// 	Predicate for finding the user to be validated.
 	/// </param>
 	///
 	/// <param name="userPassword">
@@ -48,28 +56,19 @@ where TUser : class, IManagedUser<TUser>
 	/// <param name="twoFactorCode">
 	/// 	Code for users with 2FA enabled.
 	/// </param>
-	void ValidateUser(
-		TUser user, 
+	TUser ValidateUser(
+		Expression<Func<TUser, bool>> userFinder,
 		string userPassword,
 		string? twoFactorCode = null
 	);
 
 	/// <summary>
-	/// 	Sends a message to an user for email confirmation.
-	/// </summary>
-	///
-	/// <param name="user">
-	/// 	User to be sent the message.
-	/// </param>
-	///
-	/// <returns>
-	/// 	User to whom the email confirmation message was sent.
-	/// </returns>
-	void SendEmailConfirmation(TUser user);
-
-	/// <summary>
 	/// 	Confirm the email of the user to whom this <paramref name="token"/> belongs to.
 	/// </summary>
+	/// 
+	/// <param name="userFinder">
+	/// 	Predicate for finding the user to confirm its email.
+	/// </param>
 	///
 	/// <param name="token">
 	/// 	Token for the action.
@@ -78,24 +77,18 @@ where TUser : class, IManagedUser<TUser>
 	/// <returns>
 	/// 	User that had his email confirmed.
 	/// </returns>
-	void ConfirmEmail(string token);
-
-	/// <summary>
-	/// 	Sends a message to an user for password redefinition.
-	/// </summary>
-	///
-	/// <param name="user">
-	/// 	User to be sent the message.
-	/// </param>
-	///
-	/// <returns>
-	/// 	User to whom the password redefinition message was sent.
-	/// </returns>
-	void SendPasswordRedefinition(TUser user);
+	void ConfirmEmail(
+		Expression<Func<TUser, bool>> userFinder,
+		string token
+	);
 
 	/// <summary>
 	/// 	Redefines the password of the user to whom this <paramref name="token"/> belongs to.
 	/// </summary>
+	/// 
+	/// <param name="userFinder">
+	/// 	Predicate for finding the user to redefine its password.
+	/// </param>
 	///
 	/// <param name="token">
 	/// 	Token for the action.
@@ -108,21 +101,51 @@ where TUser : class, IManagedUser<TUser>
 	/// <returns>
 	/// 	User that had his password redefined.
 	/// </returns>
-	void RedefinePassword(string token, string newPassword);
+	void RedefinePassword(
+		Expression<Func<TUser, bool>> userFinder, 
+		string token, 
+		string newPassword
+	);
+
+	/// <summary>
+	/// 	Sends a message to an user for email confirmation.
+	/// </summary>
+	///
+	/// <param name="userFinder">
+	/// 	Predicate for finding the user to be sent the message.
+	/// </param>
+	///
+	/// <returns>
+	/// 	User to whom the email confirmation message was sent.
+	/// </returns>
+	void SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder);
+
+	/// <summary>
+	/// 	Sends a message to an user for password redefinition.
+	/// </summary>
+	///
+	/// <param name="userFinder">
+	/// 	Predicate for finding the user to be sent the message.
+	/// </param>
+	///
+	/// <returns>
+	/// 	User to whom the password redefinition message was sent.
+	/// </returns>
+	void SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder);
 
 	/// <summary>
 	/// 	Sends a message to an user for 2FA.
 	/// </summary>
 	///
-	/// <param name="user">
-	/// 	User to be sent the message.
+	/// <param name="userFinder">
+	/// 	Predicate for finding the user to be sent the message.
 	/// </param>
 	///
 	/// <returns>
 	/// 	User to whom the 2FA message was sent.
 	/// </returns>
-	void SendTwoFactorAuthentication(TUser user);
-	
+	void SendTwoFactorAuthentication(Expression<Func<TUser, bool>> userFinder);
+
 	/// <summary>
 	/// 	Helper to find an user on the DB.
 	/// </summary>

@@ -57,16 +57,16 @@ namespace PortunusCodeExample.Controllers
 				if (credentials.Email is null || credentials.Password is null)
 					return Problem("Email and Password can't be empty");
 
+				// In a real app, use a safe way to give privileges to an user
 				var user = _userManager.CreateUser(
 					e => e.Email == credentials.Email,
 					() => new ApplicationUser(
 						credentials.Email,
 						credentials.Password,
-						// In a real app, use a safe way to give privileges to an user
-						credentials.Email.Substring(credentials.Email.Length-3) == "adm"
+						credentials.Email[^3..] == "adm"
 					)
 				);
-				_userManager.SendEmailConfirmation(user);
+
 				return Ok(_userManager.GetJwt(user));
 			} catch (PortunusException e) {
 				return Problem(e.ShortMessage);
@@ -83,19 +83,16 @@ namespace PortunusCodeExample.Controllers
 				if (credentials.Email is null || credentials.Password is null)
 					return Problem("Email and Password can't be empty");
 
-				var user = _userManager.FindUser(e => e.Email == credentials.Email);
-				_userManager.ValidateUser(
-					user,
+				var user = _userManager.ValidateUser(
+					e => e.Email == credentials.Email,
 					credentials.Password,
 					credentials.Xdc
 				);
 
 				return Ok(_userManager.GetJwt(user));
-			} catch (Required2FAException) {
-				// Yes, I know, not best practices using exception for expected cases, will fix.
-				_userManager.SendTwoFactorAuthentication(
-					_userManager.FindUser(e => e.Email == credentials.Email)
-				);
+			} catch (TwoFactorRequiredException) {
+				// Yes, TwoFactorRequired best practices using exception for expected cases, will fix.
+				_userManager.SendTwoFactorAuthentication(e => e.Email == credentials.Email);
 				return Accepted();
 			} catch (PortunusException e) {
 				return Problem(e.ShortMessage);
@@ -109,9 +106,7 @@ namespace PortunusCodeExample.Controllers
 		public IActionResult SendEmailConfirmation(string email)
 		{
 			try {
-				_userManager.SendEmailConfirmation(
-					_userManager.FindUser(e => e.Email == email)
-				);
+				_userManager.SendEmailConfirmation(e => e.Email == email);
 
 				return Ok();
 			} catch (PortunusException e) {
@@ -126,9 +121,7 @@ namespace PortunusCodeExample.Controllers
 		public IActionResult SendPasswordRedefinition(string email)
 		{
 			try {
-				_userManager.SendPasswordRedefinition(
-					_userManager.FindUser(e => e.Email == email)
-				);
+				_userManager.SendPasswordRedefinition(e => e.Email == email);
 
 				return Ok();
 			} catch (PortunusException e) {
@@ -147,14 +140,10 @@ namespace PortunusCodeExample.Controllers
 				if (credentials.Email is null || credentials.Xdc is null)
 					return Problem("Email and XDC can't be empty");
 
-				var user = _userManager.FindUser(e => e.Email == credentials.Email);
-				var token =
-					UserToken<ApplicationUser>.GetTokenFrom(
-						user.Id,
-						credentials.Xdc,
-						MessageTypes.EmailConfirmation
-					);
-				_userManager.ConfirmEmail(token);
+				_userManager.ConfirmEmail(
+					e => e.Email == credentials.Email,
+					credentials.Xdc
+				);
 
 				return Ok();
 			} catch (PortunusException e) {
@@ -172,15 +161,9 @@ namespace PortunusCodeExample.Controllers
 				if (credentials.Email is null || credentials.Xdc is null || credentials.Password is null)
 					return Problem("Email, XDC and Password can't be empty");
 
-				var user = _userManager.FindUser(e => e.Email == credentials.Email);
-				var token =
-					UserToken<ApplicationUser>.GetTokenFrom(
-						user.Id,
-						credentials.Xdc!,
-						MessageTypes.PasswordRedefinition
-					);
 				_userManager.RedefinePassword(
-					token,
+					e => e.Email == credentials.Email,
+					credentials.Xdc,
 					credentials.Password!
 				);
 

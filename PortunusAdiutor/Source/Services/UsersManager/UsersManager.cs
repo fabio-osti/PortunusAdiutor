@@ -57,7 +57,11 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 	}
 
 	/// <inheritdoc/>
-	public TUser CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder)
+	public TUser CreateUser(
+		Expression<Func<TUser, bool>> userFinder, 
+		Func<TUser> userBuilder,
+		bool sendConfirmationMail = true
+	)
 	{
 		if (_context.Users.FirstOrDefault(userFinder) is not null) {
 			throw new UserAlreadyExistsException();
@@ -65,89 +69,108 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 
 		var user = _context.Users.Add(userBuilder()).Entity;
 		_context.SaveChanges();
+
+		if (sendConfirmationMail) {
+			_mailPoster.SendEmailConfirmationMessage(user);
+		}
+
 		return user;
 	}
 
 	/// <inheritdoc/>
-	public void ValidateUser(
-		TUser user, 
+	public TUser ValidateUser(
+		Expression<Func<TUser, bool>> userFinder, 
 		string userPassword,
-		string? twoFactorCode = null
+		string? token = null
 	)
 	{
+		var user = _context.Users.FirstOrDefault(userFinder) 
+			?? throw new UserNotFoundException();
 		if (!user.ValidatePassword(userPassword)) {
 			throw new InvalidPasswordException();
 		}
 
 		if (user.TwoFactorAuthenticationEnabled) {
-			var token =	UserToken<TUser>.GetTokenFrom(
-				user.Id,
-				NotFoundExtensions.ThrowIf2FANull(twoFactorCode),
-				MessageTypes.TwoFactorAuthentication
-			);
+			if (token is null) {
+				throw new TwoFactorRequiredException();
+			}
 			_context.ConsumeToken(
+				user.Id,
 				token,
 				MessageType.TwoFactorAuthentication,
 				false
 			);
 		}
+		return user;
 	}
 
 	/// <inheritdoc/>
-	public void SendEmailConfirmation(TUser user)
+	public void ConfirmEmail(
+		Expression<Func<TUser, bool>> userFinder, 
+		string token
+	)
 	{
-		if (user.EmailConfirmed) {
-			throw new EmailAlreadyConfirmedException();
-		}
-
-		_mailPoster.SendEmailConfirmationMessage(user);
-	}
-
-	/// <inheritdoc/>
-	public void ConfirmEmail(string userToken)
-	{
-		var userId = _context.ConsumeToken(
-			userToken,
+		var user = _context.Users.FirstOrDefault(userFinder) 
+			?? throw new UserNotFoundException();
+		_context.ConsumeToken(
+			user.Id,
+			token,
 			MessageType.EmailConfirmation
 		);
-		var user = _context.Users.Find(userId);
-		user.ThrowIfUserNull();
 		user.EmailConfirmed = true;
 		_context.SaveChanges();
 	}
 
 	/// <inheritdoc/>
-	public void SendPasswordRedefinition(TUser user)
-	{
-		_mailPoster.SendPasswordRedefinitionMessage(user);
-	}
-
-	/// <inheritdoc/>
-	public void SendTwoFactorAuthentication(TUser user)
-	{
-		_mailPoster.SendTwoFactorAuthenticationMessage(user);
-	}
-
-	/// <inheritdoc/>
 	public void RedefinePassword(
-		string userToken,
+		Expression<Func<TUser, bool>> userFinder,
+		string token,
 		string newPassword
 	)
 	{
-		var userId = _context.ConsumeToken(
-			userToken,
+		var user = _context.Users.FirstOrDefault(userFinder) 
+			?? throw new UserNotFoundException();
+		_context.ConsumeToken(
+			user.Id,
+			token,
 			MessageType.PasswordRedefinition
 		);
-		var user = _context.Users.Find(userId);
-		user.ThrowIfUserNull();
 		user.SetPassword(newPassword);
 		_context.SaveChanges();
 	}
 
 	/// <inheritdoc/>
+	public void SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
+	{
+		var user = _context.Users.FirstOrDefault(userFinder) 
+			?? throw new UserNotFoundException();
+		if (user.EmailConfirmed) {
+			throw new EmailAlreadyConfirmedException();
+		}
+		_mailPoster.SendEmailConfirmationMessage(user);
+	}
+
+	/// <inheritdoc/>
+	public void SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
+	{
+		var user = _context.Users.FirstOrDefault(userFinder) 
+			?? throw new UserNotFoundException();
+		_mailPoster.SendPasswordRedefinitionMessage(user);
+	}
+
+	/// <inheritdoc/>
+	public void SendTwoFactorAuthentication(Expression<Func<TUser, bool>> userFinder)
+	{
+		var user = _context.Users.FirstOrDefault(userFinder) 
+			?? throw new UserNotFoundException();
+		_mailPoster.SendTwoFactorAuthenticationMessage(user);
+	}
+
+	/// <inheritdoc/>
 	public TUser FindUser(Expression<Func<TUser, bool>> userFinder)
 	{
-		return _context.Users.FirstOrDefault(userFinder) ?? throw new UserNotFoundException();
+		return _context.Users.FirstOrDefault(userFinder) 
+			?? throw new UserNotFoundException();
 	}
 
 	/// <inheritdoc/>

@@ -5,12 +5,13 @@ namespace PortunusAdiutor.Exceptions;
 
 /// <summary>
 /// 	Represents error that occur when a 
-/// 	token is not found.
+/// 	token is not found for the user.
 /// </summary>
-public class TokenNotFoundException : PortunusException
+public class InvalidTokenException : PortunusException
 {
 	/// <summary>
 	/// 	Initializes the exception.
 	/// </summary>
-	public TokenNotFoundException() : base("Token not found.") { }
+	public InvalidTokenException() 
+		: base("Validation for this token failed.") { }
 }

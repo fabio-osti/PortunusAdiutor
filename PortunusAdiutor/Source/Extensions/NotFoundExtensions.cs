@@ -56,7 +56,7 @@ static public class NotFoundExtensions
 	/// 	Not null asserted <paramref name="token"/>.
 	/// </returns>
 	///
-	/// <exception cref="TokenNotFoundException">
+	/// <exception cref="InvalidTokenException">
 	/// 	Throws if <paramref name="token"/> is null.
 	/// </exception>
 	public static UserToken<TUser> ThrowIfTokenNull<TUser>(
@@ -64,7 +64,7 @@ static public class NotFoundExtensions
 	)
 	where TUser : class, IManagedUser<TUser>
 	{
-		return token ?? throw new TokenNotFoundException();
+		return token ?? throw new InvalidTokenException();
 	}
 
 	/// <summary>
@@ -79,9 +79,9 @@ static public class NotFoundExtensions
 	/// 	Not null asserted twoFactorCode
 	/// </returns>
 	/// 
-	/// <exception cref="Required2FAException">
+	/// <exception cref="TwoFactorRequiredException">
 	/// 	Throws if <paramref name="twoFactorCode"/> is null.
 	/// </exception>
 	static public string ThrowIf2FANull(string? twoFactorCode) =>
-		twoFactorCode ?? throw new Required2FAException();
+		twoFactorCode ?? throw new TwoFactorRequiredException();
 }
