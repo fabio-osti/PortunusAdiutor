@@ -198,6 +198,7 @@ function getRandomEmail(domainExt: string) {
 			expect: r => r.status === 403
 		})
 	} catch (e) {
+		process.exitCode = 1;
 	} finally {
 		log.printAccumulatedTests({
 			writeToTxt: true,
