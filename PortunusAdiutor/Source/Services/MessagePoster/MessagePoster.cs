@@ -1,44 +1,39 @@
 using MailKit.Net.Smtp;
 using MimeKit;
-
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Models;
-using PortunusAdiutor.Static;
 
 namespace PortunusAdiutor.Services.MessagePoster;
 
 /// <summary>
-/// 	Implementation of <see cref="IMessagePoster{TUser}"/> 
-/// 	with access code.
+///     Implementation of <see cref="IMessagePoster{TUser}" />
+///     with access code.
 /// </summary>
-///
+/// 
 /// <typeparam name="TContext">
-/// 	Type of the DbContext.
+///     Type of the DbContext.
 /// </typeparam>
-///
+/// 
 /// <typeparam name="TUser">
-/// 	Type of the user.
+///     Type of the user.
 /// </typeparam>
 public class MessagePoster<TContext, TUser> : IMessagePoster<TUser>
-where TContext : ManagedUserDbContext<TUser>
-where TUser : class, IManagedUser<TUser>
+	where TContext : ManagedUserDbContext<TUser>
+	where TUser : class, IManagedUser<TUser>
 {
-	private readonly MessagePosterParams _posterParams;
-	private readonly TContext _context;
-
 	/// <summary>
-	/// 	Initializes an instance of the class.
+	///     Initializes an instance of the class.
 	/// </summary>
-	///
+	/// 
 	/// <param name="posterParams">
-	/// 	Parameters for sending messages.
+	///     Parameters for sending messages.
 	/// </param>
-	///
+	/// 
 	/// <param name="context">
-	/// 	Database context.
+	///     Database context.
 	/// </param>
 	public MessagePoster(
-		MessagePosterParams posterParams, 
+		MessagePosterParams posterParams,
 		TContext context
 	)
 	{
@@ -46,54 +41,63 @@ where TUser : class, IManagedUser<TUser>
 		_context = context;
 	}
 
-	/// <inheritdoc/>
+	private readonly TContext _context;
+	private readonly MessagePosterParams _posterParams;
+
+	/// <inheritdoc />
 	public void SendEmailConfirmationMessage(TUser user)
 	{
 		// Generates TOKEN
 		_context.GenAndSaveToken(
-			user.Id, 
-			MessageType.EmailConfirmation, 
+			user.Id,
+			MessageType.EmailConfirmation,
 			out var token
 		);
+
 		// Builds and sends message
 		var message = _posterParams.EmailConfirmationMessageBuilder(
 			user.Email,
 			token
 		);
+
 		SendMessage(message);
 	}
 
-	/// <inheritdoc/>
+	/// <inheritdoc />
 	public void SendPasswordRedefinitionMessage(TUser user)
 	{
 		// Generates TOKEN
 		_context.GenAndSaveToken(
-			user.Id, 
-			MessageType.PasswordRedefinition, 
+			user.Id,
+			MessageType.PasswordRedefinition,
 			out var token
 		);
+
 		// Builds and sends message
 		var message = _posterParams.PasswordRedefinitionMessageBuilder(
 			user.Email,
 			token
 		);
+
 		SendMessage(message);
 	}
 
-	/// <inheritdoc/>
+	/// <inheritdoc />
 	public void SendTwoFactorAuthenticationMessage(TUser user)
 	{
 		// Generates TOKEN
 		_context.GenAndSaveToken(
-			user.Id, 
-			MessageType.TwoFactorAuthentication, 
+			user.Id,
+			MessageType.TwoFactorAuthentication,
 			out var token
 		);
+
 		// Builds and sends message
 		var message = _posterParams.TwoFactorAuthenticationMessageBuilder(
 			user.Email,
 			token
 		);
+
 		SendMessage(message);
 	}
 
