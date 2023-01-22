@@ -2,10 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using PortunusAdiutor.Exceptions;
-using PortunusAdiutor.Models;
-using PortunusAdiutor.Services.TokenBuilder;
+using PortunusAdiutor.Helpers;
 using PortunusAdiutor.Services.UsersManager;
-using PortunusAdiutor.Static;
 using PortunusCodeExample.Data;
 using PortunusCodeExample.Models;
 
@@ -17,17 +15,17 @@ namespace PortunusCodeExample.Controllers
 	{
 		private readonly ILogger<AuthorizationController> _logger;
 		private readonly ApplicationDbContext _context;
-		private readonly IUsersManager<ApplicationUser> _userManager;
+		private readonly IUsersManager<ApplicationUser> _manager;
 
 		public AuthorizationController(
 			ILogger<AuthorizationController> logger,
 			ApplicationDbContext context,
-			IUsersManager<ApplicationUser> userManager
+			IUsersManager<ApplicationUser> manager
 		)
 		{
 			_logger = logger;
 			_context = context;
-			_userManager = userManager;
+			_manager = manager;
 		}
 
 		[HttpGet]
@@ -58,7 +56,7 @@ namespace PortunusCodeExample.Controllers
 					return Problem("Email and Password can't be empty");
 
 				// In a real app, use a safe way to give privileges to an user
-				var userResult = _userManager.CreateUser(
+				var userResult = _manager.CreateUser(
 					e => e.Email == credentials.Email,
 					() => new ApplicationUser(
 						credentials.Email,
@@ -67,9 +65,11 @@ namespace PortunusCodeExample.Controllers
 					)
 				);
 
-				return Ok(_userManager.GetJwt(userResult.User));
-			} catch (PortunusException e) {
-				return Problem(e.ShortMessage);
+				if (userResult.Status == UserResultStatus.Ok) {
+					return Ok(_manager.GetJwt(userResult.User));
+				} else {
+					return Problem(userResult.Status.GetDescription());
+				}
 			} catch (Exception e) {
 				_logger.LogError(e, "An error has occurred.");
 				return Problem();
@@ -83,20 +83,18 @@ namespace PortunusCodeExample.Controllers
 				if (credentials.Email is null || credentials.Password is null)
 					return Problem("Email and Password can't be empty");
 
-				var userResult = _userManager.ValidateUser(
+				var userResult = _manager.ValidateUser(
 					e => e.Email == credentials.Email,
 					credentials.Password,
 					credentials.Xdc
 				);
 
 				if (userResult.Status == UserResultStatus.TwoFactorRequired) {
-					_userManager.SendTwoFactorAuthentication(e => e.Email == credentials.Email);
+					_manager.SendTwoFactorAuthentication(e => e.Email == credentials.Email);
 					return Ok(0);
 				}
 
-				return Ok(_userManager.GetJwt(userResult.User));
-			} catch (PortunusException e) {
-				return Problem(e.ShortMessage);
+				return Ok(_manager.GetJwt(userResult.User));
 			} catch (Exception e) {
 				_logger.LogError(e, "An error has occurred.");
 				return Problem();
@@ -107,7 +105,7 @@ namespace PortunusCodeExample.Controllers
 		public IActionResult SendEmailConfirmation(string email)
 		{
 			try {
-				var result = _userManager.SendEmailConfirmation(e => e.Email == email);
+				var result = _manager.SendEmailConfirmation(e => e.Email == email);
 
 				if (result.Status == UserResultStatus.Ok) {
 					return Ok();
@@ -124,7 +122,7 @@ namespace PortunusCodeExample.Controllers
 		public IActionResult SendPasswordRedefinition(string email)
 		{
 			try {
-				var result = _userManager.SendPasswordRedefinition(e => e.Email == email);
+				var result = _manager.SendPasswordRedefinition(e => e.Email == email);
 
 				if (result.Status == UserResultStatus.Ok) {
 					return Ok();
@@ -145,7 +143,7 @@ namespace PortunusCodeExample.Controllers
 				if (credentials.Email is null || credentials.Xdc is null)
 					return Problem("Email and XDC can't be empty");
 
-				var result = _userManager.ConfirmEmail(
+				var result = _manager.ConfirmEmail(
 					e => e.Email == credentials.Email,
 					credentials.Xdc
 				);
@@ -170,7 +168,7 @@ namespace PortunusCodeExample.Controllers
 				if (credentials.Email is null || credentials.Xdc is null || credentials.Password is null)
 					return Problem("Email, XDC and Password can't be empty");
 
-				var result = _userManager.RedefinePassword(
+				var result = _manager.RedefinePassword(
 					e => e.Email == credentials.Email,
 					credentials.Xdc,
 					credentials.Password!

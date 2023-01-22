@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.IdentityModel.Tokens;
+using PortunusAdiutor.Helpers;
 using PortunusAdiutor.Models;
 
 namespace PortunusAdiutor.Services.UsersManager;
@@ -27,10 +28,10 @@ where TUser : class, IManagedUser<TUser>
 	/// <param name="userBuilder">
 	/// 	Builder of the user.
 	/// </param>
-    /// 
+	/// 
 	/// <param name="sendConfirmationMail">
-    /// 	
-    /// </param>
+	/// 	
+	/// </param>
 	///
 	/// <returns>
 	/// 	Created user.
@@ -102,8 +103,8 @@ where TUser : class, IManagedUser<TUser>
 	/// 	User that had his password redefined.
 	/// </returns>
 	UserResult<TUser> RedefinePassword(
-		Expression<Func<TUser, bool>> userFinder, 
-		string token, 
+		Expression<Func<TUser, bool>> userFinder,
+		string token,
 		string newPassword
 	);
 
