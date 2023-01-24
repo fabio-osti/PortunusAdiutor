@@ -64,10 +64,9 @@ public class AuthorizationController : ControllerBase
 				)
 			);
 
-			if (userResult.Status == UserResultStatus.Ok)
-				return Ok(_manager.GetJwt(userResult.User));
-
-			return Problem(userResult.Status.GetDescription());
+			return (userResult.Status == UserResultStatus.Ok) 
+				? Ok(_manager.GetJwt(userResult.User)) 
+				: Problem(userResult.Status.GetDescription());
 		} catch (Exception e) {
 			_logger.LogError(e, "An error has occurred.");
 			return Problem();
@@ -77,7 +76,8 @@ public class AuthorizationController : ControllerBase
 	[HttpPost]
 	public IActionResult SignIn([FromBody] CredentialsDto credentials)
 	{
-		try {
+		try
+		{
 			if (credentials.Email is null || credentials.Password is null)
 				return Problem("Email and Password can't be empty");
 
@@ -87,15 +87,11 @@ public class AuthorizationController : ControllerBase
 				credentials.Xdc
 			);
 
-			if (userResult.Status == UserResultStatus.TwoFactorRequired) {
-				_manager.SendTwoFactorAuthentication(
-					e => e.Email == credentials.Email
-				);
-
-				return Ok(0);
-			}
-
-			return Ok(_manager.GetJwt(userResult.User));
+			return userResult.Status switch {
+				UserResultStatus.TwoFactorRequired => Ok(0),
+				UserResultStatus.Ok => Ok(_manager.GetJwt(userResult.User)),
+				_ => Problem(userResult.Status.GetDescription())
+			};
 		} catch (Exception e) {
 			_logger.LogError(e, "An error has occurred.");
 			return Problem();
@@ -108,8 +104,9 @@ public class AuthorizationController : ControllerBase
 		try {
 			var result = _manager.SendEmailConfirmation(e => e.Email == email);
 
-			if (result.Status == UserResultStatus.Ok) return Ok();
-			return Problem(result.Status.GetDescription());
+			return (result.Status == UserResultStatus.Ok) 
+				? Ok() 
+				: Problem(result.Status.GetDescription());
 		} catch (Exception e) {
 			_logger.LogError(e, "An error has occurred.");
 			return Problem();
@@ -123,8 +120,9 @@ public class AuthorizationController : ControllerBase
 			var result =
 				_manager.SendPasswordRedefinition(e => e.Email == email);
 
-			if (result.Status == UserResultStatus.Ok) return Ok();
-			return Problem(result.Status.GetDescription());
+			return (result.Status == UserResultStatus.Ok) 
+				? Ok() 
+				: Problem(result.Status.GetDescription());
 		} catch (Exception e) {
 			_logger.LogError(e, "An error has occurred.");
 			return Problem();
@@ -144,10 +142,9 @@ public class AuthorizationController : ControllerBase
 				credentials.Xdc
 			);
 
-			if (result.Status == UserResultStatus.Ok) return Ok();
-			return Problem(result.Status.GetDescription());
-		} catch (PortunusException e) {
-			return Problem(e.ShortMessage);
+			return (result.Status == UserResultStatus.Ok) 
+				? Ok() 
+				: Problem(result.Status.GetDescription());
 		} catch (Exception e) {
 			_logger.LogError(e, "An error has occurred.");
 			return Problem();
@@ -169,10 +166,9 @@ public class AuthorizationController : ControllerBase
 				credentials.Password!
 			);
 
-			if (result.Status == UserResultStatus.Ok) return Ok();
-			return Problem(result.Status.GetDescription());
-		} catch (PortunusException e) {
-			return Problem(e.ShortMessage);
+			return (result.Status == UserResultStatus.Ok) 
+				? Ok() 
+				: Problem(result.Status.GetDescription());
 		} catch (Exception e) {
 			_logger.LogError(e, "An error has occurred.");
 			return Problem();

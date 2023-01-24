@@ -77,7 +77,8 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 	public UserResult<TUser> ValidateUser(
 		Expression<Func<TUser, bool>> userFinder,
 		string userPassword,
-		string? token = null
+		string? token = null,
+		bool sendMessageWhenRequired = true
 	)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
@@ -88,14 +89,21 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 			return new(UserResultStatus.InvalidPassword);
 
 		if (user.TwoFactorAuthenticationEnabled) {
-			if (token is null) return new(UserResultStatus.TwoFactorRequired);
+			if (token is null) {
+				if (sendMessageWhenRequired) 
+					_mailPoster.SendTwoFactorAuthenticationMessage(user);
+				
+				return new(UserResultStatus.TwoFactorRequired);
+			}
 
-			_context.ConsumeToken(
+			var tokenConsumed = _context.ConsumeToken(
 				user.Id,
 				token,
 				MessageType.TwoFactorAuthentication,
 				false
 			);
+			
+			if (!tokenConsumed) return new(UserResultStatus.InvalidToken);
 		}
 
 		return new(user);
@@ -111,13 +119,13 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 
 		if (user is null) return new(UserResultStatus.UserNotFound);
 
-		var result = _context.ConsumeToken(
+		var tokenConsumed = _context.ConsumeToken(
 			user.Id,
 			token,
 			MessageType.EmailConfirmation
 		);
 
-		if (result != UserResultStatus.Ok) return new(result);
+		if (!tokenConsumed) return new(UserResultStatus.InvalidToken);
 
 		user.EmailConfirmed = true;
 		_context.SaveChanges();
@@ -136,13 +144,13 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 
 		if (user is null) return new(UserResultStatus.UserNotFound);
 
-		var result = _context.ConsumeToken(
+		var tokenConsumed = _context.ConsumeToken(
 			user.Id,
 			token,
 			MessageType.PasswordRedefinition
 		);
 
-		if (result != UserResultStatus.Ok) return new(result);
+		if (!tokenConsumed) return new(UserResultStatus.InvalidToken);
 
 		user.SetPassword(newPassword);
 		_context.SaveChanges();

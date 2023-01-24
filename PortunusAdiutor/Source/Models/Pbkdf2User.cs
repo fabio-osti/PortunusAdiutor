@@ -61,10 +61,6 @@ public class Pbkdf2User<TUser> : IManagedUser<TUser>
 	///     Initializes an instance of the class.
 	/// </summary>
 	/// 
-	/// <param name="id">
-	///     Id of the user
-	/// </param>
-	/// 
 	/// <param name="email">
 	///     Email of the user.
 	/// </param>
@@ -73,12 +69,11 @@ public class Pbkdf2User<TUser> : IManagedUser<TUser>
 	///     Password of the user.
 	/// </param>
 	public Pbkdf2User(
-		Guid id,
 		string email,
 		string password
 	)
 	{
-		Id = id;
+		Id = Guid.NewGuid();
 		Email = email;
 		SetPassword(password);
 	}

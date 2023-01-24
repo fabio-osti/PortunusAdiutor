@@ -73,7 +73,7 @@ public static class ManagedUserDbContextExtensions
 	/// <returns>
 	///     The key of the user to whom the token gives access to.
 	/// </returns>
-	public static UserResultStatus ConsumeToken<TUser>(
+	public static bool ConsumeToken<TUser>(
 		this ManagedUserDbContext<TUser> context,
 		Guid userId,
 		string token,
@@ -84,13 +84,13 @@ public static class ManagedUserDbContextExtensions
 		var userToken = context.UserTokens.Find(userId, token, messageType);
 
 		if (userToken is null || userToken.ExpiresOn < DateTime.UtcNow)
-			return UserResultStatus.InvalidToken;
+			return false;
 
 		if (singleUse) {
 			context.UserTokens.Remove(userToken);
 			context.SaveChanges();
 		}
 
-		return UserResultStatus.Ok;
+		return true;
 	}
 }

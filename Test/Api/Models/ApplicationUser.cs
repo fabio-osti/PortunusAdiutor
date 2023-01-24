@@ -9,7 +9,7 @@ public class ApplicationUser : Pbkdf2User<ApplicationUser>
 		string email,
 		string password,
 		bool admin
-	) : base(Guid.NewGuid(), email, password)
+	) : base(email, password)
 	{
 		IsAdmin = admin;
 		TwoFactorAuthenticationEnabled = admin;

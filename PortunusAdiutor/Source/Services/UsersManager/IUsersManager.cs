@@ -56,10 +56,17 @@ public interface IUsersManager<TUser> where TUser : class, IManagedUser<TUser>
 	/// <param name="twoFactorCode">
 	///     Code for users with 2FA enabled.
 	/// </param>
+    /// 
+	/// <param name="sendMessageWhenRequired">
+    /// 	Wether to automatically send a message to user
+    /// 	that have 2FA enabled when <paramref name="twoFactorCode"/>
+    /// 	is null.
+    /// </param>
 	UserResult<TUser> ValidateUser(
 		Expression<Func<TUser, bool>> userFinder,
 		string userPassword,
-		string? twoFactorCode = null
+		string? twoFactorCode = null,
+		bool sendMessageWhenRequired = true
 	);
 
 	/// <summary>
