@@ -31,11 +31,13 @@ public class TokenBuilder : ITokenBuilder
 			SecurityAlgorithms.HmacSha256Signature
 		);
 
-		tokenDescriptor.EncryptingCredentials = new(
-			_builderParams.EncryptionKey,
-			JwtConstants.DirectKeyUseAlg,
-			SecurityAlgorithms.Aes128CbcHmacSha256
-		);
+		if (_builderParams.EncryptionKey is not null) {
+			tokenDescriptor.EncryptingCredentials = new(
+				_builderParams.EncryptionKey,
+				JwtConstants.DirectKeyUseAlg,
+				SecurityAlgorithms.Aes128CbcHmacSha256
+			);
+		}
 
 		var handler = new JwtSecurityTokenHandler();
 		return handler.WriteToken(handler.CreateToken(tokenDescriptor));

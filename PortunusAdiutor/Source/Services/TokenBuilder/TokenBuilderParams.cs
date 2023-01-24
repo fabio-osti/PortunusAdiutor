@@ -122,14 +122,9 @@ public class TokenBuilderParams
 			)
 		);
 
-		EncryptionKey = new(
-			converter(
-				sect["SEK"]
-				?? throw new ArgumentNullException(
-					$"{nameof(config)}[\"JWT__SEK\"]"
-				)
-			)
-		);
+		var encryptionKey = sect["SEK"];
+		if (encryptionKey is not null) 
+			EncryptionKey = new(converter(encryptionKey));
 	}
 
 	/// <summary>
@@ -140,7 +135,7 @@ public class TokenBuilderParams
 	/// <summary>
 	///     Key for encrypting tokens.
 	/// </summary>
-	public required SymmetricSecurityKey EncryptionKey { get; set; }
+	public SymmetricSecurityKey? EncryptionKey { get; set; }
 
 	/// <summary>
 	///     Configurator of <see cref="JwtBearerOptions" />.
