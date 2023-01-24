@@ -15,7 +15,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <PackageId>VulcanusInstrumenta.PortunusAdiutor</PackageId>
-    <Version>1.0.1</Version>
+    <Version>2.0.0-rc.1</Version>
     <Authors>fabio-osti</Authors>
     <PackageDescription>An identity-less helper with setting up JWT authorization.</PackageDescription>
     <RepositoryUrl>https://github.com/fabio-osti/PortunusAdiutor.git</RepositoryUrl>
