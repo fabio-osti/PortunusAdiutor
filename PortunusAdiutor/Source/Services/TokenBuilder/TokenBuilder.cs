@@ -72,7 +72,7 @@ public class TokenBuilder : ITokenBuilder
 	)
 	{
 		try {
-			validationParameters ??= new() {
+			validationParameters ??= _builderParams.ValidationParams ?? new() {
 				ValidateIssuer = false,
 				ValidateAudience = false
 			};
