@@ -22,7 +22,6 @@ namespace PortunusAdiutor.Services.UsersManager;
 public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 	where TContext : ManagedUserDbContext<TUser>
 	where TUser : class, IManagedUser<TUser>
-
 {
 	/// <summary>
 	///     Initializes an instance of the class.
@@ -204,7 +203,9 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 	}
 
 	/// <inheritdoc />
-	public UserResult<TUser> FindUser(Expression<Func<TUser, bool>> userFinder)
+	public UserResult<TUser> FindUser(
+		Expression<Func<TUser, bool>> userFinder
+	)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
 
