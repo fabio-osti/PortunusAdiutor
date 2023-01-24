@@ -1,9 +1,9 @@
-namespace PortunusAdiutor.Services.MessagePoster;
+namespace PortunusAdiutor.Models.Code;
 
 /// <summary>
 ///     Enumeration of types of message.
 /// </summary>
-public enum TokenType
+public enum CodeType
 {
 	/// <summary>
 	///     Message for email confirmation.

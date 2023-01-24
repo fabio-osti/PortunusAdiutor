@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Helpers;
 using PortunusAdiutor.Models;
+using PortunusAdiutor.Models.Code;
 using PortunusAdiutor.Services.MessagePoster;
 
 /// <summary>
@@ -10,7 +11,7 @@ using PortunusAdiutor.Services.MessagePoster;
 public static class ManagedUserDbContextExtensions
 {
 	/// <summary>
-	///     Generates a <see cref="UserToken{TUser}" /> for an
+	///     Generates a <see cref="UserCode{TUser}" /> for an
 	///     <see cref="IManagedUser{TUser}" /> for an access of type
 	///     <paramref name="type" /> and saves it on the database.
 	/// </summary>
@@ -29,23 +30,25 @@ public static class ManagedUserDbContextExtensions
 	/// </param>
 	/// 
 	/// <returns>
-	///     The generated <see cref="UserToken{TUser}" />.
+	///     The generated <see cref="UserCode{TUser}" />.
 	/// </returns>
-	public static UserToken<TUser> GenAndSaveToken<TUser>(
+	public static UserCode<TUser> GenAndSaveToken<TUser>(
 		this ManagedUserDbContext<TUser> context,
 		Guid userId,
-		TokenType type,
+		CodeType type,
 		out string token
 	) where TUser : class, IManagedUser<TUser>
 	{
-		token = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
+		do {
+			token = RandomNumberGenerator.GetInt32(1000000).ToString("000000");
+		} while (context.UsersCodes.Find(userId, token, type) is not null);
 
-		var userToken = new UserToken<TUser>(userId, token, type);
+		var userCode = new UserCode<TUser>(userId, token, type);
 
-		context.UserTokens.Add(userToken);
+		context.UsersCodes.Add(userCode);
 		context.SaveChanges();
 
-		return userToken;
+		return userCode;
 	}
 
 	/// <summary>
@@ -77,17 +80,17 @@ public static class ManagedUserDbContextExtensions
 		this ManagedUserDbContext<TUser> context,
 		Guid userId,
 		string token,
-		TokenType messageType,
+		CodeType messageType,
 		bool singleUse = true
 	) where TUser : class, IManagedUser<TUser>
 	{
-		var userToken = context.UserTokens.Find(userId, token, messageType);
+		var userToken = context.UsersCodes.Find(userId, token, messageType);
 
 		if (userToken is null || userToken.ExpiresOn < DateTime.UtcNow)
 			return false;
 
 		if (singleUse) {
-			context.UserTokens.Remove(userToken);
+			context.UsersCodes.Remove(userToken);
 			context.SaveChanges();
 		}
 

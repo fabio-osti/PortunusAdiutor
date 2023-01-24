@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Helpers;
 using PortunusAdiutor.Models;
+using PortunusAdiutor.Models.Code;
 using PortunusAdiutor.Services.MessagePoster;
 using PortunusAdiutor.Services.TokenBuilder;
 
@@ -98,7 +99,7 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 			var tokenConsumed = _context.ConsumeToken(
 				user.Id,
 				token,
-				TokenType.TwoFactorAuthentication,
+				CodeType.TwoFactorAuthentication,
 				false
 			);
 			
@@ -121,7 +122,7 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 		var tokenConsumed = _context.ConsumeToken(
 			user.Id,
 			token,
-			TokenType.EmailConfirmation
+			CodeType.EmailConfirmation
 		);
 
 		if (!tokenConsumed) return new(UserResultStatus.InvalidToken);
@@ -146,7 +147,7 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 		var tokenConsumed = _context.ConsumeToken(
 			user.Id,
 			token,
-			TokenType.PasswordRedefinition
+			CodeType.PasswordRedefinition
 		);
 
 		if (!tokenConsumed) return new(UserResultStatus.InvalidToken);

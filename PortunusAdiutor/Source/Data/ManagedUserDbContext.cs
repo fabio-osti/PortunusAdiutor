@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PortunusAdiutor.Models;
+using PortunusAdiutor.Models.Code;
 
 namespace PortunusAdiutor.Data;
 
@@ -34,7 +35,7 @@ public class ManagedUserDbContext<TUser> : DbContext
 	///     Gets or sets the <see cref="DbSet{TEntity}" />
 	///     containing all UserTokens.
 	/// </summary>
-	public DbSet<UserToken<TUser>> UserTokens { get; protected set; }
+	public DbSet<UserCode<TUser>> UsersCodes { get; protected set; }
 
 	/// <inheritdoc />
 	protected override void OnModelCreating(ModelBuilder builder)
@@ -44,16 +45,16 @@ public class ManagedUserDbContext<TUser> : DbContext
 
 		userBuilder.HasKey(e => e.Id);
 
-		var tokenBuilder = builder.Entity<UserToken<TUser>>();
+		var tokenBuilder = builder.Entity<UserCode<TUser>>();
 
 		tokenBuilder.HasKey(
 			e => new {
 				e.UserId,
-				e.Token,
+				e.Code,
 				e.Type
 			}
 		);
 
-		tokenBuilder.HasOne<TUser>(e => e.User).WithMany(e => e.UserTokens);
+		tokenBuilder.HasOne<TUser>(e => e.User).WithMany(e => e.UserCodes);
 	}
 }

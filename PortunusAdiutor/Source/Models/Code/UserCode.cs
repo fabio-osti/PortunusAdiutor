@@ -1,6 +1,4 @@
-using PortunusAdiutor.Services.MessagePoster;
-
-namespace PortunusAdiutor.Models;
+namespace PortunusAdiutor.Models.Code;
 
 /// <summary>
 ///     Class representing a password for special access.
@@ -9,7 +7,7 @@ namespace PortunusAdiutor.Models;
 /// <typeparam name="TUser">
 ///     Type of the user.
 /// </typeparam>
-public class UserToken<TUser>
+public class UserCode<TUser>
 {
 	/// <summary>
 	///     Initializes an instance of the class.
@@ -19,65 +17,65 @@ public class UserToken<TUser>
 	///     The primary key of the user that the token will authenticate.
 	/// </param>
 	/// 
-	/// <param name="token">
+	/// <param name="code">
 	///     A 'X' digits code.
 	/// </param>
 	/// 
 	/// <param name="type">
-	///     The string representation of the <see cref="TokenType" />
+	///     The string representation of the <see cref="CodeType" />
 	///     that will include this token.
 	/// </param>
-	public UserToken(
+	public UserCode(
 		Guid userId,
-		string token,
-		TokenType type
+		string code,
+		CodeType type
 	)
 	{
-		Token = token;
+		Code = code;
 		UserId = userId;
 		Type = type;
 		ExpiresOn = DateTime.UtcNow.AddMinutes(15);
 	}
 
-	private UserToken(
+	private UserCode(
 		Guid userId,
 		string token,
-		TokenType type,
+		CodeType type,
 		DateTime expiresOn
 	)
 	{
 		UserId = userId;
-		Token = token;
+		Code = token;
 		Type = type;
 		ExpiresOn = expiresOn;
 	}
 
 	/// <summary>
-	///     The user this <see cref="UserToken{TUser}" />
+	///     The user this <see cref="UserCode{TUser}" />
 	///     gives access to.
 	/// </summary>
 	public TUser? User { get; init; }
 
 	/// <summary>
 	///     The primary key of the user this
-	///     <see cref="UserToken{TUser}" /> gives access to.
+	///     <see cref="UserCode{TUser}" /> gives access to.
 	/// </summary>
 	public Guid UserId { get; init; }
 
 	/// <summary>
 	///     The token.
 	/// </summary>
-	public string Token { get; init; }
+	public string Code { get; init; }
 
 	/// <summary>
 	///     The type of access given to
-	///     by this <see cref="UserToken{TUser}" />.
+	///     by this <see cref="UserCode{TUser}" />.
 	/// </summary>
-	public TokenType Type { get; init; }
+	public CodeType Type { get; init; }
 
 	/// <summary>
 	///     Expiration <see cref="DateTime" />
-	///     of this <see cref="UserToken{TUser}" />.
+	///     of this <see cref="UserCode{TUser}" />.
 	/// </summary>
 	public DateTime ExpiresOn { get; init; }
 }

@@ -2,6 +2,7 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Models;
+using PortunusAdiutor.Models.Code;
 
 namespace PortunusAdiutor.Services.MessagePoster;
 
@@ -50,7 +51,7 @@ public class MessagePoster<TContext, TUser> : IMessagePoster<TUser>
 		// Generates TOKEN
 		_context.GenAndSaveToken(
 			user.Id,
-			TokenType.EmailConfirmation,
+			CodeType.EmailConfirmation,
 			out var token
 		);
 
@@ -69,7 +70,7 @@ public class MessagePoster<TContext, TUser> : IMessagePoster<TUser>
 		// Generates TOKEN
 		_context.GenAndSaveToken(
 			user.Id,
-			TokenType.PasswordRedefinition,
+			CodeType.PasswordRedefinition,
 			out var token
 		);
 
@@ -88,7 +89,7 @@ public class MessagePoster<TContext, TUser> : IMessagePoster<TUser>
 		// Generates TOKEN
 		_context.GenAndSaveToken(
 			user.Id,
-			TokenType.TwoFactorAuthentication,
+			CodeType.TwoFactorAuthentication,
 			out var token
 		);
 
