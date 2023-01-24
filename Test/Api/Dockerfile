@@ -13,7 +13,8 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["Test/Api/PortunusAdiutorApiTest.csproj", "Test/Api/"]
 RUN dotnet restore "Test/Api/PortunusAdiutorApiTest.csproj"
-COPY . .
+COPY ["Test/Api/", "Test/Api/"]
+COPY ["PortunusAdiutor", "PortunusAdiutor"]
 WORKDIR "/src/Test/Api"
 RUN dotnet build "PortunusAdiutorApiTest.csproj" -c Release -o /app/build
 

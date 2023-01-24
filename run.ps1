@@ -1,3 +1,5 @@
+cd Test/Script
+
 if (!(Test-Path results)) {
 	mkdir results > $null
 } 
@@ -5,7 +7,6 @@ if (!(Test-Path results)) {
 npm install
 tsc
 node bin/testApi.js
-
 
 Write-Output "Press enter to continue"
 Read-Host
