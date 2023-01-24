@@ -34,7 +34,7 @@ public static class ManagedUserDbContextExtensions
 	public static UserToken<TUser> GenAndSaveToken<TUser>(
 		this ManagedUserDbContext<TUser> context,
 		Guid userId,
-		MessageType type,
+		TokenType type,
 		out string token
 	) where TUser : class, IManagedUser<TUser>
 	{
@@ -77,7 +77,7 @@ public static class ManagedUserDbContextExtensions
 		this ManagedUserDbContext<TUser> context,
 		Guid userId,
 		string token,
-		MessageType messageType,
+		TokenType messageType,
 		bool singleUse = true
 	) where TUser : class, IManagedUser<TUser>
 	{

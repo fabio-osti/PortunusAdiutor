@@ -24,13 +24,13 @@ public class UserToken<TUser>
 	/// </param>
 	/// 
 	/// <param name="type">
-	///     The string representation of the <see cref="MessageType" />
+	///     The string representation of the <see cref="TokenType" />
 	///     that will include this token.
 	/// </param>
 	public UserToken(
 		Guid userId,
 		string token,
-		MessageType type
+		TokenType type
 	)
 	{
 		Token = token;
@@ -42,7 +42,7 @@ public class UserToken<TUser>
 	private UserToken(
 		Guid userId,
 		string token,
-		MessageType type,
+		TokenType type,
 		DateTime expiresOn
 	)
 	{
@@ -73,7 +73,7 @@ public class UserToken<TUser>
 	///     The type of access given to
 	///     by this <see cref="UserToken{TUser}" />.
 	/// </summary>
-	public MessageType Type { get; init; }
+	public TokenType Type { get; init; }
 
 	/// <summary>
 	///     Expiration <see cref="DateTime" />

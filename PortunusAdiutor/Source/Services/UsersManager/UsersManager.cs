@@ -98,7 +98,7 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 			var tokenConsumed = _context.ConsumeToken(
 				user.Id,
 				token,
-				MessageType.TwoFactorAuthentication,
+				TokenType.TwoFactorAuthentication,
 				false
 			);
 			
@@ -121,7 +121,7 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 		var tokenConsumed = _context.ConsumeToken(
 			user.Id,
 			token,
-			MessageType.EmailConfirmation
+			TokenType.EmailConfirmation
 		);
 
 		if (!tokenConsumed) return new(UserResultStatus.InvalidToken);
@@ -146,7 +146,7 @@ public class UsersManager<TContext, TUser> : IUsersManager<TUser>
 		var tokenConsumed = _context.ConsumeToken(
 			user.Id,
 			token,
-			MessageType.PasswordRedefinition
+			TokenType.PasswordRedefinition
 		);
 
 		if (!tokenConsumed) return new(UserResultStatus.InvalidToken);

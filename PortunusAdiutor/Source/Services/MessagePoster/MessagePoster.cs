@@ -50,7 +50,7 @@ public class MessagePoster<TContext, TUser> : IMessagePoster<TUser>
 		// Generates TOKEN
 		_context.GenAndSaveToken(
 			user.Id,
-			MessageType.EmailConfirmation,
+			TokenType.EmailConfirmation,
 			out var token
 		);
 
@@ -69,7 +69,7 @@ public class MessagePoster<TContext, TUser> : IMessagePoster<TUser>
 		// Generates TOKEN
 		_context.GenAndSaveToken(
 			user.Id,
-			MessageType.PasswordRedefinition,
+			TokenType.PasswordRedefinition,
 			out var token
 		);
 
@@ -88,7 +88,7 @@ public class MessagePoster<TContext, TUser> : IMessagePoster<TUser>
 		// Generates TOKEN
 		_context.GenAndSaveToken(
 			user.Id,
-			MessageType.TwoFactorAuthentication,
+			TokenType.TwoFactorAuthentication,
 			out var token
 		);
 
