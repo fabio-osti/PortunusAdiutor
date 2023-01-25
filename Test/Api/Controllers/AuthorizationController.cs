@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PortunusAdiutor.Exceptions;
 using PortunusAdiutor.Helpers;
 using PortunusAdiutor.Services.UsersManager;
 using PortunusCodeExample.Data;

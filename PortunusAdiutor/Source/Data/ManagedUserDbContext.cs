@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PortunusAdiutor.Models;
+using PortunusAdiutor.Models.User;
 using PortunusAdiutor.Models.Code;
 
 namespace PortunusAdiutor.Data;

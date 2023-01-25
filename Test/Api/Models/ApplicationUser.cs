@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using PortunusAdiutor.Models;
+using PortunusAdiutor.Models.User;
 
 namespace PortunusCodeExample.Models;
 

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using PortunusAdiutor.Data;
-using PortunusAdiutor.Models;
+using PortunusAdiutor.Models.User;
 using PortunusAdiutor.Services.UsersManager;
 
 namespace PortunusAdiutor.Extensions;

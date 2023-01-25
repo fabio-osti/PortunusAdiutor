@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PortunusAdiutor.Data;
-using PortunusAdiutor.Models;
+using PortunusAdiutor.Models.User;
 using PortunusAdiutor.Services.MessagePoster;
 using PortunusAdiutor.Services.TokenBuilder;
 

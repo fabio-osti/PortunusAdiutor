@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Helpers;
-using PortunusAdiutor.Models;
+using PortunusAdiutor.Models.User;
 using PortunusAdiutor.Models.Code;
 using PortunusAdiutor.Services.MessagePoster;
 

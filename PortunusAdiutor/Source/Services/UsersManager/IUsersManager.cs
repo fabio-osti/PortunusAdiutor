@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.IdentityModel.Tokens;
 using PortunusAdiutor.Helpers;
-using PortunusAdiutor.Models;
+using PortunusAdiutor.Models.User;
 
 namespace PortunusAdiutor.Services.UsersManager;
 

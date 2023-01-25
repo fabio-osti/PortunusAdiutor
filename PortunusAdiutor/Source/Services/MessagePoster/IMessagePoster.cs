@@ -1,4 +1,4 @@
-using PortunusAdiutor.Models;
+using PortunusAdiutor.Models.User;
 
 namespace PortunusAdiutor.Services.MessagePoster;
 

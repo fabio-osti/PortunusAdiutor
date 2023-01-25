@@ -1,7 +1,7 @@
 using MailKit.Net.Smtp;
 using MimeKit;
 using PortunusAdiutor.Data;
-using PortunusAdiutor.Models;
+using PortunusAdiutor.Models.User;
 using PortunusAdiutor.Models.Code;
 
 namespace PortunusAdiutor.Services.MessagePoster;
