@@ -56,9 +56,11 @@ public static class ManagedUserDbContextExtensions
 	/// </summary>
 	/// 
 	/// <param name="context">
+    /// 	Database context.
 	/// </param>
 	/// 
 	/// <param name="userId">
+    /// 	Id of the user.
 	/// </param>
 	/// 
 	/// <param name="token">
