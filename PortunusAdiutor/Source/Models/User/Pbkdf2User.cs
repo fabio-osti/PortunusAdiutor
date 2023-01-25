@@ -8,7 +8,8 @@ using PortunusAdiutor.Models.Code;
 namespace PortunusAdiutor.Models.User;
 
 /// <summary>
-///     Implementation of <see cref="IManagedUser{TUser}" /> using PBKDF2 as derivation algorithm.
+///     Implementation of <see cref="IManagedUser{TUser}" /> 
+///     using PBKDF2 as derivation algorithm.
 /// </summary>
 /// 
 /// <typeparam name="TUser">
