@@ -4,7 +4,7 @@ An identity-less helper with setting up JWT authorization.
 
 ## Creating a DbContext and User model
 
-The user model must implement IManagedUser\<TUser>, the recommended way is trough inheritance of any implementation provided by this library.
+The user model must implement IManagedUser\<TUser>, the recommended way is through inheritance of any implementation provided by this library.
 
 Example:
 ```csharp
