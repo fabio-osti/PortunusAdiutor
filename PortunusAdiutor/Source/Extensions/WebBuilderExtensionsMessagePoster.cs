@@ -2,14 +2,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using PortunusAdiutor.Data;
 using PortunusAdiutor.Models.User;
-using PortunusAdiutor.Services.UsersManager;
+using PortunusAdiutor.Services.MessagePoster;
 
 namespace PortunusAdiutor.Extensions;
 
 public static partial class WebBuilderExtensions
 {
 	/// <summary>
-	///     Adds <see cref="UsersManager{TContext,TUser}" />
+	///     Adds <see cref="MessagePoster{TContext, TUser}" />
 	///     to the <see cref="ServiceCollection" />.
 	/// </summary>
 	/// 
@@ -24,14 +24,23 @@ public static partial class WebBuilderExtensions
 	/// <param name="builder">
 	///     The web app builder.
 	/// </param>
-	public static void AddUsersManager<TContext, TUser>(
-		this WebApplicationBuilder builder
+	/// 
+	/// <param name="mailParams">
+	///     The parameters used by the
+	///     <see cref="MessagePoster{TContext, TUser}" />.
+	/// </param>
+	public static void AddMessagePoster<TContext, TUser>(
+		this WebApplicationBuilder builder,
+		MessagePosterParams mailParams
 	)
 		where TContext : ManagedUserDbContext<TUser>
 		where TUser : class, IManagedUser<TUser>
 	{
-		builder.Services
-			.AddSingleton<IUsersManager<TUser>,
-				UsersManager<TContext, TUser>>();
+		builder.Services.AddSingleton<IMessagePoster<TUser>>(
+			e => new MessagePoster<TContext, TUser>(
+				mailParams,
+				e.GetRequiredService<TContext>()
+			)
+		);
 	}
 }

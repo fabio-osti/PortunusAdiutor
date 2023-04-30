@@ -4,7 +4,7 @@ An identity-less helper with setting up JWT authorization.
 
 ## Creating a DbContext and User model
 
-The user model must implement IManagedUser\<TUser, TKey>, the recommended way is through inheritance of any implementation provided by this library.
+The user model must implement IManagedUser\<TUser>, the recommended way is through inheritance of any implementation provided by this library.
 
 Example:
 ```csharp
@@ -39,7 +39,7 @@ public class ApplicationUser : Pbkdf2User<ApplicationUser, Guid>
 }
 ```
 
-The context must inherit from ManagedUserDbContext\<TUser, TKey>.
+The context must inherit from ManagedUserDbContext\<TUser>.
 
 Example:
 ```csharp
@@ -52,7 +52,7 @@ public class ApplicationDbContext : ManagedUserDbContext<ApplicationUser, Guid>
 
 ## Adding it to your app
 
-The recommended way of providing the services to your app is through the AddAllPortunusServices\<TContext, TUser, TKey> extensions method on the app builder.
+The recommended way of providing the services to your app is through the AddAllPortunusServices\<TContext, TUser> extensions method on the app builder.
 
 Example:
 ```csharp
@@ -93,9 +93,9 @@ builder.Services.AddAuthorization(
 
 ## Usage
 
-To use it, inject the IUserManager\<TUser, TKey> and ITokenBuilder.
+To use it, inject the IUserManager\<TUser> and ITokenBuilder.
 
-Exceptions caused by invalid user interactions (such as signing in with the wrong password or signing up with a duplicate email) are treated with PortunusException.
+Invalid user interactions (such as signing in with the wrong password or signing up with a duplicate email) will return an UserResult containing the corresponding status error.
 
 As most operations can (and should) be done with IUserManager, there's no need to ever use the DbContext directly for individual user operations.
 
@@ -106,40 +106,17 @@ Example:
 [Route("[controller]/[action]")]
 public class AuthorizationController : ControllerBase
 {
-	private readonly ILogger<AuthorizationController> _logger;
-	private readonly ApplicationDbContext _context;
-	private readonly IUsersManager<ApplicationUser, Guid> _userManager;
-
 	public AuthorizationController(
 		ILogger<AuthorizationController> logger,
-		ApplicationDbContext context,
-		IUsersManager<ApplicationUser, Guid> userManager
+		IUsersManager<ApplicationUser> manager
 	)
 	{
 		_logger = logger;
-		_context = context;
-		_userManager = userManager;
+		_manager = manager;
 	}
 
-	[HttpGet]
-	public IActionResult Ping()
-	{
-		return Ok(DateTime.UtcNow);
-	}
-
-	[HttpGet]
-	[Authorize]
-	public IActionResult WhoAmI()
-	{
-		return Ok(User.Claims.ToDictionary(e => e.Type, e => e.Value));
-	}
-
-	[HttpGet]
-	[Authorize(Policy = "Administrator")]
-	public IActionResult GetUsersCount()
-	{
-		return Ok(_context.Users.Count());
-	}
+	private readonly ILogger<AuthorizationController> _logger;
+	private readonly IUsersManager<ApplicationUser> _manager;
 
 	[HttpPost]
 	public IActionResult SignUp([FromBody] CredentialsDto credentials)
@@ -148,19 +125,20 @@ public class AuthorizationController : ControllerBase
 			if (credentials.Email is null || credentials.Password is null)
 				return Problem("Email and Password can't be empty");
 
-			var user = _userManager.CreateUser(
+			// In a real app, use a safe way to give privileges to an user
+			var userResult = _manager.CreateUser(
 				e => e.Email == credentials.Email,
-				() => new ApplicationUser(
+				() => new(
 					credentials.Email,
 					credentials.Password,
-					// In a real app, use a safe way to give privileges to an user
-					credentials.Email.Substring(credentials.Email.Length-3) == "adm"
+					credentials.Email[^3..] == "adm"
 				)
 			);
 
-			return Ok(_userManager.GetJwt(user));
-		} catch (PortunusException e) {
-			return Problem(e.ShortMessage);
+			return (userResult.Status == UserResultStatus.Ok) 
+				? Ok(_manager.GetJwt(userResult.User)) 
+				: Problem(userResult.Status.GetDescription());
+
 		} catch (Exception e) {
 			_logger.LogError(e, "An error has occurred.");
 			return Problem();
@@ -170,56 +148,27 @@ public class AuthorizationController : ControllerBase
 	[HttpPost]
 	public IActionResult SignIn([FromBody] CredentialsDto credentials)
 	{
-		try {
+		try
+		{
 			if (credentials.Email is null || credentials.Password is null)
 				return Problem("Email and Password can't be empty");
 
-			var user = _userManager.ValidateUser(
+			var userResult = _manager.ValidateUser(
 				e => e.Email == credentials.Email,
-				credentials.Password
+				credentials.Password,
+				credentials.Xdc
 			);
 
-			return Ok(_userManager.GetJwt(user));
-		} catch (PortunusException e) {
-			return Problem(e.ShortMessage);
+			return userResult.Status switch {
+				UserResultStatus.TwoFactorRequired => Ok(0),
+				UserResultStatus.Ok => Ok(_manager.GetJwt(userResult.User)),
+				_ => Problem(userResult.Status.GetDescription())
+			};
 		} catch (Exception e) {
 			_logger.LogError(e, "An error has occurred.");
 			return Problem();
 		}
 	}
-
-	[HttpPost]
-	public IActionResult SendEmailConfirmation(string email)
-	{
-		try {
-			var user =
-				_userManager.SendEmailConfirmation(e => e.Email == email);
-
-			return Ok();
-		} catch (PortunusException e) {
-			return Problem(e.ShortMessage);
-		} catch (Exception e) {
-			_logger.LogError(e, "An error has occurred.");
-			return Problem();
-		}
-	}
-
-	[HttpPost]
-	public IActionResult SendPasswordRedefinition(string email)
-	{
-		try {
-			var user =
-				_userManager.SendPasswordRedefinition(e => e.Email == email);
-
-			return Ok();
-		} catch (PortunusException e) {
-			return Problem(e.ShortMessage);
-		} catch (Exception e) {
-			_logger.LogError(e, "An error has occurred.");
-			return Problem();
-		}
-	}
-
 
 	[HttpPost]
 	public IActionResult ConfirmEmail([FromBody] CredentialsDto credentials)
@@ -228,16 +177,14 @@ public class AuthorizationController : ControllerBase
 			if (credentials.Email is null || credentials.Xdc is null)
 				return Problem("Email and XDC can't be empty");
 
-			var user = _userManager.FindUser(e => e.Email == credentials.Email);
-			var token =
-				SingleUseToken<ApplicationUser, Guid>.GetTokenFrom(
-					user.Id,
-					credentials.Xdc,
-					MessageTypes.EmailConfirmation
-				);
-			var confirmedUser = _userManager.ConfirmEmail(token);
+			var result = _manager.ConfirmEmail(
+				e => e.Email == credentials.Email,
+				credentials.Xdc
+			);
 
-			return Ok();
+			return (result.Status == UserResultStatus.Ok) 
+				? Ok() 
+				: Problem(result.Status.GetDescription());
 		} catch (PortunusException e) {
 			return Problem(e.ShortMessage);
 		} catch (Exception e) {
@@ -250,24 +197,53 @@ public class AuthorizationController : ControllerBase
 	public IActionResult RedefinePassword([FromBody] CredentialsDto credentials)
 	{
 		try {
-			if (credentials.Email is null || credentials.Xdc is null || credentials.Password is null)
+			if (credentials.Email is null
+			    || credentials.Xdc is null
+			    || credentials.Password is null)
 				return Problem("Email, XDC and Password can't be empty");
 
-			var user = _userManager.FindUser(e => e.Email == credentials.Email);
-			var token =
-				SingleUseToken<ApplicationUser, Guid>.GetTokenFrom(
-					user.Id,
-					credentials.Xdc!,
-					MessageTypes.PasswordRedefinition
-				);
-			var redefinedUser = _userManager.RedefinePassword(
-				token,
+			var result = _manager.RedefinePassword(
+				e => e.Email == credentials.Email,
+				credentials.Xdc,
 				credentials.Password!
 			);
 
-			return Ok();
+			return (result.Status == UserResultStatus.Ok) 
+				? Ok() 
+				: Problem(result.Status.GetDescription());
 		} catch (PortunusException e) {
 			return Problem(e.ShortMessage);
+		} catch (Exception e) {
+			_logger.LogError(e, "An error has occurred.");
+			return Problem();
+		}
+	}
+
+	[HttpPost]
+	public IActionResult SendEmailConfirmation(string email)
+	{
+		try {
+			var result = _manager.SendEmailConfirmation(e => e.Email == email);
+
+			return (result.Status == UserResultStatus.Ok) 
+				? Ok() 
+				: Problem(result.Status.GetDescription());
+		} catch (Exception e) {
+			_logger.LogError(e, "An error has occurred.");
+			return Problem();
+		}
+	}
+
+	[HttpPost]
+	public IActionResult SendPasswordRedefinition(string email)
+	{
+		try {
+			var result =
+				_manager.SendPasswordRedefinition(e => e.Email == email);
+
+			return (result.Status == UserResultStatus.Ok) 
+				? Ok() 
+				: Problem(result.Status.GetDescription());
 		} catch (Exception e) {
 			_logger.LogError(e, "An error has occurred.");
 			return Problem();
@@ -276,13 +252,6 @@ public class AuthorizationController : ControllerBase
 }
 ```
 
-## SingleUseTokens and IMessagePoster
+## UserTokens and IMessagePoster
 
-For password redefinition and email confirmation (and in the future, two-steps-authentication) this library provides two strategies to work with:
-
-- CodeMessagePoster: which sends a message to the user email containing a 6 digits code that can be consumed, along the UserID and the type of message that was sent, to rebuild the SingleUseToken, that should be used within the app.
-- LinkMessagePoster: which sends a link of an endpoint appended to the SingleUseToken directly that should perform the desired operation.
-
-## See more
-
-The examples given here are of the CodeMessagePoster strategy, you can see the full examples at the Examples folder on the project.
+For password redefinition, email confirmation and two-factor authentication a message will be sent to the user email containing a token (a 6-digit number for now, but should be configurable later).

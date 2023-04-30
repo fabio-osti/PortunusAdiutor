@@ -1,57 +1,47 @@
 using System.Linq.Expressions;
 using Microsoft.IdentityModel.Tokens;
 using PortunusAdiutor.Data;
-using PortunusAdiutor.Exceptions;
-using PortunusAdiutor.Extensions;
-using PortunusAdiutor.Models;
+using PortunusAdiutor.Helpers;
+using PortunusAdiutor.Models.User;
+using PortunusAdiutor.Models.Code;
 using PortunusAdiutor.Services.MessagePoster;
 using PortunusAdiutor.Services.TokenBuilder;
-using PortunusAdiutor.Static;
 
 namespace PortunusAdiutor.Services.UsersManager;
 
 /// <summary>
-/// 	Default implementation of <see cref="IUsersManager{TUser, TKey}"/>.
+///     Default implementation of <see cref="IUsersManager{TUser}" />.
 /// </summary>
-///
+/// 
 /// <typeparam name="TContext">
-/// 	Type of the DbContext.
+///     Type of the DbContext.
 /// </typeparam>
-///
+/// 
 /// <typeparam name="TUser">
-/// 	Type of the user.
+///     Type of the user.
 /// </typeparam>
-///
-/// <typeparam name="TKey">
-/// 	Type of the user primary key.
-/// </typeparam>
-public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
-	where TContext : ManagedUserDbContext<TUser, TKey>
-	where TUser : class, IManagedUser<TUser, TKey>
-	where TKey : IEquatable<TKey>
+public class UsersManager<TContext, TUser> : IUsersManager<TUser>
+	where TContext : ManagedUserDbContext<TUser>
+	where TUser : class, IManagedUser<TUser>
 {
-	private readonly ITokenBuilder _tokenBuilder;
-	private readonly IMessagePoster<TUser, TKey> _mailPoster;
-	private readonly TContext _context;
-
 	/// <summary>
-	/// 	Initializes an instance of the class.
+	///     Initializes an instance of the class.
 	/// </summary>
 	/// 
 	/// <param name="tokenBuilder">
-	/// 	Service for building JWT tokens.
+	///     Service for building JWT tokens.
 	/// </param>
-	///
+	/// 
 	/// <param name="messagePoster">
-	/// 	Service for sending the messages.
+	///     Service for sending the messages.
 	/// </param>
-	///
+	/// 
 	/// <param name="context">
-	/// 	Database context used for identity.
+	///     Database context used for identity.
 	/// </param>
 	public UsersManager(
 		ITokenBuilder tokenBuilder,
-		IMessagePoster<TUser, TKey> messagePoster,
+		IMessagePoster<TUser> messagePoster,
 		TContext context
 	)
 	{
@@ -60,104 +50,178 @@ public class UsersManager<TContext, TUser, TKey> : IUsersManager<TUser, TKey>
 		_context = context;
 	}
 
-	/// <inheritdoc/>
-	public TUser CreateUser(Expression<Func<TUser, bool>> userFinder, Func<TUser> userBuilder)
+	private readonly TContext _context;
+	private readonly IMessagePoster<TUser> _mailPoster;
+	private readonly ITokenBuilder _tokenBuilder;
+
+	/// <inheritdoc />
+	public UserResult<TUser> CreateUser(
+		Expression<Func<TUser, bool>> userFinder,
+		Func<TUser> userBuilder,
+		bool sendConfirmationMail = true
+	)
 	{
-		if (_context.Users.FirstOrDefault(userFinder) is not null) {
-			throw new UserAlreadyExistsException();
-		}
+		if (_context.Users.FirstOrDefault(userFinder) is not null)
+			return new(UserResultStatus.UserAlreadyExists);
 
 		var user = _context.Users.Add(userBuilder()).Entity;
-		_mailPoster.SendEmailConfirmationMessage(user);
 		_context.SaveChanges();
-		return user;
+
+		if (sendConfirmationMail)
+			_mailPoster.SendEmailConfirmationMessage(user);
+
+		return new(user);
 	}
 
-	/// <inheritdoc/>
-	public TUser ValidateUser(Expression<Func<TUser, bool>> userFinder, string userPassword)
+	/// <inheritdoc />
+	public UserResult<TUser> ValidateUser(
+		Expression<Func<TUser, bool>> userFinder,
+		string userPassword,
+		string? token = null,
+		bool sendMessageWhenRequired = true
+	)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		user.ThrowIfUserNull<TUser, TKey>();
 
-		if (!user.ValidatePassword(userPassword)) {
-			throw new InvalidPasswordException();
+		if (user is null) return new(UserResultStatus.UserNotFound);
+
+		if (!user.ValidatePassword(userPassword))
+			return new(UserResultStatus.InvalidPassword);
+
+		if (user.TwoFactorAuthenticationEnabled) {
+			if (token is null) {
+				if (sendMessageWhenRequired) 
+					_mailPoster.SendTwoFactorAuthenticationMessage(user);
+				
+				return new(UserResultStatus.TwoFactorRequired);
+			}
+
+			var tokenConsumed = _context.ConsumeToken(
+				user.Id,
+				token,
+				CodeType.TwoFactorAuthentication,
+				false
+			);
+			
+			if (!tokenConsumed) return new(UserResultStatus.InvalidToken);
 		}
 
-		return user;
+		return new(user);
 	}
 
-	/// <inheritdoc/>
-	public TUser SendEmailConfirmation(Expression<Func<TUser, bool>> userFinder)
+	/// <inheritdoc />
+	public UserResult<TUser> ConfirmEmail(
+		Expression<Func<TUser, bool>> userFinder,
+		string token
+	)
 	{
 		var user = _context.Users.FirstOrDefault(userFinder);
-		user.ThrowIfUserNull<TUser, TKey>();
 
-		if (user.EmailConfirmed) {
-			throw new EmailAlreadyConfirmedException();
-		}
+		if (user is null) return new(UserResultStatus.UserNotFound);
 
-		_mailPoster.SendEmailConfirmationMessage(user);
-
-		return user;
-	}
-
-	/// <inheritdoc/>
-	public TUser ConfirmEmail(string singleUseToken)
-	{
-		var userId = _context.ConsumeSut(
-			singleUseToken,
-			MessageType.EmailConfirmation
+		var tokenConsumed = _context.ConsumeToken(
+			user.Id,
+			token,
+			CodeType.EmailConfirmation
 		);
-		var user = _context.Users.Find(userId);
-		user.ThrowIfUserNull<TUser, TKey>();
+
+		if (!tokenConsumed) return new(UserResultStatus.InvalidToken);
+
 		user.EmailConfirmed = true;
 		_context.SaveChanges();
 
-		return user;
+		return new(user);
 	}
 
-	/// <inheritdoc/>
-	public TUser SendPasswordRedefinition(Expression<Func<TUser, bool>> userFinder)
-	{
-		var user = _context.Users.FirstOrDefault(userFinder);
-		user.ThrowIfUserNull<TUser, TKey>();
-
-		_mailPoster.SendPasswordRedefinitionMessage(user);
-
-		return user;
-	}
-
-	/// <inheritdoc/>
-	public TUser RedefinePassword(
-		string singleUseToken,
+	/// <inheritdoc />
+	public UserResult<TUser> RedefinePassword(
+		Expression<Func<TUser, bool>> userFinder,
+		string token,
 		string newPassword
 	)
 	{
-		var userId = _context.ConsumeSut(
-			singleUseToken,
-			MessageType.PasswordRedefinition
+		var user = _context.Users.FirstOrDefault(userFinder);
+
+		if (user is null) return new(UserResultStatus.UserNotFound);
+
+		var tokenConsumed = _context.ConsumeToken(
+			user.Id,
+			token,
+			CodeType.PasswordRedefinition
 		);
-		var user = _context.Users.Find(userId);
-		user.ThrowIfUserNull<TUser, TKey>();
+
+		if (!tokenConsumed) return new(UserResultStatus.InvalidToken);
+
 		user.SetPassword(newPassword);
 		_context.SaveChanges();
 
-		return user;
+		return new(user);
 	}
 
-	/// <inheritdoc/>
-	public TUser FindUser(Expression<Func<TUser, bool>> userFinder)
+	/// <inheritdoc />
+	public UserResult<TUser> SendEmailConfirmation(
+		Expression<Func<TUser, bool>> userFinder
+	)
 	{
-		return _context.Users.FirstOrDefault(userFinder) ?? throw new UserNotFoundException();
+		var user = _context.Users.FirstOrDefault(userFinder);
+
+		if (user is null) return new(UserResultStatus.UserNotFound);
+
+		if (user.EmailConfirmed)
+			return new(UserResultStatus.UserAlreadyConfirmed);
+
+		_mailPoster.SendEmailConfirmationMessage(user);
+
+		return new(user);
 	}
 
-	/// <inheritdoc/>
+	/// <inheritdoc />
+	public UserResult<TUser> SendPasswordRedefinition(
+		Expression<Func<TUser, bool>> userFinder
+	)
+	{
+		var user = _context.Users.FirstOrDefault(userFinder);
+
+		if (user is null) return new(UserResultStatus.UserNotFound);
+
+		_mailPoster.SendPasswordRedefinitionMessage(user);
+
+		return new(user);
+	}
+
+	/// <inheritdoc />
+	public UserResult<TUser> SendTwoFactorAuthentication(
+		Expression<Func<TUser, bool>> userFinder
+	)
+	{
+		var user = _context.Users.FirstOrDefault(userFinder);
+
+		if (user is null) return new(UserResultStatus.UserNotFound);
+
+		_mailPoster.SendTwoFactorAuthenticationMessage(user);
+
+		return new(user);
+	}
+
+	/// <inheritdoc />
+	public UserResult<TUser> FindUser(
+		Expression<Func<TUser, bool>> userFinder
+	)
+	{
+		var user = _context.Users.FirstOrDefault(userFinder);
+
+		if (user is null) return new(UserResultStatus.UserNotFound);
+
+		return new(user);
+	}
+
+	/// <inheritdoc />
 	public string GetJwt(TUser user)
 	{
 		return _tokenBuilder.BuildToken(user.GetClaims());
 	}
 
-	/// <inheritdoc/>
+	/// <inheritdoc />
 	public string GetJwt(
 		TUser user,
 		SecurityTokenDescriptor tokenDescriptor
